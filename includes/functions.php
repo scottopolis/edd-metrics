@@ -153,7 +153,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         		
         	}
 
-        	return array( 'total' => number_format( $earnings, 2 ), 'compare' => '<span class="' . $classes . '">' . number_format( $percentage, 2 ) . '%' . '</span> over last ' . $dates['num_days'] . ' days', 'avgyearly' => self::get_avg_yearly( $earnings, $previous_earnings, $dates['num_days'] ), 'avgpercust' => self::get_avg_percust( $earnings ) );
+        	return array( 'total' => number_format( $earnings, 2 ), 'compare' => '<span class="' . $classes . '">' . round( $percentage, 1 ) . '%' . '</span> over last ' . $dates['num_days'] . ' days', 'avgyearly' => self::get_avg_yearly( $earnings, $previous_earnings, $dates['num_days'] ), 'avgpercust' => self::get_avg_percust( $earnings ) );
 
         }
 
@@ -223,7 +223,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
         	}
 
-			return array( 'total' => number_format( $avgyearly, 2 ), 'compare' => '<span class="' . $classes . '">' . number_format( $percentage, 2 ) . '%' . '</span> over last ' . $num_days . ' days' );
+			return array( 'total' => number_format( $avgyearly, 2 ), 'compare' => '<span class="' . $classes . '">' . round( $percentage, 1 ) . '%' . '</span> over last ' . $num_days . ' days' );
 
 		}
 
@@ -267,7 +267,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
         	}
 
-        	return array( 'count' => $sales, 'compare' => '<span class="' . $classes . '">' . number_format( $percentage, 2 ) . '%' . '</span> over last ' . $dates['num_days'] . ' days' );
+        	return array( 'count' => $sales, 'compare' => '<span class="' . $classes . '">' . round( $percentage, 1 ) . '%' . '</span> over last ' . $dates['num_days'] . ' days' );
 
         }
 
