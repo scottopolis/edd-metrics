@@ -39,7 +39,7 @@
           $('#yearly').text( '$' + data.earnings.avgyearly.total );
           $('#avgyearly-compare').html( data.earnings.avgyearly.compare );
 
-          $('#avgpercust').text( '$' + data.earnings.avgpercust );
+          $('#avgpercust').text( '$' + data.earnings.avgpercust.total );
 
           $('#renewals').text( data.renewals.count );
 

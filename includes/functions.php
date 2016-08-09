@@ -69,12 +69,14 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             add_action( 'wp_ajax_edd_metrics_change_date', array( $this, 'change_date' ) );
 
-            add_action( 'admin_enqueue_scripts', array( $this, 'localized_vars' ), 101 );
+            // add_action( 'admin_enqueue_scripts', array( $this, 'localized_vars' ), 101 );
 
             
 
         }
 
+
+        // not used
         public static function localized_vars() {
         	wp_localize_script( 'edd-metrics-js', 'eddMetrics', array(
 	            //'some_string' => __( 'Some string to translate', 'edd-metrics' ),
@@ -86,7 +88,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         }
 
         /**
-         * Change date and reload everything
+         * Change date and reload everything, called via ajax. Echoes json string.
          *
          * @access      public
          * @since       1.0.0
@@ -109,36 +111,6 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 	        ) );
 
 	        wp_die();
-        }
-
-        /**
-         * Return sales and earnings
-         *
-         * @access      public
-         * @since       1.0.0
-         * @return      array()
-         */
-        public static function get_stats() {
-
-        	$start = date("jS F, Y", self::$start );
-        	$end = date("jS F, Y", self::$end );
-        	
-        	$EDD_Stats = new EDD_Payment_Stats();
-        	$sales = $EDD_Stats->get_sales( 0, $start, $end );
-        	$earnings = $EDD_Stats->get_earnings( 0, $start, $end );
-
-        	if( $sales > 0 ) { 
-        		$avg = round( $earnings/$sales, 2); 
-        	} else { 
-        		$avg = 'N/A'; 
-        	}
-
-        	// Yearly estimate - avg rev per day in set time period, averaged out over 365 days. So $287/day in the last 30 days would be $287*365
-			$datediff = self::$end - self::$start;
-			$num_days = floor( $datediff/( 60*60*24 ) );
-			$avgyearly = ($earnings/$num_days)*365;
-
-        	return array( 'dates' => array( 'start' => $start, 'end' => $end ), 'sales' => self::get_sales(), 'earnings' => self::get_earnings(), 'avgpercust' => $avg, 'avgyearly' => round( $avgyearly, 2 ) );
         }
 
         /**
@@ -177,14 +149,29 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
         	} else {
 
-        		$percentage = self::percent( $earnings, $previous_earnings );
+        		$percentage = self::percent_change( $earnings, $previous_earnings );
         		
         	}
 
+        	return array( 'total' => number_format( $earnings, 2 ), 'compare' => '<span class="' . $classes . '">' . number_format( $percentage, 2 ) . '%' . '</span> over last ' . $dates['num_days'] . ' days', 'avgyearly' => self::get_avg_yearly( $earnings, $previous_earnings, $dates['num_days'] ), 'avgpercust' => self::get_avg_percust( $earnings ) );
 
+        }
 
-        	return array( 'total' => $earnings, 'compare' => '<span class="' . $classes . '">' . round( $percentage, 2 ) . '%' . '</span> over last ' . $dates['num_days'] . ' days', 'avgyearly' => self::get_avg_yearly( $earnings, $previous_earnings, $dates['num_days'] ), 'avgpercust' => 'N/A' );
+        /**
+         * Get average per customer
+         *
+         * @access      public
+         * @since       1.0.0
+         * @return      array()
+         */
+        public function get_avg_percust( $earnings = null ) {
 
+            $sales = self::get_sales()['count'];
+
+            if( $earnings === 0 || $sales === 0 )
+                return 'N/A';
+
+            return array( 'total' => number_format( $earnings/$sales, 2), 'compare' => '' );
         }
 
         /**
@@ -232,11 +219,11 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
         	} else {
 
-        		$percentage = self::percent( $avgyearly, $previous_avgyearly );
+        		$percentage = self::percent_change( $avgyearly, $previous_avgyearly );
 
         	}
 
-			return array( 'total' => round( $avgyearly, 2 ), 'compare' => '<span class="' . $classes . '">' . round( $percentage, 2 ) . '%' . '</span> over last ' . $num_days . ' days' );
+			return array( 'total' => number_format( $avgyearly, 2 ), 'compare' => '<span class="' . $classes . '">' . number_format( $percentage, 2 ) . '%' . '</span> over last ' . $num_days . ' days' );
 
 		}
 
@@ -276,11 +263,11 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
         	} else {
 
-        		$percentage = self::percent( $sales, $previous_sales );
+        		$percentage = self::percent_change( $sales, $previous_sales );
 
         	}
 
-        	return array( 'count' => $sales, 'compare' => '<span class="' . $classes . '">' . round( $percentage, 2 ) . '%' . '</span> over last ' . $dates['num_days'] . ' days' );
+        	return array( 'count' => $sales, 'compare' => '<span class="' . $classes . '">' . number_format( $percentage, 2 ) . '%' . '</span> over last ' . $dates['num_days'] . ' days' );
 
         }
 
@@ -321,8 +308,8 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @since       1.0.0
          * @return      integer
          */
-        public function percent($num_amount, $num_total) {
-		    return ( $num_amount / $num_total ) * 100;
+        public function percent_change($new_val, $old_val) {
+		    return ( ( $new_val - $old_val ) / $old_val ) * 100;
 		}
 
         /**
@@ -334,70 +321,60 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          */
         public static function do_boxes() {
 
-        	$start = date("jS F, Y", self::$start );
-        	$end = date("jS F, Y", self::$end );
-        	
-        	$EDD_Stats = new EDD_Payment_Stats();
-        	$sales = $EDD_Stats->get_sales( 0, $start, $end );
-        	$earnings = $EDD_Stats->get_earnings( 0, $start, $end );
+            $earnings = self::get_earnings();
+            $sales = self::get_sales();
+            $renewals = self::get_renewals();
+            $refunds = self::get_refunds();
 
         	?>
 
         	<div class="one-half">
                 <div class="edd-metrics-box">
                     <p class="top-text"><?php _e('Revenue', 'edd-metrics'); ?></p>
-                    <h2 id="revenue">$<?php echo number_format( $earnings, 2 ); ?></h2>
-                    <p class="bottom-text" id="revenue-compare"></p>
+                    <h2 id="revenue">$<?php echo $earnings['total']; ?></h2>
+                    <p class="bottom-text" id="revenue-compare"><?php echo $earnings['compare']; ?></p>
                 </div>
             </div>
 
             <div class="one-half last-col">
                 <div class="edd-metrics-box">
                     <p class="top-text"><?php _e('Sales', 'edd-metrics'); ?></p>
-                    <h2 id="sales"><?php echo $sales; ?></h2>
-                    <p class="bottom-text" id="sales-compare"></p>
+                    <h2 id="sales"><?php echo $sales['count']; ?></h2>
+                    <p class="bottom-text" id="sales-compare"><?php echo $sales['compare']; ?></p>
                 </div>
             </div>
 
             <div class="one-half">
                 <div class="edd-metrics-box">
                     <p class="top-text"><?php _e('Avg. Per Customer', 'edd-metrics'); ?></p>
-                    <h2 id="avgpercust">$<?php if( $sales > 0 ) { echo round( $earnings/$sales, 2); } else { echo 'N/A'; } ?></h2>
-                    <p class="bottom-text"><span class="metrics-positive metrics-uparrow">20%</span> over last year</p>
+                    <h2 id="avgpercust">$<?php echo $earnings['avgpercust']['total']; ?></h2>
+                    <p class="bottom-text" id="revpercust-compare"><?php echo $earnings['avgpercust']['compare']; ?></p>
                 </div>
             </div>
 
             <div class="one-half last-col">
                 <div class="edd-metrics-box">
                     <p class="top-text"><?php _e('Renewals', 'edd-metrics'); ?></p>
-                    <h2 class="metrics-title1" id="renewals"><?php echo self::get_renewals()['count']; ?></h2>
-                    <h2 class="metrics-title2">$<?php echo number_format( self::get_renewals()['earnings'], 2 ); ?></h2>
-                    <p class="bottom-text"><span class="metrics-negative metrics-downarrow">4%</span> over last year</p>
+                    <h2 class="metrics-title1" id="renewals"><?php echo $renewals['count']; ?></h2>
+                    <h2 class="metrics-title2">$<?php echo number_format( $renewals['earnings'], 2 ); ?></h2>
+                    <p class="bottom-text" id="renewal-compare"></p>
                 </div>
             </div>
 
             <div class="one-half">
                 <div class="edd-metrics-box">
                     <p class="top-text"><?php _e('Refunds', 'edd-metrics'); ?></p>
-                    <h2 class="metrics-title1" id="refunds"><?php echo self::$instance->get_refunds()['count']; ?></h2>
-                    <h2 class="metrics-title2">$<?php echo number_format( self::$instance->get_refunds()['losses'], 2 ); ?></h2>
-                    <p class="bottom-text"><span class="metrics-positive metrics-uparrow">20%</span> over last year</p>
+                    <h2 class="metrics-title1" id="refunds"><?php echo $refunds['count']; ?></h2>
+                    <h2 class="metrics-title2">$<?php echo number_format( $refunds['losses'], 2 ); ?></h2>
+                    <p class="bottom-text" id="refund-compare"></p>
                 </div>
             </div>
 
             <div class="one-half last-col">
                 <div class="edd-metrics-box">
                     <p class="top-text"><?php _e('Est. Yearly Revenue', 'edd-metrics'); ?></p>
-                    <?php // Equation: avg rev per day in set time period, averaged out over 365 days. So $287/day in the last 30 days would be $287*365
-
-                    // get number of days in time period
-					$datediff = self::$end - self::$start;
-					$num_days = floor( $datediff/( 60*60*24 ) );
-					$total = ($earnings/$num_days)*365;
-
-                    ?>
-                    <h2 id="yearly">$<?php echo round( $total, 2 ); ?></h2>
-                    <p class="bottom-text" id="avgyearly-compare"></p>
+                    <h2 id="yearly">$<?php echo $earnings['avgyearly']['total']; ?></h2>
+                    <p class="bottom-text" id="avgyearly-compare"><?php echo $earnings['avgyearly']['compare']; ?></p>
                 </div>
             </div>
 
@@ -406,7 +383,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                     <p class="top-text"><?php _e('Subscriptions', 'edd-metrics'); ?></p>
                     <h2 class="metrics-title1">2</h2>
                     <h2 class="metrics-title2">$12</h2>
-                    <p class="bottom-text"><span class="metrics-positive metrics-uparrow">20%</span> over last year</p>
+                    <p class="bottom-text" id="subscription-compare"></p>
                 </div>
             </div>
 
@@ -484,7 +461,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             if( !class_exists('EDD_Software_Licensing') )
             	return;
 
-        	// This gets renewals for one day, need to loop through and count up based on selected dates. See reports.php in SL plugin
+        	// see reports.php in EDD SL plugin
     		// edd_sl_get_renewals_by_date( $day = null, $month = null, $year = null, $hour = null  )
 
         	$start = self::$start;
