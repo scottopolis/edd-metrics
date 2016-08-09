@@ -133,7 +133,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         	if( $previous_earnings > $earnings ) {
         		$classes = 'metrics-negative metrics-downarrow';
         	} else if( $previous_earnings == $earnings ) {
-        		return 'No change';
+        		$classes = '';
         	} else {
         		$classes = 'metrics-positive metrics-uparrow';
         	}
@@ -168,8 +168,9 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             $sales = self::get_sales()['count'];
 
-            if( $earnings === 0 || $sales === 0 )
-                return 'N/A';
+            if( $earnings === 0 || $sales === 0 ) {
+                return array( 'total' => 0, 'compare' => '' );
+            }
 
             return array( 'total' => number_format( $earnings/$sales, 2), 'compare' => '' );
         }
@@ -185,7 +186,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
         	// Fix division by 0 errors
         	if( !$earnings || !$previous_earnings ) {
-        		return 'N/A';
+        		return array( 'total' => 0, 'compare' => '' );
         	} else if( $earnings === 0 ) {
         		$earnings = 1;
         	} else if( $previous_earnings === 0 ) {
@@ -203,7 +204,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         	if( $previous_avgyearly > $avgyearly ) {
         		$classes = 'metrics-negative metrics-downarrow';
         	} else if( $previous_avgyearly == $avgyearly ) {
-        		return 'No change';
+        		$classes = '';
         	} else {
         		$classes = 'metrics-positive metrics-uparrow';
         	}
@@ -247,7 +248,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         	if( $previous_sales > $sales ) {
         		$classes = 'metrics-negative metrics-downarrow';
         	} else if( $previous_sales == $sales ) {
-        		return 'No change';
+        		$classes = '';
         	} else {
         		$classes = 'metrics-positive metrics-uparrow';
         	}
@@ -309,6 +310,9 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @return      integer
          */
         public function percent_change($new_val, $old_val) {
+            if( $old_val === 0 )
+                return 0;
+
 		    return ( ( $new_val - $old_val ) / $old_val ) * 100;
 		}
 
@@ -355,8 +359,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             <div class="one-half last-col">
                 <div class="edd-metrics-box">
                     <p class="top-text"><?php _e('Renewals', 'edd-metrics'); ?></p>
-                    <h2 class="metrics-title1" id="renewals"><?php echo $renewals['count']; ?></h2>
-                    <h2 class="metrics-title2">$<?php echo number_format( $renewals['earnings'], 2 ); ?></h2>
+                    <h2 id="renewals"><?php echo $renewals['count']; ?></h2>
                     <p class="bottom-text" id="renewal-compare"></p>
                 </div>
             </div>
@@ -364,8 +367,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             <div class="one-half">
                 <div class="edd-metrics-box">
                     <p class="top-text"><?php _e('Refunds', 'edd-metrics'); ?></p>
-                    <h2 class="metrics-title1" id="refunds"><?php echo $refunds['count']; ?></h2>
-                    <h2 class="metrics-title2">$<?php echo number_format( $refunds['losses'], 2 ); ?></h2>
+                    <h2 id="refunds"><?php echo $refunds['count']; ?></h2>
                     <p class="bottom-text" id="refund-compare"></p>
                 </div>
             </div>
@@ -381,8 +383,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             <div class="one-half">
                 <div class="edd-metrics-box">
                     <p class="top-text"><?php _e('Subscriptions', 'edd-metrics'); ?></p>
-                    <h2 class="metrics-title1">2</h2>
-                    <h2 class="metrics-title2">$12</h2>
+                    <h2 id="subscriptions">2</h2>
                     <p class="bottom-text" id="subscription-compare"></p>
                 </div>
             </div>
