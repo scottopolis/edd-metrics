@@ -102,10 +102,9 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
         	echo json_encode( array(
 	            //'some_string' => __( 'Some string to translate', 'edd-metrics' ),
-	            'dates' => array( 'start' => $start, 'end' => $end ), 
+	            'dates' => self::get_compare_dates(),
 	            'sales' => self::get_sales(), 
-	            'earnings' => self::get_earnings(), 
-	            // 'avgpercust' => $avg,
+	            'earnings' => self::get_earnings(),
 	            'renewals' => self::get_renewals(),
 	            'refunds' => self::get_refunds(),
 	        ) );
@@ -130,13 +129,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         	$previous_earnings = $EDD_Stats->get_earnings( 0, $dates['previous_start'], $dates['previous_end'] );
 
         	// output classes for arrows and colors
-        	if( $previous_earnings > $earnings ) {
-        		$classes = 'metrics-negative metrics-downarrow';
-        	} else if( $previous_earnings == $earnings ) {
-        		$classes = '';
-        	} else {
-        		$classes = 'metrics-positive metrics-uparrow';
-        	}
+        	$classes = self::get_arrow_classes( $earnings, $previous_earnings );
 
         	// avoid division by 0 errors
         	if( $previous_earnings === 0 && $earnings > 0 ) {
@@ -153,26 +146,43 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         		
         	}
 
-        	return array( 'total' => number_format( $earnings, 2 ), 'compare' => '<span class="' . $classes . '">' . round( $percentage, 1 ) . '%' . '</span> over last ' . $dates['num_days'] . ' days', 'avgyearly' => self::get_avg_yearly( $earnings, $previous_earnings, $dates['num_days'] ), 'avgpercust' => self::get_avg_percust( $earnings ) );
+        	return array( 'total' => number_format( $earnings, 2 ), 'compare' => array( 'classes' => $classes, 'percentage' => round( $percentage, 1 ) ), 'avgyearly' => self::get_avg_yearly( $earnings, $previous_earnings, $dates['num_days'] ), 'avgpercust' => self::get_avg_percust( $earnings, $previous_earnings ) );
 
         }
 
         /**
-         * Get average per customer
+         * Get average revenue per customer
          *
          * @access      public
          * @since       1.0.0
          * @return      array()
          */
-        public function get_avg_percust( $earnings = null ) {
+        public function get_avg_percust( $earnings = null, $previous_earnings = null ) {
 
-            $sales = self::get_sales()['count'];
+            $sales = self::get_sales();
+
+            $current_sales = $sales['count'];
+            $previous_sales = $sales['previous'];
 
             if( $earnings === 0 || $sales === 0 ) {
-                return array( 'total' => 0, 'compare' => '' );
+                // can't divide by 0
+                $total = 0;
+            } else {
+                $total = number_format( $earnings/$current_sales, 2);
             }
 
-            return array( 'total' => number_format( $earnings/$sales, 2), 'compare' => '' );
+            if( $previous_earnings === 0 || $previous_sales === 0 ) {
+                // can't divide by 0
+                $percentage = 0;
+            } else {
+                $prev_total = number_format( $previous_earnings/$previous_sales, 2);
+                $percentage = self::percent_change( $total, $prev_total );
+            }
+
+            // output classes for arrows and colors
+            $classes = self::get_arrow_classes( $total, $previous_total );
+
+            return array( 'total' => $total, 'compare' => array( 'classes' => $classes, 'percentage' => round( $percentage, 1 ) ) );
         }
 
         /**
@@ -201,13 +211,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 			$previous_avgyearly = ( $previous_earnings/$num_days )*365;
 
 			// output classes for arrows and colors
-        	if( $previous_avgyearly > $avgyearly ) {
-        		$classes = 'metrics-negative metrics-downarrow';
-        	} else if( $previous_avgyearly == $avgyearly ) {
-        		$classes = '';
-        	} else {
-        		$classes = 'metrics-positive metrics-uparrow';
-        	}
+        	$classes = self::get_arrow_classes( $avgyearly, $previous_avgyearly );
 
         	// avoid division by 0 errors
         	if( $previous_avgyearly === 0 && $avgyearly > 0 ) {
@@ -224,7 +228,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
         	}
 
-			return array( 'total' => number_format( $avgyearly, 2 ), 'compare' => '<span class="' . $classes . '">' . round( $percentage, 1 ) . '%' . '</span> over last ' . $num_days . ' days' );
+			return array( 'total' => number_format( $avgyearly, 2 ), 'compare' => array( 'classes' => $classes, 'percentage' => round( $percentage, 1 ) ) );
 
 		}
 
@@ -245,13 +249,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         	$previous_sales = $EDD_Stats->get_sales( 0, $dates['previous_start'], $dates['previous_end'] );
 
         	// output classes for arrows and colors
-        	if( $previous_sales > $sales ) {
-        		$classes = 'metrics-negative metrics-downarrow';
-        	} else if( $previous_sales == $sales ) {
-        		$classes = '';
-        	} else {
-        		$classes = 'metrics-positive metrics-uparrow';
-        	}
+        	$classes = self::get_arrow_classes( $sales, $previous_sales );
 
         	// avoid division by 0 errors
         	if( $previous_sales === 0 && $sales > 0 ) {
@@ -268,7 +266,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
         	}
 
-        	return array( 'count' => $sales, 'compare' => '<span class="' . $classes . '">' . round( $percentage, 1 ) . '%' . '</span> over last ' . $dates['num_days'] . ' days' );
+        	return array( 'count' => $sales, 'previous' => $previous_sales, 'compare' => array( 'classes' => $classes, 'percentage' => round( $percentage, 1 ) ) );
 
         }
 
@@ -317,6 +315,42 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 		}
 
         /**
+         * Helper method to prevent division by zero errors
+         *
+         * @access      public
+         * @since       1.0.0
+         * @return      array()
+         */
+        public static function is_dividing_zero( $num = null, $num2 = null ) {
+
+            if( $num === 0 || $num2 === 0 ) {
+                return true;
+            }
+
+            return false;
+        }
+
+        /**
+         * Return the classes we need for arrows
+         *
+         * @access      public
+         * @since       1.0.0
+         * @return      string
+         */
+        public function get_arrow_classes( $current = null, $previous = null ) {
+
+            // output classes for arrows and colors
+            if( $previous > $current ) {
+                return 'metrics-negative metrics-downarrow';
+            } else if( $previous == $current ) {
+                return 'metrics-nochange';
+            } else {
+                return 'metrics-positive metrics-uparrow';
+            }
+
+        }
+
+        /**
          * Add metrics boxes on dash
          *
          * @access      public
@@ -335,48 +369,48 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         	<div class="one-half">
                 <div class="edd-metrics-box">
                     <p class="top-text"><?php _e('Revenue', 'edd-metrics'); ?></p>
-                    <h2 id="revenue">$<?php echo $earnings['total']; ?></h2>
-                    <p class="bottom-text" id="revenue-compare"><?php echo $earnings['compare']; ?></p>
+                    <h2 id="revenue"></h2>
+                    <p class="bottom-text" id="revenue-compare"><span></span></p>
                 </div>
             </div>
 
             <div class="one-half last-col">
                 <div class="edd-metrics-box">
                     <p class="top-text"><?php _e('Sales', 'edd-metrics'); ?></p>
-                    <h2 id="sales"><?php echo $sales['count']; ?></h2>
-                    <p class="bottom-text" id="sales-compare"><?php echo $sales['compare']; ?></p>
+                    <h2 id="sales"></h2>
+                    <p class="bottom-text" id="sales-compare"><span></span></p>
                 </div>
             </div>
 
             <div class="one-half">
                 <div class="edd-metrics-box">
                     <p class="top-text"><?php _e('Avg. Per Customer', 'edd-metrics'); ?></p>
-                    <h2 id="avgpercust">$<?php echo $earnings['avgpercust']['total']; ?></h2>
-                    <p class="bottom-text" id="revpercust-compare"><?php echo $earnings['avgpercust']['compare']; ?></p>
-                </div>
-            </div>
-
-            <div class="one-half last-col">
-                <div class="edd-metrics-box">
-                    <p class="top-text"><?php _e('Renewals', 'edd-metrics'); ?></p>
-                    <h2 id="renewals"><?php echo $renewals['count']; ?></h2>
-                    <p class="bottom-text" id="renewal-compare"></p>
-                </div>
-            </div>
-
-            <div class="one-half">
-                <div class="edd-metrics-box">
-                    <p class="top-text"><?php _e('Refunds', 'edd-metrics'); ?></p>
-                    <h2 id="refunds"><?php echo $refunds['count']; ?></h2>
-                    <p class="bottom-text" id="refund-compare"></p>
+                    <h2 id="avgpercust"></h2>
+                    <p class="bottom-text" id="avgpercust-compare"><span></span></p>
                 </div>
             </div>
 
             <div class="one-half last-col">
                 <div class="edd-metrics-box">
                     <p class="top-text"><?php _e('Est. Yearly Revenue', 'edd-metrics'); ?></p>
-                    <h2 id="yearly">$<?php echo $earnings['avgyearly']['total']; ?></h2>
-                    <p class="bottom-text" id="avgyearly-compare"><?php echo $earnings['avgyearly']['compare']; ?></p>
+                    <h2 id="yearly"></h2>
+                    <p class="bottom-text" id="avgyearly-compare"><span></span></p>
+                </div>
+            </div>
+
+            <div class="one-half">
+                <div class="edd-metrics-box">
+                    <p class="top-text"><?php _e('Refunds', 'edd-metrics'); ?></p>
+                    <h2 id="refunds"></h2>
+                    <p class="bottom-text" id="refund-compare"><span></span></p>
+                </div>
+            </div>
+
+            <div class="one-half last-col">
+                <div class="edd-metrics-box">
+                    <p class="top-text"><?php _e('Renewals', 'edd-metrics'); ?></p>
+                    <h2 id="renewals"></h2>
+                    <p class="bottom-text" id="renewal-compare"><span></span></p>
                 </div>
             </div>
 
