@@ -131,22 +131,15 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         	// output classes for arrows and colors
         	$classes = self::get_arrow_classes( $earnings, $previous_earnings );
 
-        	// avoid division by 0 errors
-        	if( $previous_earnings === 0 && $earnings > 0 ) {
-
-        		$percentage = $earnings * 100;
-
-        	} else if ( $previous_earnings > 0 && $earnings === 0 ) {
-
-        		$percentage = $previous_earnings * 100;
-
-        	} else {
-
-        		$percentage = self::percent_change( $earnings, $previous_earnings );
-        		
-        	}
-
-        	return array( 'total' => number_format( $earnings, 2 ), 'compare' => array( 'classes' => $classes, 'percentage' => round( $percentage, 1 ) ), 'avgyearly' => self::get_avg_yearly( $earnings, $previous_earnings, $dates['num_days'] ), 'avgpercust' => self::get_avg_percust( $earnings, $previous_earnings ) );
+        	return array( 
+                'total' => number_format( $earnings, 2 ), 
+                'compare' => array( 
+                    'classes' => $classes, 
+                    'percentage' => self::get_percentage( $earnings, $previous_earnings ) 
+                    ), 
+                'avgyearly' => self::get_avg_yearly( $earnings, $previous_earnings, $dates['num_days'] ), 
+                'avgpercust' => self::get_avg_percust( $earnings, $previous_earnings ) 
+                );
 
         }
 
@@ -171,18 +164,21 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                 $total = number_format( $earnings/$current_sales, 2);
             }
 
-            if( $previous_earnings === 0 || $previous_sales === 0 ) {
-                // can't divide by 0
-                $percentage = 0;
-            } else {
-                $prev_total = number_format( $previous_earnings/$previous_sales, 2);
-                $percentage = self::percent_change( $total, $prev_total );
-            }
+
+            $prev_total = number_format( $previous_earnings/$previous_sales, 2);
+
+            // echo $total . ' ' . $prev_total;
 
             // output classes for arrows and colors
-            $classes = self::get_arrow_classes( $total, $previous_total );
+            $classes = self::get_arrow_classes( $total, $prev_total );
 
-            return array( 'total' => $total, 'compare' => array( 'classes' => $classes, 'percentage' => round( $percentage, 1 ) ) );
+            return array( 
+                'total' => $total, 
+                'compare' => array( 
+                    'classes' => $classes, 
+                    'percentage' => self::get_percentage( $total, $prev_total ) 
+                    ) 
+                );
         }
 
         /**
@@ -195,11 +191,11 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         public function get_avg_yearly( $earnings = null, $previous_earnings = null, $num_days = null ) {
 
         	// Fix division by 0 errors
-        	if( !$earnings || !$previous_earnings ) {
-        		return array( 'total' => 0, 'compare' => '' );
-        	} else if( $earnings === 0 ) {
+        	if( !$earnings && !$previous_earnings ) {
+        		return array( 'total' => 0, 'compare' => array( 'classes' => 'metrics-nochange', 'percentage' => 0 ) );
+        	} else if( $earnings === 0 || !$earnings ) {
         		$earnings = 1;
-        	} else if( $previous_earnings === 0 ) {
+        	} else if( $previous_earnings === 0 || !$previous_earnings ) {
         		$previous_earnings = 1;
         	}
 
@@ -213,22 +209,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 			// output classes for arrows and colors
         	$classes = self::get_arrow_classes( $avgyearly, $previous_avgyearly );
 
-        	// avoid division by 0 errors
-        	if( $previous_avgyearly === 0 && $avgyearly > 0 ) {
-
-        		$percentage = $avgyearly * 100;
-
-        	} elseif ( $previous_avgyearly > 0 && $avgyearly === 0 ) {
-
-        		$percentage = $previous_avgyearly * 100;
-
-        	} else {
-
-        		$percentage = self::percent_change( $avgyearly, $previous_avgyearly );
-
-        	}
-
-			return array( 'total' => number_format( $avgyearly, 2 ), 'compare' => array( 'classes' => $classes, 'percentage' => round( $percentage, 1 ) ) );
+			return array( 'total' => number_format( $avgyearly, 2 ), 'compare' => array( 'classes' => $classes, 'percentage' => self::get_percentage( $avgyearly, $previous_avgyearly ) ) );
 
 		}
 
@@ -251,22 +232,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         	// output classes for arrows and colors
         	$classes = self::get_arrow_classes( $sales, $previous_sales );
 
-        	// avoid division by 0 errors
-        	if( $previous_sales === 0 && $sales > 0 ) {
-
-        		$percentage = $sales * 100;
-
-        	} elseif ( $previous_sales > 0 && $sales === 0 ) {
-
-        		$percentage = $previous_sales * 100;
-
-        	} else {
-
-        		$percentage = self::percent_change( $sales, $previous_sales );
-
-        	}
-
-        	return array( 'count' => $sales, 'previous' => $previous_sales, 'compare' => array( 'classes' => $classes, 'percentage' => round( $percentage, 1 ) ) );
+        	return array( 'count' => $sales, 'previous' => $previous_sales, 'compare' => array( 'classes' => $classes, 'percentage' => self::get_percentage( $sales, $previous_sales ) ) );
 
         }
 
@@ -319,15 +285,29 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          *
          * @access      public
          * @since       1.0.0
-         * @return      array()
+         * @return      integer
          */
-        public static function is_dividing_zero( $num = null, $num2 = null ) {
+        public function get_percentage( $current_value = null, $prev_value = null ) {
 
-            if( $num === 0 || $num2 === 0 ) {
-                return true;
+            // avoid division by 0 errors
+            if( $prev_value === 0 && $current_value > 0 ) {
+
+                return round( $current_value * 100, 1 );
+
+            } else if ( $prev_value > 0 && $current_value === 0 ) {
+
+                return round( $prev_value * 100, 1 );
+
+            } else if ( $prev_value === 0 && $current_value === 0 ) {
+
+                return '0';
+
+            } else {
+
+                return round( self::percent_change( $current_value, $prev_value ), 1 );
+                
             }
 
-            return false;
         }
 
         /**
@@ -342,10 +322,10 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             // output classes for arrows and colors
             if( $previous > $current ) {
                 return 'metrics-negative metrics-downarrow';
-            } else if( $previous == $current ) {
-                return 'metrics-nochange';
-            } else {
+            } else if( $previous < $current ) {
                 return 'metrics-positive metrics-uparrow';
+            } else {
+                return 'metrics-nochange';
             }
 
         }
@@ -358,11 +338,6 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @return      void
          */
         public static function do_boxes() {
-
-            $earnings = self::get_earnings();
-            $sales = self::get_sales();
-            $renewals = self::get_renewals();
-            $refunds = self::get_refunds();
 
         	?>
 
@@ -402,7 +377,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                 <div class="edd-metrics-box">
                     <p class="top-text"><?php _e('Refunds', 'edd-metrics'); ?></p>
                     <h2 id="refunds"></h2>
-                    <p class="bottom-text" id="refund-compare"><span></span></p>
+                    <p class="bottom-text" id="refunds-compare"><span></span></p>
                 </div>
             </div>
 
@@ -410,17 +385,17 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                 <div class="edd-metrics-box">
                     <p class="top-text"><?php _e('Renewals', 'edd-metrics'); ?></p>
                     <h2 id="renewals"></h2>
-                    <p class="bottom-text" id="renewal-compare"><span></span></p>
+                    <p class="bottom-text" id="renewals-compare"><span></span></p>
                 </div>
             </div>
 
-            <div class="one-half">
+            <!--div class="one-half">
                 <div class="edd-metrics-box">
                     <p class="top-text"><?php _e('Subscriptions', 'edd-metrics'); ?></p>
                     <h2 id="subscriptions">2</h2>
                     <p class="bottom-text" id="subscription-compare"></p>
                 </div>
-            </div>
+            </div-->
 
             <?php
         }
@@ -513,8 +488,39 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 			  	$earnings = $renewals['earnings'];
 			}
 
-	        return array( 'count' => $count, 'earnings' => number_format( $earnings, 2 ) );
+	        return array( 'count' => $count, 'earnings' => number_format( $earnings, 2 ), 'compare' => self::compare_renewals( $count ) );
 			        
+        }
+
+        /**
+         * Compare renewals
+         *
+         * @access      public
+         * @since       1.0.0
+         * @return      array()
+         */
+        public static function compare_renewals( $current_renewals = null ) {
+
+            $dates = self::get_compare_dates();
+
+            $start = $dates['previous_start'];
+            $end = $dates['previous_end'];
+            $count = 0;
+            $earnings = 0;
+
+            // Loop between timestamps, 24 hours at a time
+            for ( $i = $start; $i <= $end; $i = $i + 86400 ) {
+                $previous_renewals = edd_sl_get_renewals_by_date( date( 'd', $i ), date( 'm', $i ) );
+                if( $previous_renewals['count'] === 0 )
+                    continue;
+                $count = $previous_renewals['count'];
+                // $earnings = $previous_renewals['earnings'];
+            }
+
+            // output classes for arrows and colors
+            $classes = self::get_arrow_classes( $current_renewals, $count );
+
+            return array( 'classes' => $classes, 'percentage' => self::get_percentage( $current_renewals, $count ) );
         }
 
         /**
@@ -552,11 +558,57 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 				}
 				wp_reset_postdata();
 			} else {
-				return array( 'count' => 0, 'losses' => 0 );
+				return array( 'count' => 0, 'losses' => 0, 'compare' => self::compare_refunds( $i ) );
 			}
 
-			return array( 'count' => $i, 'losses' => number_format( $losses, 2 ) );
+			return array( 'count' => $i, 'losses' => number_format( $losses, 2 ), 'compare' => self::compare_refunds( $i ) );
 	    }
+
+        /**
+         * Compare refunds
+         *
+         * @access      public
+         * @since       1.0.0
+         * @return      array()
+         */
+        public static function compare_refunds( $current_refunds = null ) {
+
+            $dates = self::get_compare_dates();
+
+            $args = array(
+                'post_type' => 'edd_payment',
+                'post_status' => array( 'refunded' ),
+                'date_query' => array(
+                    array(
+                        'after'     => $dates['previous_start'], // june 1
+                        'before'    => $dates['previous_end'], // june 30
+                        'inclusive' => true,
+                    ),
+                ),
+            );
+
+            $losses = 0;
+
+            // The Query
+            $the_query = new WP_Query( $args );
+
+            if ( $the_query->have_posts() ) {
+                $previous_refunds = 0;
+                while ( $the_query->have_posts() ) {
+                    $the_query->the_post();
+                    $losses += get_post_meta( get_the_ID(), '_edd_payment_total' )[0];
+                    $previous_refunds++;
+                }
+                wp_reset_postdata();
+            } else {
+                return array( 'classes' => 'metrics-nochange', 'percentage' => 0 );
+            }
+
+            // output classes for arrows and colors
+            $classes = self::get_arrow_classes( $current_refunds, $previous_refunds );
+
+            return array( 'classes' => $classes, 'percentage' => self::get_percentage( $current_refunds, $previous_refunds ) );
+        }
 
     }
 
