@@ -36,7 +36,6 @@
 }
 
 .metrics-positive {
-	font-weight: bold;
 	color: #009900;
 	position: relative;
 }
@@ -54,7 +53,6 @@
 }
 
 .metrics-negative {
-	font-weight: bold;
 	color: #cc0000;
 	position: relative;
 }
@@ -69,6 +67,25 @@
 	position: absolute;
     left: -15px;
     bottom: 5px;
+}
+
+/* Reverse colors for refunds, cause down is good */
+#refunds-compare .metrics-negative {
+	color: #009900;
+}
+
+#refunds-compare .metrics-positive {
+	color: #cc0000;
+}
+
+#refunds-compare .metrics-downarrow:before {
+	content: '';
+	border-top-color: #009900;
+}
+
+#refunds-compare .metrics-uparrow:before {
+	content: '';
+	border-bottom-color: #cc0000;
 }
 
 .metrics-select {

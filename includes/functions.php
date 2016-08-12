@@ -157,7 +157,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             $current_sales = $sales['count'];
             $previous_sales = $sales['previous'];
 
-            if( $earnings === 0 || $sales === 0 ) {
+            if( $earnings === 0 || $sales === 0 || !$earnings || !$sales ) {
                 // can't divide by 0
                 $total = 0;
             } else {
@@ -200,8 +200,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         	}
 
         	// Yearly estimate - avg rev per day in set time period, averaged out over 365 days. So $287/day in the last 30 days would be $287*365
-			$datediff = self::$end - self::$start;
-			$num_days = floor( $datediff/( 60*60*24 ) );
+			$num_days = self::get_compare_dates()['num_days'];
 
 			$avgyearly = ( $earnings/$num_days )*365;
 			$previous_avgyearly = ( $previous_earnings/$num_days )*365;
@@ -290,11 +289,11 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         public function get_percentage( $current_value = null, $prev_value = null ) {
 
             // avoid division by 0 errors
-            if( $prev_value === 0 && $current_value > 0 ) {
+            if( $prev_value === 0 && $current_value > 0 || !$prev_value && $current_value > 0 ) {
 
                 return round( $current_value * 100, 1 );
 
-            } else if ( $prev_value > 0 && $current_value === 0 ) {
+            } else if ( $prev_value > 0 && $current_value === 0 || $prev_value > 0 && !$current_value ) {
 
                 return round( $prev_value * 100, 1 );
 
