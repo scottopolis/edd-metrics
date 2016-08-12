@@ -601,16 +601,19 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             $dates = self::get_compare_dates();
 
+            $start = strtotime( $dates['previous_start'] );
+            $end = strtotime( $dates['previous_end'] );
+
 			$count = 0;
 			$earnings = 0;
 
 			// Loop between timestamps, 24 hours at a time
-			for ( $i = $dates['start']; $i <= $dates['end']; $i = $i + 86400 ) {
+			for ( $i = $start; $i <= $end; $i = $i + 86400 ) {
 				$renewals = edd_sl_get_renewals_by_date( date( 'd', $i ), date( 'm', $i ) );
 				if( $renewals['count'] === 0 )
 					continue;
-				$count = $renewals['count'];
-			  	$earnings = $renewals['earnings'];
+				$count++;
+			  	$earnings += $renewals['earnings'];
 			}
 
 	        return array( 'count' => $count, 'earnings' => number_format( $earnings, 2 ), 'compare' => self::compare_renewals( $count ) );
@@ -628,8 +631,8 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             $dates = self::get_compare_dates();
 
-            $start = $dates['previous_start'];
-            $end = $dates['previous_end'];
+            $start = strtotime( $dates['previous_start'] );
+            $end = strtotime( $dates['previous_end'] );
             $count = 0;
             $earnings = 0;
 
@@ -638,7 +641,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                 $previous_renewals = edd_sl_get_renewals_by_date( date( 'd', $i ), date( 'm', $i ) );
                 if( $previous_renewals['count'] === 0 )
                     continue;
-                $count = $previous_renewals['count'];
+                $count++;
                 // $earnings = $previous_renewals['earnings'];
             }
 

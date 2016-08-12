@@ -47,7 +47,7 @@
     var data = JSON.parse(response);
     console.log( data );
 
-    var compareTemp = '% over the last ' + data.dates.num_days + ' days';
+    var compareTemp = '% over previous ' + data.dates.num_days + ' days';
 
     $('#revenue').text( '$' + data.earnings.total );
     $('#revenue-compare span').text( data.earnings.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.compare.classes );
