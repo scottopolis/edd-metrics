@@ -175,7 +175,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             $classes = self::get_arrow_classes( $total, $prev_total );
 
             return array( 
-                'total' => $total, 
+                'total' => number_format( $total, 2 ), 
                 'compare' => array( 
                     'classes' => $classes, 
                     'percentage' => self::get_percentage( $total, $prev_total ) 
@@ -324,6 +324,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             $args = array(
                 'post_type' => 'edd_payment',
+                'nopaging' => true,
                 'date_query' => array(
                     array(
                         'after'     => $start,
@@ -662,6 +663,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
         	$args = array(
 				'post_type' => 'edd_payment',
+                'nopaging' => true,
 				'post_status' => array( 'refunded' ),
 				'date_query' => array(
 					array(
@@ -705,6 +707,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             $args = array(
                 'post_type' => 'edd_payment',
+                'nopaging' => true,
                 'post_status' => array( 'refunded' ),
                 'date_query' => array(
                     array(
