@@ -161,14 +161,14 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                 // can't divide by 0
                 $total = 0;
             } else {
-                $total = number_format( $earnings/$current_customers, 2);
+                $total = $earnings/$current_customers;
             }
 
             if( empty( $previous_earnings ) || empty( $previous_customers ) ) {
                 // can't divide by 0
                 $prev_total = 0;
             } else {
-                $prev_total = number_format( $previous_earnings/$previous_customers, 2);
+                $prev_total = $previous_earnings/$previous_customers;
             }
 
             // output classes for arrows and colors
