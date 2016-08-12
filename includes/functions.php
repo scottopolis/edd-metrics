@@ -106,8 +106,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 	            'sales' => self::get_sales(), 
 	            'earnings' => self::get_earnings(),
 	            'renewals' => self::get_renewals(),
-	            'refunds' => self::get_refunds(),
-                'customers' => self::get_customers()
+	            'refunds' => self::get_refunds()
 	        ) );
 
 	        wp_die();
@@ -153,10 +152,10 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          */
         public function get_avg_percust( $earnings = null, $previous_earnings = null ) {
 
-            $customers = self::get_customers();
+            $dates = self::get_compare_dates();
 
-            $current_customers = $customers['count'];
-            $previous_customers = $customers['compare']['count'];
+            $current_customers = self::get_unique_customers_count( $dates['start'], $dates['end'] );
+            $previous_customers = self::get_unique_customers_count( $dates['previous_start'], $dates['previous_end'] );
 
             if( empty( $earnings ) || empty( $current_customers ) ) {
                 // can't divide by 0
@@ -240,6 +239,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
         /**
          * Get number of customers
+         * Only returns customers *created* in the set date range, not customers who purchased in the range.
          *
          * @access      public
          * @since       1.0.0
@@ -307,6 +307,55 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                 'percentage' => self::get_percentage( $current_customers, $i ),
                 'count' => $i 
                 );
+        }
+
+        /**
+         * Get number of unique customers based on payment data
+         *
+         * @access      public
+         * @since       1.0.0
+         * @return      int
+         */
+        public function get_unique_customers_count( $start = null, $end = null ) {
+
+            $dates = self::get_compare_dates();
+
+            $edd_payment = get_post_type_object( 'edd_payment' );
+
+            $args = array(
+                'post_type' => 'edd_payment',
+                'date_query' => array(
+                    array(
+                        'after'     => $start,
+                        'before'    => $end,
+                        'inclusive' => true,
+                    ),
+                ),
+            );
+
+            // The Query
+            $the_query = new WP_Query( $args );
+
+            $emails = array();
+
+            // Recent payments loop
+            if ( $the_query->have_posts() ) {
+                while ( $the_query->have_posts() ) {
+                    $the_query->the_post();
+                    $email = get_post_meta( get_the_ID(), '_edd_payment_user_email' )[0];
+
+                    if( empty( $email ) )
+                        continue;
+
+                    $emails[] = $email;
+                }
+                wp_reset_postdata();
+            } else {
+                return 0;
+            }
+
+            return count( array_unique( $emails ) );
+
         }
 
         /**
@@ -550,13 +599,13 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         	// see reports.php in EDD SL plugin
     		// edd_sl_get_renewals_by_date( $day = null, $month = null, $year = null, $hour = null  )
 
-        	$start = self::$start;
-        	$end = self::$end;
+            $dates = self::get_compare_dates();
+
 			$count = 0;
 			$earnings = 0;
 
 			// Loop between timestamps, 24 hours at a time
-			for ( $i = $start; $i <= $end; $i = $i + 86400 ) {
+			for ( $i = $dates['start']; $i <= $dates['end']; $i = $i + 86400 ) {
 				$renewals = edd_sl_get_renewals_by_date( date( 'd', $i ), date( 'm', $i ) );
 				if( $renewals['count'] === 0 )
 					continue;
