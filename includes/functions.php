@@ -107,6 +107,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 	            'earnings' => self::get_earnings(),
 	            'renewals' => self::get_renewals(),
 	            'refunds' => self::get_refunds(),
+                'customers' => self::get_customers()
 	        ) );
 
 	        wp_die();
@@ -144,7 +145,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         }
 
         /**
-         * Get average revenue per customer
+         * Get average revenue per customer. Earnings/Customers
          *
          * @access      public
          * @since       1.0.0
@@ -152,22 +153,24 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          */
         public function get_avg_percust( $earnings = null, $previous_earnings = null ) {
 
-            $sales = self::get_sales();
+            $customers = self::get_customers();
 
-            $current_sales = $sales['count'];
-            $previous_sales = $sales['previous'];
+            $current_customers = $customers['count'];
+            $previous_customers = $customers['compare']['count'];
 
-            if( $earnings === 0 || $sales === 0 || !$earnings || !$sales ) {
+            if( empty( $earnings ) || empty( $current_customers ) ) {
                 // can't divide by 0
                 $total = 0;
             } else {
-                $total = number_format( $earnings/$current_sales, 2);
+                $total = number_format( $earnings/$current_customers, 2);
             }
 
-
-            $prev_total = number_format( $previous_earnings/$previous_sales, 2);
-
-            // echo $total . ' ' . $prev_total;
+            if( empty( $previous_earnings ) || empty( $previous_customers ) ) {
+                // can't divide by 0
+                $prev_total = 0;
+            } else {
+                $prev_total = number_format( $previous_earnings/$previous_customers, 2);
+            }
 
             // output classes for arrows and colors
             $classes = self::get_arrow_classes( $total, $prev_total );
@@ -193,9 +196,9 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         	// Fix division by 0 errors
         	if( !$earnings && !$previous_earnings ) {
         		return array( 'total' => 0, 'compare' => array( 'classes' => 'metrics-nochange', 'percentage' => 0 ) );
-        	} else if( $earnings === 0 || !$earnings ) {
+        	} else if( empty( $earnings ) ) {
         		$earnings = 1;
-        	} else if( $previous_earnings === 0 || !$previous_earnings ) {
+        	} else if( empty( $previous_earnings ) ) {
         		$previous_earnings = 1;
         	}
 
@@ -236,6 +239,77 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         }
 
         /**
+         * Get number of customers
+         *
+         * @access      public
+         * @since       1.0.0
+         * @return      array()
+         */
+        public function get_customers() {
+
+            $dates = self::get_compare_dates();
+
+            $args = array(
+                'date' => array(
+                    'start' => $dates['start'],
+                    'end' => $dates['end']
+                    )
+                );
+
+            // see easy-digital-downloads/includes/class-edd-db-customers.php
+            $customers = EDD()->customers->get_customers( $args );
+
+            $i = 0;
+
+            foreach ($customers as $key => $value) {
+                $i++;
+            }
+
+            return array( 
+                'count' => $i, 
+                'compare' => self::compare_customers( $i ) 
+                );
+
+        }
+
+        /**
+         * Get previous number of customers and compare
+         *
+         * @access      public
+         * @since       1.0.0
+         * @return      array()
+         */
+        public function compare_customers( $current_customers = null ) {
+
+            $dates = self::get_compare_dates();
+
+            $args = array(
+                'date' => array(
+                    'start' => $dates['previous_start'],
+                    'end' => $dates['previous_end']
+                    )
+                );
+
+            $previous_customers = EDD()->customers->get_customers( $args );
+
+            $i = 0;
+
+            // count customers
+            foreach ($previous_customers as $key => $value) {
+                $i++;
+            }
+
+            // output classes for arrows and colors
+            $classes = self::get_arrow_classes( $current_customers, $i );
+
+            return array( 
+                'classes' => $classes, 
+                'percentage' => self::get_percentage( $current_customers, $i ),
+                'count' => $i 
+                );
+        }
+
+        /**
          * Get start and end dates for compare periods
          *
          * @access      public
@@ -273,7 +347,8 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @return      integer
          */
         public function percent_change($new_val, $old_val) {
-            if( $old_val === 0 )
+
+            if( empty( $old_val ) )
                 return 0;
 
 		    return ( ( $new_val - $old_val ) / $old_val ) * 100;
@@ -289,15 +364,17 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         public function get_percentage( $current_value = null, $prev_value = null ) {
 
             // avoid division by 0 errors
-            if( $prev_value === 0 && $current_value > 0 || !$prev_value && $current_value > 0 ) {
+            if( empty( $prev_value ) && $current_value > 0 ) {
 
-                return round( $current_value * 100, 1 );
+                // can't calculate percentage increase from zero?
+                //return round( $current_value * 100, 1 );
+                return '-';
 
-            } else if ( $prev_value > 0 && $current_value === 0 || $prev_value > 0 && !$current_value ) {
+            } else if ( $prev_value > 0 && empty( $current_value ) ) {
 
                 return round( $prev_value * 100, 1 );
 
-            } else if ( $prev_value === 0 && $current_value === 0 ) {
+            } else if ( empty( $current_value ) && empty( $prev_value ) ) {
 
                 return '0';
 
