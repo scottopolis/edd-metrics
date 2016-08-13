@@ -83,7 +83,8 @@ if( !class_exists( 'EDD_Metrics' ) ) {
         private function includes() {
             // Include scripts
             require_once EDD_Metrics_DIR . 'includes/scripts.php';
-            require_once EDD_Metrics_DIR . 'includes/functions.php';
+            require_once EDD_Metrics_DIR . 'includes/class-edd-metrics-functions.php';
+            require_once EDD_Metrics_DIR . 'includes/class-edd-metrics-detail.php';
 
             // require_once EDD_Metrics_DIR . 'includes/shortcodes.php';
             // require_once EDD_Metrics_DIR . 'includes/widgets.php';
@@ -173,19 +174,15 @@ if( !class_exists( 'EDD_Metrics' ) ) {
 
                 <?php do_action('edd_metrics_select'); ?>
 
-                <h2 class="page-title">Metrics Overview</h2>
+                <?php
 
-                <div class="two-thirds">
+                if ( isset( $_GET['view'] ) && 'metrics-details' == $_GET['view'] ) {
+                    require_once EDD_Metrics_DIR . 'includes/view-metrics-details.php';
+                } else {
+                    require_once EDD_Metrics_DIR . 'includes/view-dashboard.php';
+                }
 
-                    <?php do_action('edd_metrics_dash_content'); ?>
-
-                </div>
-
-                <div class="one-third last-col">
-
-                    <?php do_action('edd_metrics_dash_sidebar'); ?>
-                    
-                </div>
+                ?>
 
             </div>
             <?php

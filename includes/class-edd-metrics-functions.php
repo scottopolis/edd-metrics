@@ -1,8 +1,7 @@
 <?php
 /**
- * Helper Functions
  *
- * @package     EDD\EDD Metrics\Functions
+ * @package     EDD\EDD Metrics
  * @since       1.0.0
  */
 
@@ -61,11 +60,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          */
         private function hooks() {
 
-            add_action( 'edd_metrics_dash_content', array( $this, 'do_boxes' ) );
-
             add_action( 'edd_metrics_dash_sidebar', array( $this, 'do_sidebar' ) );
-
-            add_action( 'edd_metrics_select', array( $this, 'do_select' ) );
 
             add_action( 'wp_ajax_edd_metrics_change_date', array( $this, 'change_date' ) );
 
@@ -100,14 +95,16 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             self::$end = strtotime( self::$endstr );
         	self::$start = strtotime( self::$startstr );
 
-        	echo json_encode( array(
-	            //'some_string' => __( 'Some string to translate', 'edd-metrics' ),
-	            'dates' => self::get_compare_dates(),
-	            'sales' => self::get_sales(), 
-	            'earnings' => self::get_earnings(),
-	            'renewals' => self::get_renewals(),
-	            'refunds' => self::get_refunds()
-	        ) );
+            $metrics = array(
+                //'some_string' => __( 'Some string to translate', 'edd-metrics' ),
+                'dates' => self::get_compare_dates(),
+                'sales' => self::get_sales(), 
+                'earnings' => self::get_earnings(),
+                'renewals' => self::get_renewals(),
+                'refunds' => self::get_refunds()
+            );
+
+        	echo json_encode( apply_filters( 'metrics_json_output', $metrics ) );
 
 	        wp_die();
         }
@@ -135,7 +132,8 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                 'total' => number_format( $earnings, 2 ), 
                 'compare' => array( 
                     'classes' => $classes, 
-                    'percentage' => self::get_percentage( $earnings, $previous_earnings ) 
+                    'percentage' => self::get_percentage( $earnings, $previous_earnings ),
+                    'total' => $previous_earnings 
                     ), 
                 'avgyearly' => self::get_avg_yearly( $earnings, $previous_earnings, $dates['num_days'] ), 
                 'avgpercust' => self::get_avg_percust( $earnings, $previous_earnings ) 
@@ -374,19 +372,33 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         	$datediff = self::$end - self::$start;
 			$num_days = floor( $datediff/( 60*60*24 ) ) + 1;
 
-			// Switch to datetime format, subtract time, then back to string
-			$startdate = date_create( $start );
-			$enddate = date_create( $end );
+			$prev = self::subtract_days( $start, $end, $num_days );
 
-			// add 1 day to num_days so it doesn't overlap by 1 day
-			$previous_start = date_sub( $startdate, date_interval_create_from_date_string( $num_days . " days" ) );
-			$previous_end = date_sub( $enddate, date_interval_create_from_date_string( $num_days . " days" ) );
+			return array( 'start' => $start, 'end' => $end, 'previous_start' => $prev[0], 'previous_end' => $prev[1], 'num_days' => $num_days );
+        }
 
-			// previous period
-			$previous_start = $previous_start->format('jS F, Y');
-			$previous_end = $previous_end->format('jS F, Y');
+        /**
+         * Helper function to subtract days from 2 dates, for getting compare periods
+         *
+         * @access      public
+         * @since       1.0.0
+         * @return      array()
+         */
+        public function subtract_days( $start = null, $end = null, $num_days = null ) {
 
-			return array( 'start' => $start, 'end' => $end, 'previous_start' => $previous_start, 'previous_end' => $previous_end, 'num_days' => $num_days );
+            // Switch to datetime format, subtract time, then back to string
+            $startdate = date_create( $start );
+            $enddate = date_create( $end );
+
+            // subtract number of days
+            $previous_start = date_sub( $startdate, date_interval_create_from_date_string( $num_days . " days" ) );
+            $previous_end = date_sub( $enddate, date_interval_create_from_date_string( $num_days . " days" ) );
+
+            // previous period
+            $previous_start = $previous_start->format('jS F, Y');
+            $previous_end = $previous_end->format('jS F, Y');
+
+            return array( $previous_start, $previous_end );
         }
 
         /**
@@ -457,76 +469,6 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         }
 
         /**
-         * Add metrics boxes on dash
-         *
-         * @access      public
-         * @since       1.0.0
-         * @return      void
-         */
-        public static function do_boxes() {
-
-        	?>
-
-        	<div class="one-half">
-                <div class="edd-metrics-box">
-                    <p class="top-text"><?php _e('Revenue', 'edd-metrics'); ?></p>
-                    <h2 id="revenue"></h2>
-                    <p class="bottom-text" id="revenue-compare"><span></span></p>
-                </div>
-            </div>
-
-            <div class="one-half last-col">
-                <div class="edd-metrics-box">
-                    <p class="top-text"><?php _e('Sales', 'edd-metrics'); ?></p>
-                    <h2 id="sales"></h2>
-                    <p class="bottom-text" id="sales-compare"><span></span></p>
-                </div>
-            </div>
-
-            <div class="one-half">
-                <div class="edd-metrics-box">
-                    <p class="top-text"><?php _e('Avg. Per Customer', 'edd-metrics'); ?></p>
-                    <h2 id="avgpercust"></h2>
-                    <p class="bottom-text" id="avgpercust-compare"><span></span></p>
-                </div>
-            </div>
-
-            <div class="one-half last-col">
-                <div class="edd-metrics-box">
-                    <p class="top-text"><?php _e('Est. Yearly Revenue', 'edd-metrics'); ?></p>
-                    <h2 id="yearly"></h2>
-                    <p class="bottom-text" id="avgyearly-compare"><span></span></p>
-                </div>
-            </div>
-
-            <div class="one-half">
-                <div class="edd-metrics-box">
-                    <p class="top-text"><?php _e('Refunds', 'edd-metrics'); ?></p>
-                    <h2 id="refunds"></h2>
-                    <p class="bottom-text" id="refunds-compare"><span></span></p>
-                </div>
-            </div>
-
-            <div class="one-half last-col">
-                <div class="edd-metrics-box">
-                    <p class="top-text"><?php _e('Renewals', 'edd-metrics'); ?></p>
-                    <h2 id="renewals"></h2>
-                    <p class="bottom-text" id="renewals-compare"><span></span></p>
-                </div>
-            </div>
-
-            <!--div class="one-half">
-                <div class="edd-metrics-box">
-                    <p class="top-text"><?php _e('Subscriptions', 'edd-metrics'); ?></p>
-                    <h2 id="subscriptions">2</h2>
-                    <p class="bottom-text" id="subscription-compare"></p>
-                </div>
-            </div-->
-
-            <?php
-        }
-
-        /**
          * Add metrics sidebar
          *
          * @access      public
@@ -566,21 +508,6 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                     </ul>
                 </div>
             </div>
-
-            <?php
-        }
-
-        /**
-         * Add metrics select menu
-         *
-         * @access      public
-         * @since       1.0.0
-         * @return      void
-         */
-        public static function do_select() {
-        	?>
-
-        	<div class="daterange daterange--double metrics-datepicker"></div>
 
             <?php
         }
