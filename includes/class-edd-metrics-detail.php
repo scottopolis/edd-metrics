@@ -64,7 +64,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
          *
          * @access      public
          * @since       1.0.0
-         * @return      void
+         * @return      array
          */
         public static function revenue_callback( $data ) {
 
@@ -82,6 +82,10 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
 
             // print_r( $twelve_mo_ago[0] . ' ' . $twelve_mo_ago[1] . ' ' . $earnings_12mo_ago );
 
+            $chart_data = self::get_chart_data( $dates );
+
+            $data['chart'] = $chart_data;
+
             $data['earnings']['detail'] = array( 
                 'sixmoago' => array( 
                     'total' => $earnings_6mo_ago,
@@ -95,6 +99,37 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
 
             return $data;
             
+        }
+
+        /**
+         * Get data for chart
+         *
+         * @access      public
+         * @since       1.0.0
+         * @return      array
+         */
+        public function get_chart_data( $dates = null ) {
+
+            $EDD_Stats = new EDD_Payment_Stats();
+
+            // Loop through each day between two dates, and get totals
+            $begin = new DateTime( $dates['start'] );
+            $end = new DateTime( $dates['end'] );
+
+            $interval = DateInterval::createFromDateString('1 day');
+            $period = new DatePeriod($begin, $interval, $end);
+
+            foreach ( $period as $dt ) {
+              $earnings[] = $EDD_Stats->get_earnings( 0, $dt->format( "jS F, Y" ), false, array( 'publish', 'revoked' ) );
+              $labels[] = $dt->format( "F j" );
+            }
+
+            foreach ( $period as $dt ) {
+              $sales[] = $EDD_Stats->get_sales( 0, $dt->format( "jS F, Y" ), false, array( 'publish', 'revoked' ) );
+            }
+
+            return array( 'sales' => $sales, 'earnings' => $earnings, 'labels' => $labels );
+
         }
 
 

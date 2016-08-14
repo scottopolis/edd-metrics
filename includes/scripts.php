@@ -33,6 +33,7 @@ function EDD_Metrics_admin_scripts( $hook ) {
         wp_enqueue_script( 'edd-metrics-js', EDD_Metrics_URL . 'assets/js/admin' . $suffix . '.js', array( 'jquery' ), '1.0', true );
         wp_enqueue_style( 'edd-metrics-css', EDD_Metrics_URL . 'assets/css/admin' . $suffix . '.css' );
         wp_enqueue_script( 'baremetrics-calendar', EDD_Metrics_URL . 'assets/js/Calendar.js', array( 'jquery' ), '1.0', true );
+        wp_enqueue_script( 'chartsjs', EDD_Metrics_URL . 'assets/js/Chart.min.js', array( 'jquery' ), '2.2.1', true );
 
         wp_enqueue_style( 'baremetrics-calendar', EDD_Metrics_URL . 'assets/css/calendar.css' );
 

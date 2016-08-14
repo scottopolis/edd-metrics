@@ -29,8 +29,8 @@ if( empty( $_GET['metric'] ) ) {
 
 <?php do_action('edd_metrics_before_detail'); ?>
 
-<div class="edd-metrics-chart">
-Chart
+<div class="edd-metrics-box edd-metrics-chart-wrapper">
+    <canvas id="metrics-chart" width="400" height="200"></canvas>
 </div>
 
 <div class="edd-metrics-box" id="box-4">

@@ -102,6 +102,8 @@
       default:
           // ...
     }
+
+    eddm.doChart( data.chart );
     
   }
 
@@ -113,6 +115,59 @@
            if(pair[0] == variable){return pair[1];}
     }
     return(false);
+  }
+
+  eddm.doChart = function( chart ) {
+
+    console.log( chart.daily );
+
+    var data = {
+        labels: chart.labels,
+        datasets: [
+            {
+                label: "Revenue",
+                fill: false,
+                lineTension: 0.1,
+                backgroundColor: "#fafafa",
+                borderColor: "#0073aa",
+                borderCapStyle: 'butt',
+                borderDash: [],
+                borderDashOffset: 0.0,
+                borderJoinStyle: 'miter',
+                pointBorderColor: "#0073aa",
+                pointBackgroundColor: "#fff",
+                pointBorderWidth: 2,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: "#0073aa",
+                pointHoverBorderColor: "rgba(220,220,220,1)",
+                pointHoverBorderWidth: 2,
+                pointRadius: 4,
+                pointHitRadius: 10,
+                data: chart.earnings,
+                spanGaps: false
+            },
+
+            {
+              label: "Sales",
+              data: chart.sales
+            }
+        ]
+    };
+
+    var ctx = document.getElementById("metrics-chart");
+
+    var myLineChart = new Chart(ctx, {
+        type: 'line',
+        data: data,
+        options: {
+            scales: {
+                xAxes: [{
+                    display: false,
+                    stacked: true
+                }],
+            }
+        }
+    });
   }
 
   jQuery(document).ready( eddm.init );

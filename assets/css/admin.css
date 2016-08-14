@@ -25,6 +25,10 @@
     text-decoration: none !important;
 }
 
+.edd-metrics-chart-wrapper {
+	margin-bottom: 15px;
+}
+
 .edd-metrics-box h2 {
 	font-size: 32px;
 	color: #0073aa;
