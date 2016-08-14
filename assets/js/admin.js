@@ -37,13 +37,20 @@
 
     var compareTemp = '% over the last ';
 
-    $.post( window.ajaxurl, data, eddm.postResponse );
+    $('.edd-metrics-box h2').html('<div id="circleG"><div id="circleG_1" class="circleG"></div><div id="circleG_2" class="circleG"></div><div id="circleG_3" class="circleG"></div></div>');
+
+    $('.edd-metrics-box .bottom-text span').html('').removeClass();
+
+    if( $(this.element[0]).hasClass('metrics-detail') ) {
+      $.post( window.ajaxurl, data, eddm.detailResponse );
+    } else {
+      $.post( window.ajaxurl, data, eddm.dashResponse );
+    }
 
   }
 
-  eddm.postResponse = function(response) {
+  eddm.dashResponse = function(response) {
 
-    console.log( response );
     var data = JSON.parse(response);
     console.log( data );
 
@@ -67,6 +74,39 @@
     $('#refunds').text( data.refunds.count );
     $('#refunds-compare span').text( data.refunds.compare.percentage + compareTemp ).removeClass().addClass( data.refunds.compare.classes );
     
+  }
+
+  eddm.detailResponse = function(response) {
+
+    var data = JSON.parse(response);
+    console.log( 'detailResponse', data );
+    var metric = eddm.getQueryVariable('metric');
+
+    switch( metric ) {
+      case 'revenue':
+          // do revenue
+          $('#box-1 h2').text( '$' + data.earnings.total );
+          $('.detail-compare-first').text( '$' + data.earnings.compare.total );
+          $('.detail-compare-second').text( '$' + data.earnings.sixmoago );
+          $('.detail-compare-third').text( '$' + data.earnings.twelvemoago );
+          break;
+      case 'renewals':
+          // ...
+          break;
+      default:
+          // ...
+    }
+    
+  }
+
+  eddm.getQueryVariable = function (variable) {
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i=0;i<vars.length;i++) {
+           var pair = vars[i].split("=");
+           if(pair[0] == variable){return pair[1];}
+    }
+    return(false);
   }
 
   jQuery(document).ready( eddm.init );
