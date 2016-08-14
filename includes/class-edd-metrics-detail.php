@@ -72,17 +72,26 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
 
             // Get current and previous period earnings
             $EDD_Stats = new EDD_Payment_Stats();
-            // $earnings = $EDD_Stats->get_earnings( 0, $dates['start'], $dates['end'] );
+            $earnings = $EDD_Stats->get_earnings( 0, $dates['start'], $dates['end'] );
 
             $six_mo_ago = self::subtract_days( $dates['start'], $dates['end'], 182 );
-            $earnings_6mo_ago = $EDD_Stats->get_earnings( 0, $six_mo_ago[0], $six_mo_ago[1] );
-
-            $data['earnings']['sixmoago'] = $earnings_6mo_ago;
+            $earnings_6mo_ago = $EDD_Stats->get_earnings( 0, strtotime( $six_mo_ago[0] ), strtotime( $six_mo_ago[1] ) );
 
             $twelve_mo_ago = self::subtract_days( $dates['start'], $dates['end'], 365 );
-            $earnings_12mo_ago = $EDD_Stats->get_earnings( 0, $twelve_mo_ago[0], $twelve_mo_ago[1] );
+            $earnings_12mo_ago = $EDD_Stats->get_earnings( 0, strtotime(  $twelve_mo_ago[0] ), strtotime( $twelve_mo_ago[1] ) );
 
-            $data['earnings']['twelvemoago'] = $earnings_12mo_ago;
+            // print_r( $twelve_mo_ago[0] . ' ' . $twelve_mo_ago[1] . ' ' . $earnings_12mo_ago );
+
+            $data['earnings']['detail'] = array( 
+                'sixmoago' => array( 
+                    'total' => $earnings_6mo_ago,
+                    'compare' => self::get_percentage( $earnings, $earnings_6mo_ago )
+                    ),
+                'twelvemoago' => array( 
+                    'total' => $earnings_12mo_ago,
+                    'compare' => self::get_percentage( $earnings, $earnings_12mo_ago )
+                    ),
+                );
 
             return $data;
             

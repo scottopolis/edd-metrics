@@ -29,43 +29,27 @@ if( empty( $_GET['metric'] ) ) {
 
 <?php do_action('edd_metrics_before_detail'); ?>
 
-<div class="one-third">
-    <div class="edd-metrics-box" id="box-1">
-        <p class="top-text">Total</p>
-        <h2></h2>
-    </div>
-</div>
-
-<div class="one-third">
-    <div class="edd-metrics-box" id="box-2">
-        <p class="top-text"></p>
-        <h2></h2>
-        <p class="bottom-text"><span></span></p>
-    </div>
-</div>
-
-<div class="one-third last-col">
-    <div class="edd-metrics-box" id="box-3">
-        <p class="top-text"></p>
-        <h2></h2>
-        <p class="bottom-text"><span></span></p>
-    </div>
+<div class="edd-metrics-chart">
+Chart
 </div>
 
 <div class="edd-metrics-box" id="box-4">
     <div class="one-third">
-        <p class="top-text">Last 30 days</p>
+        <p class="top-text">Previous period</p>
         <h2 class="detail-compare-first"></h2>
+        <p class="bottom-text"><span></span></p>
     </div>
 
-    <div class="one-third">
+    <div class="one-third" id="box-5">
         <p class="top-text">6 months ago</p>
         <h2 class="detail-compare-second"></h2>
+        <p class="bottom-text"><span></span></p>
     </div>
 
-    <div class="one-third last-col">
+    <div class="one-third last-col" id="box-6">
         <p class="top-text">12 months ago</p>
         <h2 class="detail-compare-third"></h2>
+        <p class="bottom-text"><span></span></p>
     </div>
 </div>
 

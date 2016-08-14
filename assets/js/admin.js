@@ -78,17 +78,23 @@
 
   eddm.detailResponse = function(response) {
 
+    console.log( 'detailResponse', response );
+
     var data = JSON.parse(response);
-    console.log( 'detailResponse', data );
+    
     var metric = eddm.getQueryVariable('metric');
 
     switch( metric ) {
       case 'revenue':
           // do revenue
-          $('#box-1 h2').text( '$' + data.earnings.total );
+
           $('.detail-compare-first').text( '$' + data.earnings.compare.total );
-          $('.detail-compare-second').text( '$' + data.earnings.sixmoago );
-          $('.detail-compare-third').text( '$' + data.earnings.twelvemoago );
+          $('#box-4 .bottom-text span').text( data.earnings.compare.percentage + '%' );
+
+          $('#box-5 .bottom-text span').text( data.earnings.detail.sixmoago.compare + '%' );
+          $('.detail-compare-second').text( '$' + data.earnings.detail.sixmoago.total );
+
+          $('.detail-compare-third').text( '$' + data.earnings.detail.twelvemoago.total );
           break;
       case 'renewals':
           // ...
