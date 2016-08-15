@@ -57,6 +57,8 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
 
             add_filter( 'metrics_json_output', array( $this, 'revenue_callback' ) );
 
+            add_action( 'edd_metrics_download_earnings', array( $this, 'get_single_product_detail') );
+
         }
 
         /**
@@ -129,6 +131,72 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
             }
 
             return array( 'sales' => $sales, 'earnings' => $earnings, 'labels' => $labels );
+
+        }
+
+        /**
+         * Get earnings for each product individually
+         *
+         * @access      public
+         * @since       1.0.0
+         * @return      array
+         */
+        public function get_single_product_detail() {
+
+            $dates = self::get_compare_dates();
+
+            // Get current and previous period earnings
+            $EDD_Stats = new EDD_Payment_Stats();
+
+            $args = array(
+                'post_type' => 'download',
+            );
+
+            // The Query
+            $the_query = new WP_Query( $args );
+
+            ?>
+
+            <div class="postbox metrics-sidebar">
+                <h2 class="hndle ui-sortable-handle"><span><?php _e('Earnings By Product', 'edd-metrics'); ?></span></h2>
+                <div class="inside">
+                    <ul>
+
+            <?php
+
+            if ( $the_query->have_posts() ) {
+                while ( $the_query->have_posts() ) {
+                    $the_query->the_post();
+                    // $downloads[] = array( 'id' => get_the_id(), 'title' => get_the_title() );
+
+                    echo '<li>';
+
+                    echo '<strong>' . get_the_title() . '</strong>';
+
+                    echo '<span class="metrics-right">$' . $EDD_Stats->get_earnings( get_the_id(), $dates['start'], $dates['end'] ) . '</span>';
+
+                    echo '</li>';
+
+                }
+                wp_reset_postdata();
+            } else {
+                echo '<li>' . _e('No Product Detail Found', 'edd-metrics') . '</li>';
+            }
+
+            ?>
+
+                    </ul>
+                </div>
+            </div>
+
+            <?php
+
+            // foreach ($downloads as $key => $value) {
+            //     // print_r( $value['id'] . ' ' );
+            //     $earnings[$key][ $value['title'] ] = $EDD_Stats->get_earnings( $value['id'], $dates['start'], $dates['end'] );
+            // }
+
+            // return $earnings;
 
         }
 

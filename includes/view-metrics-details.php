@@ -30,11 +30,11 @@ if( empty( $_GET['metric'] ) ) {
 <?php do_action('edd_metrics_before_detail'); ?>
 
 <div class="edd-metrics-box edd-metrics-chart-wrapper">
-    <canvas id="metrics-chart" width="400" height="200"></canvas>
+    <canvas id="metrics-chart" width="400" height="150"></canvas>
 </div>
 
-<div class="edd-metrics-box" id="box-4">
-    <div class="one-third">
+<div class="edd-metrics-box" style="margin-bottom:15px">
+    <div class="one-third" id="box-4">
         <p class="top-text">Previous period</p>
         <h2 class="detail-compare-first"></h2>
         <p class="bottom-text"><span></span></p>
@@ -52,5 +52,7 @@ if( empty( $_GET['metric'] ) ) {
         <p class="bottom-text"><span></span></p>
     </div>
 </div>
+
+<?php do_action('edd_metrics_download_earnings'); ?>
 
 <?php do_action('edd_metrics_after_detail'); ?>

@@ -27,6 +27,7 @@
 
 .edd-metrics-chart-wrapper {
 	margin-bottom: 15px;
+	min-height: 200px;
 }
 
 .edd-metrics-box h2 {
@@ -126,6 +127,10 @@
 
 .daterange {
 	width: 275px;
+	float: right;
+}
+
+.metrics-right {
 	float: right;
 }
 

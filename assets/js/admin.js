@@ -51,8 +51,9 @@
 
   eddm.dashResponse = function(response) {
 
+    console.log( response );
+
     var data = JSON.parse(response);
-    console.log( data );
 
     var compareTemp = '% over previous ' + data.dates.num_days + ' days';
 
@@ -69,10 +70,23 @@
     $('#avgpercust-compare span').text( data.earnings.avgpercust.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.avgpercust.compare.classes );
 
     $('#renewals').text( data.renewals.count );
+    $('#renewal-amount').text( '$' + data.renewals.earnings );
     $('#renewals-compare span').text( data.renewals.compare.percentage + compareTemp ).removeClass().addClass( data.renewals.compare.classes );
 
     $('#refunds').text( data.refunds.count );
+    $('#refund-amount').text( '$' + data.refunds.losses );
     $('#refunds-compare span').text( data.refunds.compare.percentage + compareTemp ).removeClass().addClass( data.refunds.compare.classes );
+
+    // Charts
+    $('.detail-compare-first').text( '$' + data.earnings.compare.total );
+    $('#box-4 .bottom-text span').text( data.earnings.compare.percentage + '%' );
+
+    $('#box-5 .bottom-text span').text( data.earnings.detail.sixmoago.compare + '%' );
+    $('.detail-compare-second').text( '$' + data.earnings.detail.sixmoago.total );
+
+    $('.detail-compare-third').text( '$' + data.earnings.detail.twelvemoago.total );
+
+    eddm.doChart( data.chart );
     
   }
 
