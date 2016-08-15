@@ -85,8 +85,6 @@
     $('.detail-compare-second').text( '$' + data.earnings.detail.sixmoago.total );
 
     $('.detail-compare-third').text( '$' + data.earnings.detail.twelvemoago.total );
-
-    eddm.doChart( data.chart );
     
   }
 
@@ -98,17 +96,22 @@
     
     var metric = eddm.getQueryVariable('metric');
 
+    var compareTemp = '% compared to this period';
+
     switch( metric ) {
       case 'revenue':
           // do revenue
 
+          $('#revenue').text( '$' + data.earnings.total );
+          $('#revenue-compare span').text( data.earnings.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.compare.classes );
           $('.detail-compare-first').text( '$' + data.earnings.compare.total );
-          $('#box-4 .bottom-text span').text( data.earnings.compare.percentage + '%' );
 
-          $('#box-5 .bottom-text span').text( data.earnings.detail.sixmoago.compare + '%' );
+          $('#revenue-6mocompare span').text( data.earnings.detail.sixmoago.compare + compareTemp ).removeClass().addClass( data.earnings.detail.sixmoago.classes );
           $('.detail-compare-second').text( '$' + data.earnings.detail.sixmoago.total );
 
           $('.detail-compare-third').text( '$' + data.earnings.detail.twelvemoago.total );
+          $('#revenue-12mocompare span').text( data.earnings.detail.twelvemoago.compare + compareTemp ).removeClass().addClass( data.earnings.detail.twelvemoago.classes );
+
           break;
       case 'renewals':
           // ...
@@ -117,7 +120,8 @@
           // ...
     }
 
-    eddm.doChart( data.chart );
+    eddm.doLineChart( data.lineChart );
+    eddm.doPieChart( data.pieChart );
     
   }
 
@@ -131,18 +135,20 @@
     return(false);
   }
 
-  eddm.doChart = function( chart ) {
+  eddm.doLineChart = function( chart ) {
 
-    console.log( chart.daily );
+    if( eddm.lineChart ) {
+      eddm.lineChart.destroy();
+    }
 
     var data = {
         labels: chart.labels,
         datasets: [
             {
                 label: "Revenue",
-                fill: false,
+                fill: true,
                 lineTension: 0.1,
-                backgroundColor: "#fafafa",
+                backgroundColor: "rgba(0,115,170,.2)",
                 borderColor: "#0073aa",
                 borderCapStyle: 'butt',
                 borderDash: [],
@@ -161,16 +167,16 @@
                 spanGaps: false
             },
 
-            {
-              label: "Sales",
-              data: chart.sales
-            }
+            // {
+            //   label: "Sales",
+            //   data: chart.sales
+            // }
         ]
     };
 
-    var ctx = document.getElementById("metrics-chart");
+    var ctx = document.getElementById("metrics-line-chart");
 
-    var myLineChart = new Chart(ctx, {
+    eddm.lineChart = new Chart(ctx, {
         type: 'line',
         data: data,
         options: {
@@ -182,6 +188,53 @@
             }
         }
     });
+  }
+
+  eddm.doPieChart = function( chart ) {
+
+    if( eddm.pieChart ) {
+      eddm.pieChart.destroy();
+    }
+
+    console.log( chart );
+
+    var data = {
+        labels: chart.labels,
+        datasets: [
+            {
+                label: "Downloads",
+                data: chart.earnings,
+                backgroundColor: [
+                  "#225378",
+                  "#1695A3",
+                  "#1fa739",
+                  "#663300",
+                  "#EB7F00",
+                  "#EB4B4D",
+                  "#EBA945",
+                  "#79EB65"
+                ],
+                hoverBackgroundColor: [
+                  "#225378",
+                  "#1695A3",
+                  "#1fa739",
+                  "#663300",
+                  "#EB7F00",
+                  "#EB4B4D",
+                  "#EBA945",
+                  "#79EB65"
+                ]
+            }
+        ]
+    };
+
+    var ctx = document.getElementById("metrics-pie-chart");
+
+    eddm.pieChart = new Chart(ctx,{
+        type: 'pie',
+        data: data
+    });
+
   }
 
   jQuery(document).ready( eddm.init );

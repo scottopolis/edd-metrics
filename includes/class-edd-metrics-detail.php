@@ -56,8 +56,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
         public function hooks() {
 
             add_filter( 'metrics_json_output', array( $this, 'revenue_callback' ) );
-
-            add_action( 'edd_metrics_download_earnings', array( $this, 'get_single_product_detail') );
+            add_filter( 'metrics_json_output', array( $this, 'get_single_product_detail' ) );
 
         }
 
@@ -82,20 +81,24 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
             $twelve_mo_ago = self::subtract_days( $dates['start'], $dates['end'], 365 );
             $earnings_12mo_ago = $EDD_Stats->get_earnings( 0, strtotime(  $twelve_mo_ago[0] ), strtotime( $twelve_mo_ago[1] ) );
 
-            // print_r( $twelve_mo_ago[0] . ' ' . $twelve_mo_ago[1] . ' ' . $earnings_12mo_ago );
+            if( $dates['num_days'] < 100 ) {
+                $chart_data = self::get_chart_data( $dates, $monthly );
+                $data['lineChart'] = $chart_data;
+            }
 
-            $chart_data = self::get_chart_data( $dates );
-
-            $data['chart'] = $chart_data;
+            $classes6mo = self::get_arrow_classes( $earnings, $earnings_6mo_ago );
+            $classes12mo = self::get_arrow_classes( $earnings, $earnings_12mo_ago );
 
             $data['earnings']['detail'] = array( 
                 'sixmoago' => array( 
                     'total' => $earnings_6mo_ago,
-                    'compare' => self::get_percentage( $earnings, $earnings_6mo_ago )
+                    'compare' => self::get_percentage( $earnings, $earnings_6mo_ago ),
+                    'classes' => $classes6mo
                     ),
                 'twelvemoago' => array( 
                     'total' => $earnings_12mo_ago,
-                    'compare' => self::get_percentage( $earnings, $earnings_12mo_ago )
+                    'compare' => self::get_percentage( $earnings, $earnings_12mo_ago ),
+                    'classes' => $classes12mo
                     ),
                 );
 
@@ -110,14 +113,14 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
          * @since       1.0.0
          * @return      array
          */
-        public function get_chart_data( $dates = null ) {
+        public function get_chart_data( $dates = null, $monthly = false ) {
 
             $EDD_Stats = new EDD_Payment_Stats();
 
             // Loop through each day between two dates, and get totals
             $begin = new DateTime( $dates['start'] );
             $end = new DateTime( $dates['end'] );
-
+            
             $interval = DateInterval::createFromDateString('1 day');
             $period = new DatePeriod($begin, $interval, $end);
 
@@ -130,7 +133,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
               $sales[] = $EDD_Stats->get_sales( 0, $dt->format( "jS F, Y" ), false, array( 'publish', 'revoked' ) );
             }
 
-            return array( 'sales' => $sales, 'earnings' => $earnings, 'labels' => $labels );
+            return array( 'sales' => $sales, 'earnings' => $earnings, 'labels' => $labels, 'period' => $interval );
 
         }
 
@@ -141,7 +144,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
          * @since       1.0.0
          * @return      array
          */
-        public function get_single_product_detail() {
+        public function get_single_product_detail( $data ) {
 
             $dates = self::get_compare_dates();
 
@@ -155,48 +158,27 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
             // The Query
             $the_query = new WP_Query( $args );
 
-            ?>
-
-            <div class="postbox metrics-sidebar">
-                <h2 class="hndle ui-sortable-handle"><span><?php _e('Earnings By Product', 'edd-metrics'); ?></span></h2>
-                <div class="inside">
-                    <ul>
-
-            <?php
-
             if ( $the_query->have_posts() ) {
                 while ( $the_query->have_posts() ) {
                     $the_query->the_post();
-                    // $downloads[] = array( 'id' => get_the_id(), 'title' => get_the_title() );
 
-                    echo '<li>';
+                    $title = get_the_title();
+                    $product_earnings = $EDD_Stats->get_earnings( get_the_id(), $dates['start'], $dates['end'] );
 
-                    echo '<strong>' . get_the_title() . '</strong>';
-
-                    echo '<span class="metrics-right">$' . $EDD_Stats->get_earnings( get_the_id(), $dates['start'], $dates['end'] ) . '</span>';
-
-                    echo '</li>';
+                    $labels[] = $title;
+                    $earnings[] = $product_earnings;
 
                 }
                 wp_reset_postdata();
             } else {
-                echo '<li>' . _e('No Product Detail Found', 'edd-metrics') . '</li>';
+                return $data;
             }
 
-            ?>
+            $chart_data = array( 'labels' => $labels, 'earnings' => $earnings );
 
-                    </ul>
-                </div>
-            </div>
+            $data['pieChart'] = $chart_data;
 
-            <?php
-
-            // foreach ($downloads as $key => $value) {
-            //     // print_r( $value['id'] . ' ' );
-            //     $earnings[$key][ $value['title'] ] = $EDD_Stats->get_earnings( $value['id'], $dates['start'], $dates['end'] );
-            // }
-
-            // return $earnings;
+            return $data;
 
         }
 

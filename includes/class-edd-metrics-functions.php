@@ -529,8 +529,8 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             $dates = self::get_compare_dates();
 
-            $start = strtotime( $dates['previous_start'] );
-            $end = strtotime( $dates['previous_end'] );
+            $start = strtotime( $dates['start'] );
+            $end = strtotime( $dates['end'] );
 
 			$count = 0;
 			$earnings = 0;

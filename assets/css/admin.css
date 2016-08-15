@@ -25,9 +25,19 @@
     text-decoration: none !important;
 }
 
+.metrics-details-link {
+	border: 1px solid #e5e5e5;
+	background-color: #fff;
+	padding: 10px;
+	text-decoration: none !important;
+	display: block;
+	margin-bottom: 10px;
+}
+
 .edd-metrics-chart-wrapper {
 	margin-bottom: 15px;
 	min-height: 200px;
+	clear: both;
 }
 
 .edd-metrics-box h2 {
@@ -37,6 +47,12 @@
 	padding: 0;
 	font-weight: bold;
 	min-height: 30px;
+}
+
+.metrics-big-title {
+	font-size: 32px;
+	color: #0073aa;
+	font-weight: bold;
 }
 
 .edd-metrics-box .top-text, .edd-metrics-box .bottom-text {
@@ -112,7 +128,7 @@
 	color: #999;
 }
 
-.edd-metrics-box:hover {
+.metrics-details-link:hover {
 	background-color: #fafafa;
 	border-color: #999;
 }

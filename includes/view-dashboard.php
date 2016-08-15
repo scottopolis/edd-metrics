@@ -2,20 +2,20 @@
 
 <h2 class="page-title">Metrics Overview</h2>
 
-<div class="edd-metrics-box edd-metrics-chart-wrapper">
+<!-- <div class="edd-metrics-box edd-metrics-chart-wrapper">
     <canvas id="metrics-chart" width="400" height="150"></canvas>
-</div>
+</div> -->
 
 <section class="two-thirds">
 
 	<?php do_action('edd_metrics_before_boxes'); ?>
 
 	<div class="one-half">
-	    <a href="?post_type=download&page=edd_metrics&view=metrics-details&metric=revenue" class="edd-metrics-box">
+	    <div class="edd-metrics-box">
 	        <p class="top-text"><?php _e('Revenue', 'edd-metrics'); ?></p>
 	        <h2 id="revenue"></h2>
 	        <p class="bottom-text" id="revenue-compare"><span></span></p>
-	    </a>
+	    </div>
 	</div>
 
 	<div class="one-half last-col">
@@ -65,6 +65,8 @@
 </section>
 
 <div class="one-third last-col">
+
+	<a href="<?php echo admin_url(); ?>edit.php?post_type=download&page=edd_metrics&view=metrics-details&metric=revenue" class="metrics-details-link">View Revenue Details &rarr;</a>
 
     <?php do_action('edd_metrics_dash_sidebar'); ?>
     
