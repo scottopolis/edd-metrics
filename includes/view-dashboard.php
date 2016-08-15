@@ -45,8 +45,8 @@
 	<div class="one-half">
 	    <div class="edd-metrics-box">
 	        <p class="top-text"><?php _e('Refunds', 'edd-metrics'); ?></p>
-	        <h2 id="refunds" class="metrics-title1"></h2>
-	        <h2 id="refund-amount" class="metrics-title2"></h2>
+	        <h2 id="refunds" class="metrics-title2"></h2>
+	        <h2 id="refund-amount" class="metrics-title1"></h2>
 	        <p class="bottom-text" id="refunds-compare"><span></span></p>
 	    </div>
 	</div>
@@ -54,8 +54,8 @@
 	<div class="one-half last-col">
 	    <div class="edd-metrics-box">
 	        <p class="top-text"><?php _e('Renewals', 'edd-metrics'); ?></p>
-	        <h2 id="renewals" class="metrics-title1"></h2>
-	        <h2 id="renewal-amount" class="metrics-title2"></h2>
+	        <h2 id="renewals" class="metrics-title2"></h2>
+	        <h2 id="renewal-amount" class="metrics-title1"></h2>
 	        <p class="bottom-text" id="renewals-compare"><span></span></p>
 	    </div>
 	</div>
@@ -66,7 +66,13 @@
 
 <div class="one-third last-col">
 
-	<a href="<?php echo admin_url(); ?>edit.php?post_type=download&page=edd_metrics&view=metrics-details&metric=revenue" class="metrics-details-link">View Revenue Details &rarr;</a>
+	<div class="metrics-details-link">
+
+	<a href="<?php echo admin_url(); ?>edit.php?post_type=download&page=edd_metrics&view=metrics-details&metric=revenue"><img src="<?php echo plugins_url( 'assets/img/chart1.png', dirname(__FILE__) ); ?>" class="details-chart" />
+	<br>
+	View Revenue Details &rarr;</a>
+
+	</div>
 
     <?php do_action('edd_metrics_dash_sidebar'); ?>
     

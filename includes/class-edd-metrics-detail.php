@@ -91,12 +91,12 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
 
             $data['earnings']['detail'] = array( 
                 'sixmoago' => array( 
-                    'total' => $earnings_6mo_ago,
+                    'total' => number_format( $earnings_6mo_ago, 2 ),
                     'compare' => self::get_percentage( $earnings, $earnings_6mo_ago ),
                     'classes' => $classes6mo
                     ),
                 'twelvemoago' => array( 
-                    'total' => $earnings_12mo_ago,
+                    'total' => number_format( $earnings_12mo_ago, 2 ),
                     'compare' => self::get_percentage( $earnings, $earnings_12mo_ago ),
                     'classes' => $classes12mo
                     ),

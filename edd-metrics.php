@@ -3,7 +3,7 @@
  * Plugin Name:     EDD Metrics
  * Plugin URI:      http://metricswp.com
  * Description:     All the stats, analytics, and metrics you need when selling stuff with Easy Digital Downloads.
- * Version:         0.0.1
+ * Version:         0.1.0
  * Author:          Scott Bolinger
  * Author URI:      http://scottbolinger.com
  * Text Domain:     edd-metrics
