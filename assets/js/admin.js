@@ -10,6 +10,19 @@
 
     var dd = new Calendar({
       element: $('.metrics-datepicker'),
+      presets: [{
+        label: 'Last 30 days',
+        start: moment().subtract(29, 'days'),
+        end: moment()
+      },{
+        label: 'Last month',
+        start: moment().subtract(1, 'month').startOf('month'),
+        end: moment().subtract(1, 'month').endOf('month')
+      },{
+        label: 'Last 3 months',
+        start: moment(this.latest_date).subtract(3, 'month').startOf('month'),
+        end: moment(this.latest_date).subtract(1, 'month').endOf('month')
+      }],
       earliest_date: 'January 1, 2006',
       latest_date: moment(),
       start_date: moment().subtract(29, 'days'),
