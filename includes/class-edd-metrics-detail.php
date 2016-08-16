@@ -92,6 +92,8 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
             $classes6mo = self::get_arrow_classes( $earnings, $earnings_6mo_ago );
             $classes12mo = self::get_arrow_classes( $earnings, $earnings_12mo_ago );
 
+            $data['yearly_renewal_rate'] = self::get_yearly_renewal_rate();
+
             $data['earnings']['detail'] = array( 
                 'sixmoago' => array( 
                     'total' => number_format( $earnings_6mo_ago, 2 ),
@@ -101,8 +103,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
                 'twelvemoago' => array( 
                     'total' => number_format( $earnings_12mo_ago, 2 ),
                     'compare' => self::get_percentage( $earnings, $earnings_12mo_ago ),
-                    'classes' => $classes12mo,
-                    'renewal' => self::get_yearly_renewal( $sales_12mo_ago )
+                    'classes' => $classes12mo
                     ),
                 );
 
@@ -137,28 +138,40 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
               $sales[] = $EDD_Stats->get_sales( 0, $dt->format( "jS F, Y" ), false, array( 'publish', 'revoked' ) );
             }
 
-            return array( 'sales' => $sales, 'earnings' => $earnings, 'labels' => $labels, 'period' => $interval );
+            return array( 'sales' => $sales, 'earnings' => $earnings, 'labels' => $labels );
 
         }
 
         /**
-         * Get yearly renewal rate
+         * Get yearly renewal rate. Only reliable way to do this is to use a really long time period, because people don't always renew exactly 12 months after they purchase. 
+         * $period is how far back we go in days, if set to 1 year, we get sales from 24mo ago -> 12mo ago, and renewals from 12mo ago -> now.
+         * Calculation is (renewals last 12 mo) / (sales count from 24mo ago -> 12 mo ago)
          *
          * @access      public
          * @since       1.0.0
          * @return      array
          */
-        public function get_yearly_renewal( $sales_12mo_ago ) {
+        public function get_yearly_renewal_rate( $period = 365 ) {
 
-            $renewals = self::get_renewals()['count'];
+            // renewals last 12 mo / sales total from 24mo ago -> 12 mo ago
+            $now = strtotime('now');
+            $period_ago = strtotime( '-' . strval( $period ) . ' days' );
+            $two_periods_ago = strtotime( '-' . strval( $period*2 ) . ' days' );
 
-            if( empty( $renewals) || empty( $sales_12mo_ago ) ) {
+            $renewals = self::get_renewals( $period_ago, $now );
+
+            $EDD_Stats = new EDD_Payment_Stats();
+
+            $sales = $EDD_Stats->get_sales( 0, $two_periods_ago, $period_ago );
+            
+
+            if( empty( $renewals) || empty( $sales ) ) {
                 return 0;
             }
 
-            $percent = ( $renewals / $sales_12mo_ago ) * 100;
+            $percent = ( intval($renewals) / intval($sales) ) * 100;
 
-            return number_format( $percent, 2);
+            return array( 'percent' => number_format( $percent, 2 ), 'period' => $period );
         }
 
         /**

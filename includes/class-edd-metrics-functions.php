@@ -100,7 +100,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                 'dates' => self::get_compare_dates(),
                 'sales' => self::get_sales(), 
                 'earnings' => self::get_earnings(),
-                'renewals' => self::get_renewals(),
+                'renewals' => self::get_renewals( self::$start, self::$end ),
                 'refunds' => self::get_refunds()
             );
 
@@ -514,23 +514,19 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
         /**
          * Get renewal count and earnings and return
+         * $start & $end should be date objects
          *
          * @access      public
          * @since       1.0.0
          * @return      array( 'count' => $count, 'earnings' => $earnings )
          */
-        public static function get_renewals() {
+        public static function get_renewals( $start = null, $end = null, $compare = true ) {
 
             if( !class_exists('EDD_Software_Licensing') )
             	return;
 
         	// see reports.php in EDD SL plugin
     		// edd_sl_get_renewals_by_date( $day = null, $month = null, $year = null, $hour = null  )
-
-            $dates = self::get_compare_dates();
-
-            $start = strtotime( $dates['start'] );
-            $end = strtotime( $dates['end'] );
 
 			$count = 0;
 			$earnings = 0;
@@ -544,7 +540,16 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 			  	$earnings += $renewals['earnings'];
 			}
 
-	        return array( 'count' => $count, 'earnings' => number_format( $earnings, 2 ), 'compare' => self::compare_renewals( $count ) );
+            $ret = array( 
+                'count' => $count, 
+                'earnings' => number_format( $earnings, 2 )
+                );
+
+            if( $compare ) {
+                $ret['compare'] = self::compare_renewals( $count ); 
+            }
+
+	        return $ret;
 			        
         }
 
