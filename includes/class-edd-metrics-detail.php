@@ -81,6 +81,9 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
             $twelve_mo_ago = self::subtract_days( $dates['start'], $dates['end'], 365 );
             $earnings_12mo_ago = $EDD_Stats->get_earnings( 0, strtotime(  $twelve_mo_ago[0] ), strtotime( $twelve_mo_ago[1] ) );
 
+            // for yearly renewal rate
+            $sales_12mo_ago = $EDD_Stats->get_sales( 0, strtotime(  $twelve_mo_ago[0] ), strtotime( $twelve_mo_ago[1] ) );
+
             if( $dates['num_days'] < 100 ) {
                 $chart_data = self::get_chart_data( $dates, $monthly );
                 $data['lineChart'] = $chart_data;
@@ -98,7 +101,8 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
                 'twelvemoago' => array( 
                     'total' => number_format( $earnings_12mo_ago, 2 ),
                     'compare' => self::get_percentage( $earnings, $earnings_12mo_ago ),
-                    'classes' => $classes12mo
+                    'classes' => $classes12mo,
+                    'renewal' => self::get_yearly_renewal( $sales_12mo_ago )
                     ),
                 );
 
@@ -135,6 +139,26 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
 
             return array( 'sales' => $sales, 'earnings' => $earnings, 'labels' => $labels, 'period' => $interval );
 
+        }
+
+        /**
+         * Get yearly renewal rate
+         *
+         * @access      public
+         * @since       1.0.0
+         * @return      array
+         */
+        public function get_yearly_renewal( $sales_12mo_ago ) {
+
+            $renewals = self::get_renewals()['count'];
+
+            if( empty( $renewals) || empty( $sales_12mo_ago ) ) {
+                return 0;
+            }
+
+            $percent = ( $renewals / $sales_12mo_ago ) * 100;
+
+            return number_format( $percent, 2);
         }
 
         /**

@@ -70,7 +70,7 @@
 
 	<a href="<?php echo admin_url(); ?>edit.php?post_type=download&page=edd_metrics&view=metrics-details&metric=revenue"><img src="<?php echo plugins_url( 'assets/img/chart1.png', dirname(__FILE__) ); ?>" class="details-chart" />
 	<br>
-	View Revenue Details &rarr;</a>
+	<?php _e('View Revenue Details', 'edd-metrics'); ?> &rarr;</a>
 
 	</div>
 
