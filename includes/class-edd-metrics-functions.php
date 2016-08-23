@@ -66,10 +66,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             // add_action( 'admin_enqueue_scripts', array( $this, 'localized_vars' ), 101 );
 
-            
-
         }
-
 
         // not used
         public static function localized_vars() {
@@ -152,8 +149,8 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             $dates = self::get_compare_dates();
 
-            $current_customers = self::get_unique_customers_count( $dates['start'], $dates['end'] );
-            $previous_customers = self::get_unique_customers_count( $dates['previous_start'], $dates['previous_end'] );
+            $current_customers = self::get_edd_customers_by_date( $dates['start'], $dates['end'] );
+            $previous_customers = self::get_edd_customers_by_date( $dates['previous_start'], $dates['previous_end'] );
 
             if( empty( $earnings ) || empty( $current_customers ) ) {
                 // can't divide by 0
@@ -173,12 +170,36 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             $classes = self::get_arrow_classes( $total, $prev_total );
 
             return array( 
-                'total' => number_format( $total, 2 ), 
+                'total' => number_format( $total, 2 ),
                 'compare' => array( 
                     'classes' => $classes, 
                     'percentage' => self::get_percentage( $total, $prev_total ) 
                     ) 
                 );
+        }
+
+        /**
+         * Use EDD_DB_Customers class to get customer count
+         * https://github.com/easydigitaldownloads/easy-digital-downloads/blob/master/includes/class-edd-db-customers.php#L523
+         *
+         * @access      public
+         * @since       1.0.0
+         * @return      array()
+         */
+        public static function get_edd_customers_by_date( $start, $end ) {
+
+            $EDD_DB_Customers = new EDD_DB_Customers();
+
+            $args = array( 
+                'date' => array( 
+                    'start' => $start, 
+                    'end' => $end 
+                    )
+                );
+
+            $customers = $EDD_DB_Customers->count( $args );
+
+            return $customers;
         }
 
         /**
@@ -236,126 +257,41 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         }
 
         /**
-         * Get number of customers
-         * Only returns customers *created* in the set date range, not customers who purchased in the range.
-         *
-         * @access      public
-         * @since       1.0.0
-         * @return      array()
-         */
-        public function get_customers() {
-
-            $dates = self::get_compare_dates();
-
-            $args = array(
-                'date' => array(
-                    'start' => $dates['start'],
-                    'end' => $dates['end']
-                    )
-                );
-
-            // see easy-digital-downloads/includes/class-edd-db-customers.php
-            $customers = EDD()->customers->get_customers( $args );
-
-            $i = 0;
-
-            foreach ($customers as $key => $value) {
-                $i++;
-            }
-
-            return array( 
-                'count' => $i, 
-                'compare' => self::compare_customers( $i ) 
-                );
-
-        }
-
-        /**
          * Get previous number of customers and compare
          *
          * @access      public
          * @since       1.0.0
          * @return      array()
          */
-        public function compare_customers( $current_customers = null ) {
+        // public function compare_customers( $current_customers = null ) {
 
-            $dates = self::get_compare_dates();
+        //     $dates = self::get_compare_dates();
 
-            $args = array(
-                'date' => array(
-                    'start' => $dates['previous_start'],
-                    'end' => $dates['previous_end']
-                    )
-                );
+        //     $args = array(
+        //         'date' => array(
+        //             'start' => $dates['previous_start'],
+        //             'end' => $dates['previous_end']
+        //             )
+        //         );
 
-            $previous_customers = EDD()->customers->get_customers( $args );
+        //     $previous_customers = EDD()->customers->get_customers( $args );
 
-            $i = 0;
+        //     $i = 0;
 
-            // count customers
-            foreach ($previous_customers as $key => $value) {
-                $i++;
-            }
+        //     // count customers
+        //     foreach ($previous_customers as $key => $value) {
+        //         $i++;
+        //     }
 
-            // output classes for arrows and colors
-            $classes = self::get_arrow_classes( $current_customers, $i );
+        //     // output classes for arrows and colors
+        //     $classes = self::get_arrow_classes( $current_customers, $i );
 
-            return array( 
-                'classes' => $classes, 
-                'percentage' => self::get_percentage( $current_customers, $i ),
-                'count' => $i 
-                );
-        }
-
-        /**
-         * Get number of unique customers based on payment data
-         *
-         * @access      public
-         * @since       1.0.0
-         * @return      int
-         */
-        public function get_unique_customers_count( $start = null, $end = null ) {
-
-            $dates = self::get_compare_dates();
-
-            $edd_payment = get_post_type_object( 'edd_payment' );
-
-            $args = array(
-                'post_type' => 'edd_payment',
-                'nopaging' => true,
-                'date_query' => array(
-                    array(
-                        'after'     => $start,
-                        'before'    => $end,
-                        'inclusive' => true,
-                    ),
-                ),
-            );
-
-            // The Query
-            $the_query = new WP_Query( $args );
-
-            $emails = array();
-
-            // Recent payments loop
-            if ( $the_query->have_posts() ) {
-                while ( $the_query->have_posts() ) {
-                    $the_query->the_post();
-                    $email = get_post_meta( get_the_ID(), '_edd_payment_user_email' )[0];
-
-                    if( empty( $email ) )
-                        continue;
-
-                    $emails[] = $email;
-                }
-                wp_reset_postdata();
-            } else {
-                return 0;
-            }
-
-            return count( array_unique( $emails ) );
-
-        }
+        //     return array( 
+        //         'classes' => $classes, 
+        //         'percentage' => self::get_percentage( $current_customers, $i ),
+        //         'count' => $i 
+        //         );
+        // }
 
         /**
          * Get start and end dates for compare periods
@@ -481,6 +417,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
         	$args = array(
 				'post_type' => 'edd_payment',
+                'post_status' => array( 'publish' )
 			);
 
         	// The Query

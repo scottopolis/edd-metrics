@@ -130,7 +130,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
             $period = new DatePeriod($begin, $interval, $end);
 
             foreach ( $period as $dt ) {
-              $earnings[] = $EDD_Stats->get_earnings( 0, $dt->format( "jS F, Y" ), false, array( 'publish', 'revoked' ) );
+              $earnings[] = $EDD_Stats->get_earnings( 0, $dt->format( "jS F, Y" ), false );
               $labels[] = $dt->format( "F j" );
             }
 
