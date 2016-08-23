@@ -158,9 +158,9 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
          * @since       1.0.0
          * @return      array
          */
-        public function get_yearly_renewal_rate( $period = 182 ) {
+        public function get_yearly_renewal_rate( $period = 365 ) {
 
-            // renewals last 6 mo / sales total from 12mo ago -> 6 mo ago
+            // renewals last 12 mo / sales total from 24mo ago -> 12 mo ago
             $now = strtotime('now');
             $period_ago = strtotime( '-' . strval( $period ) . ' days' );
             $two_periods_ago = strtotime( '-' . strval( $period*2 ) . ' days' );
@@ -172,7 +172,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
             $sales = $EDD_Stats->get_sales( 0, date("jS F Y", $two_periods_ago ), date("jS F Y", $period_ago ) );
 
             if( empty( $renewals) || empty( $sales ) ) {
-                return array( 'percent' => 0, 'period' => '' );
+                return array( 'percent' => 0, 'period' => $period );
             }
 
             $percent = ( intval($renewals) / intval($sales) ) * 100;
@@ -243,7 +243,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
                 $complete_count = edd_count_sales_by_gateway( $gateway_id, 'publish' );
 
                 $reports_data['labels'][] = $gateway['admin_label'];
-                $reports_data['earnings'][] = edd_format_amount( $complete_count, false );
+                $reports_data['earnings'][] = $complete_count;
 
             }
 
