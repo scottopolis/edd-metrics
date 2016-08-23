@@ -166,7 +166,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
             
 
             if( empty( $renewals) || empty( $sales ) ) {
-                return 0;
+                return array( 'percent' => 0, 'period' => '' );
             }
 
             $percent = ( intval($renewals) / intval($sales) ) * 100;

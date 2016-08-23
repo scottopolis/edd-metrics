@@ -51,6 +51,7 @@
 	    </div>
 	</div>
 
+	<?php if( class_exists('EDD_Software_Licensing') ) : ?>
 	<div class="one-half last-col">
 	    <div class="edd-metrics-box">
 	        <p class="top-text"><?php _e('Renewals', 'edd-metrics'); ?></p>
@@ -59,6 +60,7 @@
 	        <p class="bottom-text" id="renewals-compare"><span></span></p>
 	    </div>
 	</div>
+	<?php endif; ?>
 
 	<?php do_action('edd_metrics_after_boxes'); ?>
 

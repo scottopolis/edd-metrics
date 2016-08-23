@@ -459,8 +459,9 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          */
         public static function get_renewals( $start = null, $end = null, $compare = true ) {
 
-            if( !class_exists('EDD_Software_Licensing') )
-            	return;
+            if( !class_exists('EDD_Software_Licensing') ) {
+            	return array( 'count' => '0', 'earnings' => '0', 'compare' => array( 'classes' => 'edd-metrics-nochange', 'percentage' => '0' ) );
+            }
 
         	// see reports.php in EDD SL plugin
     		// edd_sl_get_renewals_by_date( $day = null, $month = null, $year = null, $hour = null  )
@@ -476,6 +477,9 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 				$count++;
 			  	$earnings += $renewals['earnings'];
 			}
+
+            if( empty($count) )
+                $count = '0';
 
             $ret = array( 
                 'count' => $count, 
@@ -557,7 +561,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 				}
 				wp_reset_postdata();
 			} else {
-				return array( 'count' => 0, 'losses' => 0, 'compare' => self::compare_refunds( $i ) );
+				return array( 'count' => '0', 'losses' => '0', 'compare' => self::compare_refunds( $i ) );
 			}
 
 			return array( 'count' => $i, 'losses' => number_format( $losses, 2 ), 'compare' => self::compare_refunds( $i ) );
