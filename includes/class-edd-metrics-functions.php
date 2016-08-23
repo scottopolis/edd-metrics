@@ -130,7 +130,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                 'compare' => array( 
                     'classes' => $classes, 
                     'percentage' => self::get_percentage( $earnings, $previous_earnings ),
-                    'total' => $previous_earnings 
+                    'total' => number_format( $previous_earnings, 2 ) 
                     ), 
                 'avgyearly' => self::get_avg_yearly( $earnings, $previous_earnings, $dates['num_days'] ), 
                 'avgpercust' => self::get_avg_percust( $earnings, $previous_earnings ) 

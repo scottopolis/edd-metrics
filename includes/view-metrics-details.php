@@ -57,13 +57,38 @@
     </div>
 </div>
 
-<div class="edd-metrics-box edd-metrics-chart-wrapper one-half">
-    <h3><?php _e('Earnings by download', 'edd-metrics'); ?></h3>
-    <canvas id="metrics-pie-chart" width="200" height="200"></canvas>
+<div class="edd-metrics-box" style="margin-bottom:15px">
+
+<div class="one-third" id="earnings-today">
+    <p class="top-text"><?php _e('Today', 'edd-metrics'); ?></p>
+    <h2></h2>
+    <p class="bottom-text" id=""><span></span></p>
 </div>
 
-<div class="one-half last-col">
-    <?php do_action('edd_metrics_dash_sidebar'); ?>
+<div class="one-third" id="earnings-this-month">
+    <p class="top-text"><?php _e('This Month', 'edd-metrics'); ?></p>
+    <h2></h2>
+    <p class="bottom-text" id=""><span></span></p>
+</div>
+
+<?php if( class_exists('EDD_Software_Licensing') ) : ?>
+<div class="one-third last-col" id="renewal-rate">
+    <p class="top-text"><?php _e('Renewal Rate', 'edd-metrics'); ?></p>
+    <h2></h2>
+    <p class="bottom-text" id="yearly-renewal-compare"><span></span></p>
+</div>
+<?php endif; ?>
+
+</div>
+
+<div class="edd-metrics-box edd-metrics-chart-wrapper one-half">
+    <h3><?php _e('Earnings by download', 'edd-metrics'); ?></h3>
+    <canvas id="metrics-piechart-by-download" width="200" height="200"></canvas>
+</div>
+
+<div class="edd-metrics-box edd-metrics-chart-wrapper one-half last-col">
+    <h3><?php _e('Earnings by Gateway', 'edd-metrics'); ?></h3>
+    <canvas id="metrics-piechart-by-gateway" width="200" height="200"></canvas>
 </div>
 
 <?php do_action('edd_metrics_after_detail'); ?>

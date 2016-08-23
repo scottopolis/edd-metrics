@@ -65,9 +65,9 @@
 
   eddm.dashResponse = function(response) {
 
-    console.log( response );
-
     var data = JSON.parse(response);
+
+    console.log( data );
 
     var compareTemp = '% over previous ' + data.dates.num_days + ' days';
 
@@ -104,9 +104,9 @@
 
   eddm.detailResponse = function(response) {
 
-    console.log( 'detailResponse', response );
-
     var data = JSON.parse(response);
+
+    console.log( 'detailResponse', data );
     
     var metric = eddm.getQueryVariable('metric');
 
@@ -126,6 +126,12 @@
           $('.detail-compare-third').text( eddm.currencySign + data.earnings.detail.twelvemoago.total );
           $('#revenue-12mocompare span').text( data.earnings.detail.twelvemoago.compare + compareTemp ).removeClass().addClass( data.earnings.detail.twelvemoago.classes );
 
+          $('#earnings-today h2').text( eddm.currencySign + data.earnings.detail.today );
+          $('#earnings-this-month h2').text( eddm.currencySign + data.earnings.detail.this_month );
+
+          $('#renewal-rate h2').text( data.yearly_renewal_rate.percent + '%' );
+          $('#yearly-renewal-compare span').text( 'Last ' + data.yearly_renewal_rate.period + ' days' );
+
           break;
       case 'renewals':
           // ...
@@ -135,7 +141,8 @@
     }
 
     eddm.doLineChart( data.lineChart );
-    eddm.doPieChart( data.pieChart );
+    eddm.doDownloadChart( data.pieChart );
+    eddm.doGatewayChart( data.earnings.gateways );
     
   }
 
@@ -204,10 +211,57 @@
     });
   }
 
-  eddm.doPieChart = function( chart ) {
+  eddm.doDownloadChart = function( chart ) {
 
-    if( eddm.pieChart ) {
-      eddm.pieChart.destroy();
+    if( eddm.downloadChart ) {
+      eddm.downloadChart.destroy();
+    }
+
+    // console.log( chart );
+
+    var data = {
+        labels: chart.labels,
+        datasets: [
+            {
+                label: "Downloads",
+                data: chart.earnings,
+                backgroundColor: [
+                  "#225378",
+                  "#1695A3",
+                  "#1fa739",
+                  "#EB7F00",
+                  "#EB4B4D",
+                  "#EBA945",
+                  "#663300",
+                  "#79EB65"
+                ],
+                hoverBackgroundColor: [
+                  "#225378",
+                  "#1695A3",
+                  "#1fa739",
+                  "#EB7F00",
+                  "#EB4B4D",
+                  "#EBA945",
+                  "#663300",
+                  "#79EB65"
+                ]
+            }
+        ]
+    };
+
+    var ctx = document.getElementById("metrics-piechart-by-download");
+
+    eddm.downloadChart = new Chart(ctx,{
+        type: 'pie',
+        data: data
+    });
+
+  }
+
+  eddm.doGatewayChart = function( chart ) {
+
+    if( eddm.gatewayChart ) {
+      eddm.gatewayChart.destroy();
     }
 
     console.log( chart );
@@ -242,9 +296,9 @@
         ]
     };
 
-    var ctx = document.getElementById("metrics-pie-chart");
+    var ctx = document.getElementById("metrics-piechart-by-gateway");
 
-    eddm.pieChart = new Chart(ctx,{
+    eddm.gatewayChart = new Chart(ctx,{
         type: 'pie',
         data: data
     });

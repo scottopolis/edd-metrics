@@ -75,6 +75,9 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
             $EDD_Stats = new EDD_Payment_Stats();
             $earnings = $EDD_Stats->get_earnings( 0, $dates['start'], $dates['end'] );
 
+            $earnings_today = $EDD_Stats->get_earnings( 0, 'today' );
+            $earnings_this_month = $EDD_Stats->get_earnings( 0, 'this_month' );
+
             $six_mo_ago = self::subtract_days( $dates['start'], $dates['end'], 182 );
             $earnings_6mo_ago = $EDD_Stats->get_earnings( 0, strtotime( $six_mo_ago[0] ), strtotime( $six_mo_ago[1] ) );
 
@@ -89,12 +92,16 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
                 $data['lineChart'] = $chart_data;
             }
 
+            $data['earnings']['gateways'] = self::get_edd_gateway_reports();
+
             $classes6mo = self::get_arrow_classes( $earnings, $earnings_6mo_ago );
             $classes12mo = self::get_arrow_classes( $earnings, $earnings_12mo_ago );
 
             $data['yearly_renewal_rate'] = self::get_yearly_renewal_rate();
 
             $data['earnings']['detail'] = array( 
+                'today' => number_format( $earnings_today, 2 ),
+                'this_month' => number_format( $earnings_this_month, 2 ),
                 'sixmoago' => array( 
                     'total' => number_format( $earnings_6mo_ago, 2 ),
                     'compare' => self::get_percentage( $earnings, $earnings_6mo_ago ),
@@ -144,26 +151,25 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
 
         /**
          * Get yearly renewal rate. Only reliable way to do this is to use a really long time period, because people don't always renew exactly 12 months after they purchase. 
-         * $period is how far back we go in days, if set to 1 year, we get sales from 24mo ago -> 12mo ago, and renewals from 12mo ago -> now.
+         * $period is how far back we go in days, if set to 365, we get sales from 24mo ago -> 12mo ago, and renewals from 12mo ago -> now.
          * Calculation is (renewals last 12 mo) / (sales count from 24mo ago -> 12 mo ago)
          *
          * @access      public
          * @since       1.0.0
          * @return      array
          */
-        public function get_yearly_renewal_rate( $period = 365 ) {
+        public function get_yearly_renewal_rate( $period = 182 ) {
 
-            // renewals last 12 mo / sales total from 24mo ago -> 12 mo ago
+            // renewals last 6 mo / sales total from 12mo ago -> 6 mo ago
             $now = strtotime('now');
             $period_ago = strtotime( '-' . strval( $period ) . ' days' );
             $two_periods_ago = strtotime( '-' . strval( $period*2 ) . ' days' );
 
-            $renewals = self::get_renewals( $period_ago, $now );
+            $renewals = self::get_renewals( $period_ago, $now )['count'];
 
             $EDD_Stats = new EDD_Payment_Stats();
 
-            $sales = $EDD_Stats->get_sales( 0, $two_periods_ago, $period_ago );
-            
+            $sales = $EDD_Stats->get_sales( 0, date("jS F Y", $two_periods_ago ), date("jS F Y", $period_ago ) );
 
             if( empty( $renewals) || empty( $sales ) ) {
                 return array( 'percent' => 0, 'period' => '' );
@@ -216,6 +222,32 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
             $data['pieChart'] = $chart_data;
 
             return $data;
+
+        }
+
+        /**
+         * Get gateway info
+         * For more methods see edd/includes/admin/reporting/class-gateways-reports-table.php ->reports_data()
+         *
+         * @access      public
+         * @since       1.0.0
+         * @return      array()
+         */
+        public function get_edd_gateway_reports() {
+            
+            $reports_data = array();
+            $gateways     = edd_get_payment_gateways();
+
+            foreach ( $gateways as $gateway_id => $gateway ) {
+
+                $complete_count = edd_count_sales_by_gateway( $gateway_id, 'publish' );
+
+                $reports_data['labels'][] = $gateway['admin_label'];
+                $reports_data['earnings'][] = edd_format_amount( $complete_count, false );
+
+            }
+
+            return $reports_data;
 
         }
 
