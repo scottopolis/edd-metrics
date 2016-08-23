@@ -302,8 +302,8 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          */
         public static function get_compare_dates() {
         	// current period
-			$start = date("jS F, Y", self::$start );
-        	$end = date("jS F, Y", self::$end );
+			$start = date("jS F Y", self::$start );
+        	$end = date("jS F Y", self::$end );
 
         	$datediff = self::$end - self::$start;
 			$num_days = floor( $datediff/( 60*60*24 ) ) + 1;
@@ -331,8 +331,8 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             $previous_end = date_sub( $enddate, date_interval_create_from_date_string( $num_days . " days" ) );
 
             // previous period
-            $previous_start = $previous_start->format('jS F, Y');
-            $previous_end = $previous_end->format('jS F, Y');
+            $previous_start = $previous_start->format('jS F Y');
+            $previous_end = $previous_end->format('jS F Y');
 
             return array( $previous_start, $previous_end );
         }
