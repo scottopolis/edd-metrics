@@ -51,13 +51,31 @@
 	    </div>
 	</div>
 
-	<?php if( class_exists('EDD_Software_Licensing') ) : ?>
 	<div class="one-half last-col">
+	    <div class="edd-metrics-box">
+	        <p class="top-text"><?php _e('Est. Monthly Revenue', 'edd-metrics'); ?></p>
+	        <h2 id="monthly"></h2>
+	        <p class="bottom-text" id="avgmonthly-compare"><span></span></p>
+	    </div>
+	</div>
+
+	<?php if( class_exists('EDD_Software_Licensing') ) : ?>
+	<div class="one-half">
 	    <div class="edd-metrics-box">
 	        <p class="top-text"><?php _e('Renewals', 'edd-metrics'); ?></p>
 	        <h2 id="renewals" class="metrics-title2"></h2>
 	        <h2 id="renewal-amount" class="metrics-title1"></h2>
 	        <p class="bottom-text" id="renewals-compare"><span></span></p>
+	    </div>
+	</div>
+	<?php endif; ?>
+
+	<?php if( class_exists('EDD_Recurring') ) : ?>
+	<div class="one-half last-col">
+	    <div class="edd-metrics-box">
+	        <p class="top-text"><?php _e('New Subscriptions', 'edd-metrics'); ?></p>
+	        <h2 id="subscriptions"></h2>
+	        <p class="bottom-text" id="subscriptions-compare"><span></span></p>
 	    </div>
 	</div>
 	<?php endif; ?>

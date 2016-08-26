@@ -66,6 +66,10 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             // add_action( 'admin_enqueue_scripts', array( $this, 'localized_vars' ), 101 );
 
+            // add_action('init', function() {
+            //     self::get_new_subscriptions();
+            // });
+
         }
 
         // not used
@@ -98,7 +102,8 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                 'sales' => self::get_sales(), 
                 'earnings' => self::get_earnings(),
                 'renewals' => self::get_renewals( self::$start, self::$end ),
-                'refunds' => self::get_refunds()
+                'refunds' => self::get_refunds(),
+                'subscriptions' => self::get_new_subscriptions( self::$startstr, self::$endstr ),
             );
 
         	echo json_encode( apply_filters( 'metrics_json_output', $metrics ) );
@@ -133,7 +138,8 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                     'total' => number_format( $previous_earnings, 2 ) 
                     ), 
                 'avgyearly' => self::get_avg_yearly( $earnings, $previous_earnings, $dates['num_days'] ), 
-                'avgpercust' => self::get_avg_percust( $earnings, $previous_earnings ) 
+                'avgpercust' => self::get_avg_percust( $earnings, $previous_earnings ),
+                'avgmonthly' => self::get_avg_monthly(),
                 );
 
         }
@@ -200,6 +206,22 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             $customers = $EDD_DB_Customers->count( $args );
 
             return $customers;
+        }
+
+        /**
+         * Get average monthly estimates
+         * see edd/includes/admin/reporting/reports.php line 486
+         *
+         * @access      public
+         * @since       1.0.0
+         * @return      array()
+         */
+        public function get_avg_monthly() {
+            $avg = edd_estimated_monthly_stats();
+            return array(
+                'earnings' => number_format( $avg['earnings'], 2 ),
+                'sales' => $avg['sales']
+                );
         }
 
         /**
@@ -471,7 +493,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
 			// Loop between timestamps, 24 hours at a time
 			for ( $i = $start; $i <= $end; $i = $i + 86400 ) {
-				$renewals = edd_sl_get_renewals_by_date( date( 'd', $i ), date( 'm', $i ) );
+				$renewals = edd_sl_get_renewals_by_date( date( 'd', $i ), date( 'm', $i ), date( 'Y', $i ) );
 				if( $renewals['count'] === 0 )
 					continue;
 				$count++;
@@ -512,7 +534,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             // Loop between timestamps, 24 hours at a time
             for ( $i = $start; $i <= $end; $i = $i + 86400 ) {
-                $previous_renewals = edd_sl_get_renewals_by_date( date( 'd', $i ), date( 'm', $i ) );
+                $previous_renewals = edd_sl_get_renewals_by_date( date( 'd', $i ), date( 'm', $i ), date( 'Y', $i ) );
                 if( $previous_renewals['count'] === 0 )
                     continue;
                 $count++;
@@ -612,6 +634,67 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             $classes = self::get_arrow_classes( $current_refunds, $previous_refunds );
 
             return array( 'classes' => $classes, 'percentage' => self::get_percentage( $current_refunds, $previous_refunds ) );
+        }
+
+        /**
+         * Get subscriptions
+         * taken from edd-recurring/includes/admin/class-subscriptions-list-table.php
+         * @access      public
+         * @since       1.0.0
+         * @return      array()
+         */
+        public function get_new_subscriptions( $start, $end) {
+
+            if( !class_exists('EDD_Subscriptions_DB') ) {
+                return array( 'earnings' => 'n/a', 'count' => 'n/a' );
+            }
+
+            global $wp_query;
+
+            $db = new EDD_Subscriptions_DB;
+
+            // $total is an array of objects. To get more info, use $total[$key]->whatever
+            $total = $db->get_subscriptions( 
+                array( 
+                    'status' => 'active', 
+                    'date' => array( 
+                        'start' => $start, 
+                        'end' => $end
+                    ) 
+                )
+            );
+
+            return array( 'count' => count($total) );
+
+            // $total_count     = $db->count();
+            // $active_count    = $db->count( array( 'status' => 'active' ) );
+            // $pending_count   = $db->count( array( 'status' => 'pending', 'search' => $search ) );
+            // $expired_count   = $db->count( array( 'status' => 'expired', 'search' => $search ) );
+            // $cancelled_count = $db->count( array( 'status' => 'cancelled', 'search' => $search ) );
+            // $completed_count = $db->count( array( 'status' => 'completed', 'search' => $search ) );
+            // $failing_count   = $db->count( array( 'status' => 'failing', 'search' => $search ) );
+
+            
+
+            // get_subscriptions_by_date() doesn't work because it counts all sales of a product with subscription enabled. If you have an old product that was not subscription, then change it to subscription, you get false totals.
+
+            // $earnings_totals      = 0.00; // Total earnings for time period shown
+            // $subscriptions_totals = 0;    // Total sales for time period shown
+
+            // $EDD_Recurring_Reports = new EDD_Recurring_Reports();
+
+            // for ( $i = $start; $i <= $end; $i = $i + 86400 ) {
+
+            //     $subscriptions = $EDD_Recurring_Reports->get_subscriptions_by_date( date( 'd', $i ), date( 'm', $i ), date( 'Y', $i ), null, false );
+
+            //     print_r( $subscriptions );
+
+            //     $earnings_totals += $subscriptions['earnings'];
+            //     $subscriptions_totals += $subscriptions['count'];
+
+            // }
+
+            //var_dump($subscriptions_totals);
         }
 
     }

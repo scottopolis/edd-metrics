@@ -16,6 +16,10 @@
         start: moment().subtract(29, 'days'),
         end: moment()
       },{
+        label: 'This month',
+        start: moment().startOf('month'),
+        end: moment().endOf('month')
+      },{
         label: 'Last month',
         start: moment().subtract(1, 'month').startOf('month'),
         end: moment().subtract(1, 'month').endOf('month')
@@ -80,6 +84,9 @@
     $('#yearly').text( eddm.currencySign + data.earnings.avgyearly.total );
     $('#avgyearly-compare span').text( data.earnings.avgyearly.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.avgyearly.compare.classes );
 
+    $('#monthly').text( eddm.currencySign + data.earnings.avgmonthly.earnings );
+    //$('#avgmonthly-compare span').text( data.earnings.avgyearly.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.avgyearly.compare.classes );
+
     $('#avgpercust').text( eddm.currencySign + data.earnings.avgpercust.total );
     $('#avgpercust-compare span').text( data.earnings.avgpercust.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.avgpercust.compare.classes );
 
@@ -90,6 +97,8 @@
     $('#refunds').text( data.refunds.count );
     $('#refund-amount').text( eddm.currencySign + data.refunds.losses );
     $('#refunds-compare span').text( data.refunds.compare.percentage + compareTemp ).removeClass().addClass( data.refunds.compare.classes );
+
+    $('#subscriptions').text( data.subscriptions.count );
 
     // Charts
     $('.detail-compare-first').text( eddm.currencySign + data.earnings.compare.total );
