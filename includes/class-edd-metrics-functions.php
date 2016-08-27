@@ -96,17 +96,32 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             self::$end = strtotime( self::$endstr );
         	self::$start = strtotime( self::$startstr );
 
-            $metrics = array(
-                //'some_string' => __( 'Some string to translate', 'edd-metrics' ),
-                'dates' => self::get_compare_dates(),
-                'sales' => self::get_sales(), 
-                'earnings' => self::get_earnings(),
-                'renewals' => self::get_renewals( self::$start, self::$end ),
-                'refunds' => self::get_refunds(),
-                'subscriptions' => self::get_new_subscriptions( self::$startstr, self::$endstr ),
-            );
+            $date_hash = hash('md5', self::$startstr . self::$endstr );
 
-        	echo json_encode( apply_filters( 'metrics_json_output', $metrics ) );
+            $metrics = get_transient( $date_hash );
+
+            if ( false === $metrics ) {
+
+                $metrics = array(
+                    'dates' => self::get_compare_dates(),
+                    'sales' => self::get_sales(), 
+                    'earnings' => self::get_earnings(),
+                    'renewals' => self::get_renewals( self::$start, self::$end ),
+                    'refunds' => self::get_refunds(),
+                    'subscriptions' => self::get_new_subscriptions( self::$startstr, self::$endstr ),
+                );
+
+                $metrics = apply_filters( 'metrics_json_output', $metrics );
+
+                $metrics['transient'] = 'false';
+
+                set_transient( $date_hash, $metrics, 12 * HOUR_IN_SECONDS );
+
+            } else {
+                $metrics['transient'] = 'true';
+            }
+
+            echo json_encode( $metrics );
 
 	        wp_die();
         }
