@@ -102,13 +102,15 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             if ( false === $metrics ) {
 
+                $dates = self::get_compare_dates();
+
                 $metrics = array(
-                    'dates' => self::get_compare_dates(),
+                    'dates' => $dates,
                     'sales' => self::get_sales(), 
                     'earnings' => self::get_earnings(),
                     'renewals' => self::get_renewals( self::$start, self::$end ),
                     'refunds' => self::get_refunds(),
-                    'subscriptions' => self::get_new_subscriptions( self::$startstr, self::$endstr ),
+                    'subscriptions' => self::get_subscriptions( self::$startstr, self::$endstr ),
                 );
 
                 $metrics = apply_filters( 'metrics_json_output', $metrics );
@@ -431,9 +433,9 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         public function get_arrow_classes( $current = null, $previous = null ) {
 
             // output classes for arrows and colors
-            if( $previous > $current ) {
+            if( intval( $previous ) > intval( $current ) ) {
                 return 'metrics-negative metrics-downarrow';
-            } else if( $previous < $current ) {
+            } else if( intval( $previous ) < intval( $current ) ) {
                 return 'metrics-positive metrics-uparrow';
             } else {
                 return 'metrics-nochange';
@@ -654,11 +656,12 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         /**
          * Get subscriptions
          * taken from edd-recurring/includes/admin/class-subscriptions-list-table.php
+         * $start and $end must be strings, not strtotime or date objects
          * @access      public
          * @since       1.0.0
          * @return      array()
          */
-        public function get_new_subscriptions( $start, $end) {
+        public function get_subscriptions( $start = string, $end = string ) {
 
             if( !class_exists('EDD_Subscriptions_DB') ) {
                 return array( 'earnings' => 'n/a', 'count' => 'n/a' );
@@ -679,7 +682,9 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                 )
             );
 
-            return array( 'count' => count($total) );
+            $total_count = count($total);
+
+            return array( 'count' => $total_count, 'compare' => self::compare_subscriptions( $total_count ) );
 
             // $total_count     = $db->count();
             // $active_count    = $db->count( array( 'status' => 'active' ) );
@@ -710,6 +715,45 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             // }
 
             //var_dump($subscriptions_totals);
+        }
+
+        /**
+         * Compare subscriptions
+         * @access      public
+         * @since       1.0.0
+         * @return      array()
+         */
+        public function compare_subscriptions( $current_subscriptions = null ) {
+
+            $dates = self::get_compare_dates();
+
+            // get previous subs, do calcs
+
+            if( !class_exists('EDD_Subscriptions_DB') ) {
+                return array( 'earnings' => 'n/a', 'count' => 'n/a' );
+            }
+
+            global $wp_query;
+
+            $db = new EDD_Subscriptions_DB;
+
+            // $total is an array of objects. To get more info, use $total[$key]->whatever
+            $total = $db->get_subscriptions( 
+                array( 
+                    'status' => 'active', 
+                    'date' => array( 
+                        'start' => $dates['previous_start'], 
+                        'end' => $dates['previous_end']
+                    ) 
+                )
+            );
+
+            $previous_subscriptions = count($total);
+
+            // output classes for arrows and colors
+            $classes = self::get_arrow_classes( $current_subscriptions, $previous_subscriptions );
+
+            return array( 'previous_count' => $previous_subscriptions, 'classes' => $classes, 'percentage' => self::get_percentage( $current_subscriptions, $previous_subscriptions ) );
         }
 
     }

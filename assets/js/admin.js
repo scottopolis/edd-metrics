@@ -24,6 +24,14 @@
         start: moment().subtract(1, 'month').startOf('month'),
         end: moment().subtract(1, 'month').endOf('month')
       },{
+        label: 'Today',
+        start: moment().startOf('day'),
+        end: moment()
+      },{
+        label: 'Last 7 days',
+        start: moment().subtract(6, 'days'),
+        end: moment()
+      },{
         label: 'Last 3 months',
         start: moment(this.latest_date).subtract(3, 'month').startOf('month'),
         end: moment(this.latest_date).subtract(1, 'month').endOf('month')
@@ -99,6 +107,7 @@
     $('#refunds-compare span').text( data.refunds.compare.percentage + compareTemp ).removeClass().addClass( data.refunds.compare.classes );
 
     $('#subscriptions').text( data.subscriptions.count );
+    $('#subscriptions-compare span').text( data.subscriptions.compare.percentage + compareTemp ).removeClass().addClass( data.subscriptions.compare.classes );
 
     // Charts
     $('.detail-compare-first').text( eddm.currencySign + data.earnings.compare.total );
