@@ -117,7 +117,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
                 $metrics['transient'] = 'false';
 
-                set_transient( $date_hash, $metrics, 12 * HOUR_IN_SECONDS );
+                set_transient( $date_hash, $metrics, 1 * HOUR_IN_SECONDS );
 
             } else {
                 $metrics['transient'] = 'true';
@@ -565,6 +565,48 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         }
 
         /**
+         * Query for refunds
+         *
+         * @access      public
+         * @since       1.0.0
+         * @return      array( 'count' => $count, 'earnings' => $earnings )
+         */
+        public function refund_query( $start, $end ) {
+
+            $args = array(
+                'post_type' => 'edd_payment',
+                'nopaging' => true,
+                'post_status' => array( 'refunded' ),
+                'date_query' => array(
+                    array(
+                        'after'     => $start, // june 1
+                        'before'    => $end, // june 30
+                        'inclusive' => true,
+                    ),
+                ),
+            );
+
+            $earnings = 0;
+
+            // The Query
+            $the_query = new WP_Query( $args );
+
+            if ( $the_query->have_posts() ) {
+                $refunds = 0;
+                while ( $the_query->have_posts() ) {
+                    $the_query->the_post();
+                    $earnings += get_post_meta( get_the_ID(), '_edd_payment_total' )[0];
+                    $refunds++;
+                }
+                wp_reset_postdata();
+            } else {
+                return array( 'count' => 0, 'earnings' => 0 );
+            }
+
+            return array( 'count' => $refunds, 'earnings' => $earnings );
+        }
+
+        /**
 	     * Get refund count and losses and return
 	     *
 	     * @access      public
@@ -573,37 +615,15 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 	     */
 	    public static function get_refunds() {
 
-        	$args = array(
-				'post_type' => 'edd_payment',
-                'nopaging' => true,
-				'post_status' => array( 'refunded' ),
-				'date_query' => array(
-					array(
-						'after'     => self::$startstr,
-						'before'    => self::$endstr,
-						'inclusive' => true,
-					),
-				),
-			);
+        	$refunds = self::refund_query( self::$startstr, self::$endstr );
 
-			$losses = 0;
+            if( $refunds['count'] == 0 && $refunds['earnings'] == 0 ) {
+                $compare = array( 'classes' => 'metrics-nochange', 'percentage' => 0 );
+            } else {
+                $compare = self::compare_refunds( $refunds['count'] );
+            }
 
-        	// The Query
-			$the_query = new WP_Query( $args );
-
-			if ( $the_query->have_posts() ) {
-				$i = 0;
-				while ( $the_query->have_posts() ) {
-					$the_query->the_post();
-					$losses += get_post_meta( get_the_ID(), '_edd_payment_total' )[0];
-					$i++;
-				}
-				wp_reset_postdata();
-			} else {
-				return array( 'count' => '0', 'losses' => '0', 'compare' => self::compare_refunds( $i ) );
-			}
-
-			return array( 'count' => $i, 'losses' => number_format( $losses, 2 ), 'compare' => self::compare_refunds( $i ) );
+			return array( 'count' => $refunds['count'], 'losses' => number_format( $refunds['earnings'], 2 ), 'compare' => $compare );
 	    }
 
         /**
@@ -617,54 +637,26 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             $dates = self::get_compare_dates();
 
-            $args = array(
-                'post_type' => 'edd_payment',
-                'nopaging' => true,
-                'post_status' => array( 'refunded' ),
-                'date_query' => array(
-                    array(
-                        'after'     => $dates['previous_start'], // june 1
-                        'before'    => $dates['previous_end'], // june 30
-                        'inclusive' => true,
-                    ),
-                ),
-            );
-
-            $losses = 0;
-
-            // The Query
-            $the_query = new WP_Query( $args );
-
-            if ( $the_query->have_posts() ) {
-                $previous_refunds = 0;
-                while ( $the_query->have_posts() ) {
-                    $the_query->the_post();
-                    $losses += get_post_meta( get_the_ID(), '_edd_payment_total' )[0];
-                    $previous_refunds++;
-                }
-                wp_reset_postdata();
-            } else {
-                return array( 'classes' => 'metrics-nochange', 'percentage' => 0 );
-            }
+            $previous_refunds = self::refund_query( $dates['previous_start'], $dates['previous_end'] );
 
             // output classes for arrows and colors
-            $classes = self::get_arrow_classes( $current_refunds, $previous_refunds );
+            $classes = self::get_arrow_classes( $current_refunds, $previous_refunds['count'] );
 
-            return array( 'classes' => $classes, 'percentage' => self::get_percentage( $current_refunds, $previous_refunds ) );
+            return array( 'classes' => $classes, 'percentage' => self::get_percentage( $current_refunds, $previous_refunds['count'] ) );
         }
 
         /**
-         * Get subscriptions
+         * Get subscriptions using EDD_Subscriptions_DB class 
          * taken from edd-recurring/includes/admin/class-subscriptions-list-table.php
          * $start and $end must be strings, not strtotime or date objects
          * @access      public
          * @since       1.0.0
          * @return      array()
          */
-        public function get_subscriptions( $start = string, $end = string ) {
+        public function subscriptions_db( $start = string, $end = string ) {
 
             if( !class_exists('EDD_Subscriptions_DB') ) {
-                return array( 'earnings' => 'n/a', 'count' => 'n/a' );
+                return null;
             }
 
             global $wp_query;
@@ -681,6 +673,22 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                     ) 
                 )
             );
+
+            return $total;
+
+        }
+
+        /**
+         * Get subscriptions
+         * taken from edd-recurring/includes/admin/class-subscriptions-list-table.php
+         * $start and $end must be strings, not strtotime or date objects
+         * @access      public
+         * @since       1.0.0
+         * @return      array()
+         */
+        public function get_subscriptions( $start = string, $end = string ) {
+
+            $total = self::subscriptions_db( $start, $end );
 
             $total_count = count($total);
 
@@ -727,26 +735,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             $dates = self::get_compare_dates();
 
-            // get previous subs, do calcs
-
-            if( !class_exists('EDD_Subscriptions_DB') ) {
-                return array( 'earnings' => 'n/a', 'count' => 'n/a' );
-            }
-
-            global $wp_query;
-
-            $db = new EDD_Subscriptions_DB;
-
-            // $total is an array of objects. To get more info, use $total[$key]->whatever
-            $total = $db->get_subscriptions( 
-                array( 
-                    'status' => 'active', 
-                    'date' => array( 
-                        'start' => $dates['previous_start'], 
-                        'end' => $dates['previous_end']
-                    ) 
-                )
-            );
+            $total = self::subscriptions_db( $dates['previous_start'], $dates['previous_end'] );
 
             $previous_subscriptions = count($total);
 
