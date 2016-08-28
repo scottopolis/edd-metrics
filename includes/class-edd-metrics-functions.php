@@ -409,7 +409,8 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             } else if ( $prev_value > 0 && empty( $current_value ) ) {
 
-                return round( $prev_value * 100, 1 );
+                // return round( $prev_value * 100, 1 );
+                return '-';
 
             } else if ( empty( $current_value ) && empty( $prev_value ) ) {
 
@@ -456,7 +457,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
         	$args = array(
 				'post_type' => 'edd_payment',
-                'post_status' => array( 'publish' )
+                // 'post_status' => array( 'publish' )
 			);
 
         	// The Query
@@ -465,7 +466,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         	?>
 
         	<div class="postbox metrics-sidebar">
-                <h2 class="hndle ui-sortable-handle"><span><?php _e('Recent Payments', 'edd-metrics'); ?></span></h2>
+                <h2 class="hndle ui-sortable-handle"><span><?php _e('Recent Activity', 'edd-metrics'); ?></span></h2>
                 <div class="inside">
                     <ul>
                     <?php
@@ -473,8 +474,33 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 						if ( $the_query->have_posts() ) {
 							while ( $the_query->have_posts() ) {
 								$the_query->the_post();
+
+                                $status = get_post_status( get_the_ID() );
+
+                                switch ( $status ) {
+                                    case 'publish':
+                                        $classes = 'metrics-positive';
+                                        $status = 'completed';
+                                        break;
+                                    case 'refunded':
+                                        $classes = 'metrics-negative';
+                                        break;
+                                    case 'revoked':
+                                        $classes = 'metrics-negative';
+                                        break;
+                                    case 'failed':
+                                        $classes = 'metrics-negative';
+                                        break;
+                                    
+                                    default:
+                                        $classes = 'metrics-nochange';
+                                        break;
+                                }
+
+                                $status = ucfirst( $status );
+
 								$total = get_post_meta( get_the_ID(), '_edd_payment_total' )[0];
-								echo '<li><a href="' . admin_url( 'edit.php?post_type=download&page=edd-payment-history&view=view-order-details&id=' . get_the_ID() ) . '"><span class="metrics-positive">$' . $total . '</span> ' . get_the_title() . '</a></li>';
+								echo '<li><a href="' . admin_url( 'edit.php?post_type=download&page=edd-payment-history&view=view-order-details&id=' . get_the_ID() ) . '"><span class="' . $classes . '"><span class="status-wrap">' . $status . '</span> $' . $total . '</span> ' . get_the_title() . '</a></li>';
 							}
 							wp_reset_postdata();
 						} else {

@@ -71,15 +71,27 @@
     <p class="bottom-text" id=""><span></span></p>
 </div>
 
+<div class="one-third last-col" id="monthly">
+    <p class="top-text"><?php _e('Est. Monthly Revenue', 'edd-metrics'); ?></p>
+    <h2></h2>
+    <p class="bottom-text" id=""><span></span></p>
+</div>
+
+</div>
+
+<div class="one-half edd-metrics-box" id="">
+    <p class="top-text"><?php _e('?', 'edd-metrics'); ?></p>
+    <h2></h2>
+    <p class="bottom-text" id=""><span></span></p>
+</div>
+
 <?php if( class_exists('EDD_Software_Licensing') ) : ?>
-<div class="one-third last-col" id="renewal-rate">
+<div class="one-half last-col edd-metrics-box" id="renewal-rate">
     <p class="top-text"><?php _e('Renewal Rate', 'edd-metrics'); ?></p>
     <h2></h2>
     <p class="bottom-text" id="yearly-renewal-compare"><span></span></p>
 </div>
 <?php endif; ?>
-
-</div>
 
 <div class="edd-metrics-box edd-metrics-chart-wrapper one-half">
     <h3><?php _e('Earnings by download', 'edd-metrics'); ?></h3>

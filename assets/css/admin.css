@@ -107,6 +107,26 @@ img.details-chart {
     bottom: 5px;
 }
 
+.metrics-positive .status-wrap {
+	background-color: #009900;
+	color: #fff;
+	padding: 3px;
+	border-radius: 3px;
+}
+
+.metrics-negative .status-wrap {
+	background-color: #cc0000;
+}
+
+.metrics-nochange .status-wrap {
+	background-color: #999;
+}
+
+.status-wrap {
+	color: #fff !important;
+	padding: 3px;
+}
+
 /* Reverse colors for refunds, cause down is good */
 #refunds-compare .metrics-negative {
 	color: #009900;
@@ -130,9 +150,14 @@ img.details-chart {
 	float: right;
 }
 
+.metrics-sidebar ul {
+	padding: 0;
+}
+
 .metrics-sidebar li {
 	border-bottom: 1px solid #eee;
-	padding-bottom: 5px;
+    padding: 10px 0;
+    margin-bottom: 0;
 }
 
 .metrics-sidebar li a {

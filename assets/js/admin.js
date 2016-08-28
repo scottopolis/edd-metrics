@@ -92,9 +92,6 @@
     $('#yearly').text( eddm.currencySign + data.earnings.avgyearly.total );
     $('#avgyearly-compare span').text( data.earnings.avgyearly.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.avgyearly.compare.classes );
 
-    $('#monthly').text( eddm.currencySign + data.earnings.avgmonthly.earnings );
-    //$('#avgmonthly-compare span').text( data.earnings.avgyearly.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.avgyearly.compare.classes );
-
     $('#avgpercust').text( eddm.currencySign + data.earnings.avgpercust.total );
     $('#avgpercust-compare span').text( data.earnings.avgpercust.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.avgpercust.compare.classes );
 
@@ -146,6 +143,8 @@
 
           $('#earnings-today h2').text( eddm.currencySign + data.earnings.detail.today );
           $('#earnings-this-month h2').text( eddm.currencySign + data.earnings.detail.this_month );
+
+          $('#monthly h2').text( eddm.currencySign + data.earnings.avgmonthly.earnings );
 
           $('#renewal-rate h2').text( data.yearly_renewal_rate.percent + '%' );
           $('#yearly-renewal-compare span').text( 'Last ' + data.yearly_renewal_rate.period + ' days' );

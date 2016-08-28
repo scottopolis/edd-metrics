@@ -53,9 +53,9 @@
 
 	<div class="one-half last-col">
 	    <div class="edd-metrics-box">
-	        <p class="top-text"><?php _e('Est. Monthly Revenue', 'edd-metrics'); ?></p>
-	        <h2 id="monthly"></h2>
-	        <p class="bottom-text" id="avgmonthly-compare"><span></span></p>
+	        <p class="top-text"><?php _e('Discounts', 'edd-metrics'); ?></p>
+	        <h2 id="discounts"></h2>
+	        <p class="bottom-text" id="discounts-compare"><span></span></p>
 	    </div>
 	</div>
 
