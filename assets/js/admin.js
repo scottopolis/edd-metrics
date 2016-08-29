@@ -106,7 +106,8 @@
     $('#subscriptions').text( data.subscriptions.count );
     $('#subscriptions-compare span').text( data.subscriptions.compare.percentage + compareTemp ).removeClass().addClass( data.subscriptions.compare.classes );
 
-    $('#discounts').text( eddm.currencySign + data.discounts.amount );
+    $('#discounts').text( eddm.currencySign + data.discounts.now.amount );
+    $('#discounts-compare span').text( data.discounts.compare.percentage + compareTemp ).removeClass().addClass( data.discounts.compare.classes );
 
     // Charts
     $('.detail-compare-first').text( eddm.currencySign + data.earnings.compare.total );
@@ -147,6 +148,9 @@
           $('#earnings-this-month h2').text( eddm.currencySign + data.earnings.detail.this_month );
 
           $('#monthly h2').text( eddm.currencySign + data.earnings.avgmonthly.earnings );
+
+          $('#new-customers h2').text( data.earnings.avgpercust.current_customers );
+          $('#new-customers span').text( 'This period' );
 
           $('#renewal-rate h2').text( data.yearly_renewal_rate.percent + '%' );
           $('#yearly-renewal-compare span').text( 'Last ' + data.yearly_renewal_rate.period + ' days' );

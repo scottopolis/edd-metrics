@@ -79,8 +79,8 @@
 
 </div>
 
-<div class="one-half edd-metrics-box" id="">
-    <p class="top-text"><?php _e('?', 'edd-metrics'); ?></p>
+<div class="one-half edd-metrics-box" id="new-customers">
+    <p class="top-text"><?php _e('New Customers', 'edd-metrics'); ?></p>
     <h2></h2>
     <p class="bottom-text" id=""><span></span></p>
 </div>

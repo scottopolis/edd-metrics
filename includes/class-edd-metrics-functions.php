@@ -105,6 +105,8 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
                 $dates = self::get_compare_dates();
 
+                $discounts = self::get_discounts( self::$startstr, self::$endstr );
+
                 $metrics = array(
                     'dates' => $dates,
                     'sales' => self::get_sales(), 
@@ -112,7 +114,10 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                     'renewals' => self::get_renewals( self::$start, self::$end ),
                     'refunds' => self::get_refunds(),
                     'subscriptions' => self::get_subscriptions( self::$startstr, self::$endstr ),
-                    'discounts' => self::get_discounts( self::$startstr, self::$endstr )
+                    'discounts' => array( 
+                        'now' => $discounts, 
+                        'compare' => self::compare_discounts( $discounts['amount'] ) 
+                    ),
                 );
 
                 $metrics = apply_filters( 'metrics_json_output', $metrics );
@@ -195,7 +200,8 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                 'compare' => array( 
                     'classes' => $classes, 
                     'percentage' => self::get_percentage( $total, $prev_total ) 
-                    ) 
+                    ),
+                'current_customers' => $current_customers
                 );
         }
 
@@ -558,7 +564,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @since       1.0.0
          * @return      
          */
-        public function get_discounts( $start, $end ) {
+        public function get_discounts( $start = string, $end = string ) {
 
             $args = array(
                 'post_type' => 'edd_payment',
@@ -600,7 +606,27 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                 return 0;
             }
 
-            return array( 'amount' => number_format( $amount, 2 ), 'count' => $count );
+            return array( 'amount' => number_format( $amount, 2 ), 'count' => $count
+                );
+        }
+
+        /**
+         * Discount compare. Compared by amounts, not count.
+         *
+         * @access      public
+         * @since       1.0.0
+         * @return      array()    
+         */
+        public function compare_discounts( $current_discounts_amount = null ) {
+
+            $dates = self::get_compare_dates();
+
+            $previous_discounts = self::get_discounts( $dates['previous_start'], $dates['previous_end'] );
+
+            // output classes for arrows and colors
+            $classes = self::get_arrow_classes( $current_discounts_amount, $previous_discounts['amount'] );
+
+            return array( 'classes' => $classes, 'percentage' => self::get_percentage( $current_discounts_amount, $previous_discounts['amount'] ) );
         }
 
         /**
@@ -703,7 +729,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             $db = new EDD_Subscriptions_DB;
 
             // $total is an array of objects. To get more info, use $total[$key]->whatever
-            $total = $db->get_subscriptions( 
+            $total = $db->count( 
                 array( 
                     'status' => 'active', 
                     'date' => array( 

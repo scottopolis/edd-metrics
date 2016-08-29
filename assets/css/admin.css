@@ -109,9 +109,6 @@ img.details-chart {
 
 .metrics-positive .status-wrap {
 	background-color: #009900;
-	color: #fff;
-	padding: 3px;
-	border-radius: 3px;
 }
 
 .metrics-negative .status-wrap {
@@ -125,6 +122,7 @@ img.details-chart {
 .status-wrap {
 	color: #fff !important;
 	padding: 3px;
+	border-radius: 3px;
 }
 
 /* Reverse colors for refunds, cause down is good */
