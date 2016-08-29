@@ -117,12 +117,8 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
                 $metrics = apply_filters( 'metrics_json_output', $metrics );
 
-                $metrics['transient'] = 'false';
-
                 set_transient( $date_hash, $metrics, HOUR_IN_SECONDS );
 
-            } else {
-                $metrics['transient'] = 'true';
             }
 
             echo json_encode( $metrics );
@@ -733,39 +729,8 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             $total = self::subscriptions_db( $start, $end );
 
-            $total_count = count($total);
+            return array( 'count' => $total, 'compare' => self::compare_subscriptions( $total ) );
 
-            return array( 'count' => $total_count, 'compare' => self::compare_subscriptions( $total_count ) );
-
-            // $total_count     = $db->count();
-            // $active_count    = $db->count( array( 'status' => 'active' ) );
-            // $pending_count   = $db->count( array( 'status' => 'pending', 'search' => $search ) );
-            // $expired_count   = $db->count( array( 'status' => 'expired', 'search' => $search ) );
-            // $cancelled_count = $db->count( array( 'status' => 'cancelled', 'search' => $search ) );
-            // $completed_count = $db->count( array( 'status' => 'completed', 'search' => $search ) );
-            // $failing_count   = $db->count( array( 'status' => 'failing', 'search' => $search ) );
-
-            
-
-            // get_subscriptions_by_date() doesn't work because it counts all sales of a product with subscription enabled. If you have an old product that was not subscription, then change it to subscription, you get false totals.
-
-            // $earnings_totals      = 0.00; // Total earnings for time period shown
-            // $subscriptions_totals = 0;    // Total sales for time period shown
-
-            // $EDD_Recurring_Reports = new EDD_Recurring_Reports();
-
-            // for ( $i = $start; $i <= $end; $i = $i + 86400 ) {
-
-            //     $subscriptions = $EDD_Recurring_Reports->get_subscriptions_by_date( date( 'd', $i ), date( 'm', $i ), date( 'Y', $i ), null, false );
-
-            //     print_r( $subscriptions );
-
-            //     $earnings_totals += $subscriptions['earnings'];
-            //     $subscriptions_totals += $subscriptions['count'];
-
-            // }
-
-            //var_dump($subscriptions_totals);
         }
 
         /**
@@ -778,9 +743,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             $dates = self::get_compare_dates();
 
-            $total = self::subscriptions_db( $dates['previous_start'], $dates['previous_end'] );
-
-            $previous_subscriptions = count($total);
+            $previous_subscriptions = self::subscriptions_db( $dates['previous_start'], $dates['previous_end'] );
 
             // output classes for arrows and colors
             $classes = self::get_arrow_classes( $current_subscriptions, $previous_subscriptions );
