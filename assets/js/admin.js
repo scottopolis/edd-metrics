@@ -106,6 +106,8 @@
     $('#subscriptions').text( data.subscriptions.count );
     $('#subscriptions-compare span').text( data.subscriptions.compare.percentage + compareTemp ).removeClass().addClass( data.subscriptions.compare.classes );
 
+    $('#discounts').text( eddm.currencySign + data.discounts.amount );
+
     // Charts
     $('.detail-compare-first').text( eddm.currencySign + data.earnings.compare.total );
     $('#box-4 .bottom-text span').text( data.earnings.compare.percentage + '%' );

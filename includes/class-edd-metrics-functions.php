@@ -67,7 +67,8 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             // add_action( 'admin_enqueue_scripts', array( $this, 'localized_vars' ), 101 );
 
             // add_action('init', function() {
-            //     self::get_new_subscriptions();
+            //     $ret = self::get_discounts( self::$startstr, self::$endstr );
+            //     var_dump($ret);
             // });
 
         }
@@ -111,13 +112,14 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                     'renewals' => self::get_renewals( self::$start, self::$end ),
                     'refunds' => self::get_refunds(),
                     'subscriptions' => self::get_subscriptions( self::$startstr, self::$endstr ),
+                    'discounts' => self::get_discounts( self::$startstr, self::$endstr )
                 );
 
                 $metrics = apply_filters( 'metrics_json_output', $metrics );
 
                 $metrics['transient'] = 'false';
 
-                set_transient( $date_hash, $metrics, 1 * HOUR_IN_SECONDS );
+                set_transient( $date_hash, $metrics, HOUR_IN_SECONDS );
 
             } else {
                 $metrics['transient'] = 'true';
@@ -156,7 +158,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                     ), 
                 'avgyearly' => self::get_avg_yearly( $earnings, $previous_earnings, $dates['num_days'] ), 
                 'avgpercust' => self::get_avg_percust( $earnings, $previous_earnings ),
-                'avgmonthly' => self::get_avg_monthly(),
+                'avgmonthly' => self::get_avg_monthly()
                 );
 
         }
@@ -294,43 +296,6 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         	return array( 'count' => $sales, 'previous' => $previous_sales, 'compare' => array( 'classes' => $classes, 'percentage' => self::get_percentage( $sales, $previous_sales ) ) );
 
         }
-
-        /**
-         * Get previous number of customers and compare
-         *
-         * @access      public
-         * @since       1.0.0
-         * @return      array()
-         */
-        // public function compare_customers( $current_customers = null ) {
-
-        //     $dates = self::get_compare_dates();
-
-        //     $args = array(
-        //         'date' => array(
-        //             'start' => $dates['previous_start'],
-        //             'end' => $dates['previous_end']
-        //             )
-        //         );
-
-        //     $previous_customers = EDD()->customers->get_customers( $args );
-
-        //     $i = 0;
-
-        //     // count customers
-        //     foreach ($previous_customers as $key => $value) {
-        //         $i++;
-        //     }
-
-        //     // output classes for arrows and colors
-        //     $classes = self::get_arrow_classes( $current_customers, $i );
-
-        //     return array( 
-        //         'classes' => $classes, 
-        //         'percentage' => self::get_percentage( $current_customers, $i ),
-        //         'count' => $i 
-        //         );
-        // }
 
         /**
          * Get start and end dates for compare periods
@@ -591,6 +556,58 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         }
 
         /**
+         * Query for discounts
+         *
+         * @access      public
+         * @since       1.0.0
+         * @return      
+         */
+        public function get_discounts( $start, $end ) {
+
+            $args = array(
+                'post_type' => 'edd_payment',
+                'nopaging' => true,
+                'post_status' => array( 'publish' ),
+                'date_query' => array(
+                    array(
+                        'after'     => $start,
+                        'before'    => $end,
+                        'inclusive' => true,
+                    ),
+                ),
+            );
+
+            $amount = 0;
+            $count = 0;
+
+            // The Query
+            $the_query = new WP_Query( $args );
+
+            if ( $the_query->have_posts() ) {
+                while ( $the_query->have_posts() ) {
+                    $the_query->the_post();
+
+                    // get discount code from meta
+                    $discount = get_post_meta( get_the_ID(), '_edd_payment_meta' )[0]['user_info']['discount'];
+
+                    if( $discount != 'none' && !empty( $discount ) ) {
+
+                        $code = edd_get_discount_id_by_code( $discount );
+                        // convert code to dollar amount
+                        $amount += edd_get_discount_amount( $code );
+                        $count++;
+                    }
+                    
+                }
+                wp_reset_postdata();
+            } else {
+                return 0;
+            }
+
+            return array( 'amount' => number_format( $amount, 2 ), 'count' => $count );
+        }
+
+        /**
          * Query for refunds
          *
          * @access      public
@@ -605,8 +622,8 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                 'post_status' => array( 'refunded' ),
                 'date_query' => array(
                     array(
-                        'after'     => $start, // june 1
-                        'before'    => $end, // june 30
+                        'after'     => $start,
+                        'before'    => $end,
                         'inclusive' => true,
                     ),
                 ),
