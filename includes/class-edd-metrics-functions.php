@@ -355,6 +355,10 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             if( empty( $old_val ) )
                 return 0;
 
+            // Commas break this equation
+            $new_val = str_replace( ',', '', $new_val );
+            $old_val = str_replace( ',', '', $old_val );
+
 		    return ( ( $new_val - $old_val ) / $old_val ) * 100;
 		}
 

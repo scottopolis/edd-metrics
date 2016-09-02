@@ -125,21 +125,21 @@ img.details-chart {
 	border-radius: 3px;
 }
 
-/* Reverse colors for refunds, cause down is good */
-#refunds-compare .metrics-negative {
+/* Reverse colors for refunds and discounts, cause down is good */
+#refunds-compare .metrics-negative, #discounts-compare .metrics-negative {
 	color: #009900;
 }
 
-#refunds-compare .metrics-positive {
+#refunds-compare .metrics-positive, #discounts-compare .metrics-positive {
 	color: #cc0000;
 }
 
-#refunds-compare .metrics-downarrow:before {
+#refunds-compare .metrics-downarrow:before, #discounts-compare .metrics-downarrow:before {
 	content: '';
 	border-top-color: #009900;
 }
 
-#refunds-compare .metrics-uparrow:before {
+#refunds-compare .metrics-uparrow:before, #discounts-compare .metrics-uparrow:before {
 	content: '';
 	border-bottom-color: #cc0000;
 }

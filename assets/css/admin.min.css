@@ -6,8 +6,9 @@
 .edd-metrics-box .top-text,.edd-metrics-box .bottom-text{color:#999;font-size:14px;clear:both}.metrics-positive{color:#090;position:relative}.metrics-uparrow:before{content:'';width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:10px solid #090;position:absolute;left:-15px;bottom:5px}
 .metrics-negative{color:#c00;position:relative}.metrics-downarrow:before{content:'';width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:10px solid #c00;position:absolute;left:-15px;bottom:5px}
 .metrics-positive .status-wrap{background-color:#090}.metrics-negative .status-wrap{background-color:#c00}.metrics-nochange .status-wrap{background-color:#999}
-.status-wrap{color:#fff!important;padding:3px;border-radius:3px}#refunds-compare .metrics-negative{color:#090}#refunds-compare .metrics-positive{color:#c00}
-#refunds-compare .metrics-downarrow:before{content:'';border-top-color:#090}#refunds-compare .metrics-uparrow:before{content:'';border-bottom-color:#c00}
+.status-wrap{color:#fff!important;padding:3px;border-radius:3px}#refunds-compare .metrics-negative,#discounts-compare .metrics-negative{color:#090}#refunds-compare .metrics-positive,#discounts-compare .metrics-positive{color:#c00}
+#refunds-compare .metrics-downarrow:before,#discounts-compare .metrics-downarrow:before{content:'';border-top-color:#090}
+#refunds-compare .metrics-uparrow:before,#discounts-compare .metrics-uparrow:before{content:'';border-bottom-color:#c00}
 .metrics-select{float:right}.metrics-sidebar ul{padding:0}.metrics-sidebar li{border-bottom:1px solid #eee;padding:10px 0;margin-bottom:0}.metrics-sidebar li a{text-decoration:none;color:#999}
 .metrics-details-link:hover{background-color:#fafafa;border-color:#999}.metrics-title2,.edd-metrics-box:hover .metrics-title1{display:none}.edd-metrics-box:hover .metrics-title2{display:block}
 .daterange{width:275px;float:right}.metrics-right{float:right}.one-half,.one-third,.two-thirds,.three-fourths,.one-fourth{float:left;margin-bottom:10px;margin-right:2%;position:relative}
