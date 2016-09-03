@@ -62,7 +62,9 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             add_action( 'edd_metrics_dash_sidebar', array( $this, 'do_sidebar' ) );
 
-            add_action( 'wp_ajax_edd_metrics_change_date', array( $this, 'change_date' ) );
+            add_action( 'wp_ajax_metrics_batch_1', array( $this, 'metrics_batch_1' ) );
+
+            add_action( 'wp_ajax_metrics_batch_2', array( $this, 'metrics_batch_2' ) );
 
             // add_action( 'admin_enqueue_scripts', array( $this, 'localized_vars' ), 101 );
 
@@ -91,7 +93,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @since       1.0.0
          * @return      void
          */
-        public static function change_date( $start, $end ) {
+        public static function metrics_batch_1( $start, $end ) {
         	self::$endstr = $_POST['end'];
         	self::$startstr = $_POST['start'];
             self::$end = strtotime( self::$endstr );
@@ -99,18 +101,57 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             $date_hash = hash('md5', self::$startstr . self::$endstr );
 
-            $metrics = get_transient( $date_hash );
+            $metrics = get_transient( 'metrics1_' . $date_hash );
 
             if ( false === $metrics ) {
 
                 $dates = self::get_compare_dates();
 
-                $discounts = self::get_discounts( self::$startstr, self::$endstr );
-
                 $metrics = array(
                     'dates' => $dates,
                     'sales' => self::get_sales(), 
                     'earnings' => self::get_earnings(),
+                );
+
+                if( $dates['num_days'] < 100 ) {
+                    $chart_data = self::get_chart_data( $dates );
+                    $metrics['lineChart'] = $chart_data;
+                }
+
+                set_transient( 'metrics1_' . $date_hash, $metrics, HOUR_IN_SECONDS );
+
+            }
+
+            echo json_encode( $metrics );
+
+	        exit;
+        }
+
+        /**
+         * Ajax call
+         *
+         * @access      public
+         * @since       1.0.0
+         * @return      void
+         */
+        public static function metrics_batch_2( $start, $end ) {
+            self::$endstr = $_POST['end'];
+            self::$startstr = $_POST['start'];
+            self::$end = strtotime( self::$endstr );
+            self::$start = strtotime( self::$startstr );
+
+            $date_hash = hash('md5', self::$startstr . self::$endstr );
+
+            $metrics = get_transient( 'metrics2_' . $date_hash );
+
+            if ( false === $metrics ) {
+
+                $discounts = self::get_discounts( self::$startstr, self::$endstr );
+
+                $dates = self::get_compare_dates();
+
+                $metrics = array(
+                    'dates' => $dates,
                     'renewals' => self::get_renewals( self::$start, self::$end ),
                     'refunds' => self::get_refunds(),
                     'subscriptions' => self::get_subscriptions( self::$startstr, self::$endstr ),
@@ -122,13 +163,13 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
                 $metrics = apply_filters( 'metrics_json_output', $metrics );
 
-                set_transient( $date_hash, $metrics, HOUR_IN_SECONDS );
+                set_transient( 'metrics2_' . $date_hash, $metrics, HOUR_IN_SECONDS );
 
             }
 
             echo json_encode( $metrics );
 
-	        wp_die();
+            exit;
         }
 
         /**
@@ -779,6 +820,37 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             $classes = self::get_arrow_classes( $current_subscriptions, $previous_subscriptions );
 
             return array( 'previous_count' => $previous_subscriptions, 'classes' => $classes, 'percentage' => self::get_percentage( $current_subscriptions, $previous_subscriptions ) );
+        }
+
+        /**
+         * Get data for chart
+         *
+         * @access      public
+         * @since       1.0.0
+         * @return      array
+         */
+        public function get_chart_data( $dates = null, $monthly = false ) {
+
+            $EDD_Stats = new EDD_Payment_Stats();
+
+            // Loop through each day between two dates, and get totals
+            $begin = new DateTime( $dates['start'] );
+            $end = new DateTime( $dates['end'] );
+            
+            $interval = DateInterval::createFromDateString('1 day');
+            $period = new DatePeriod($begin, $interval, $end);
+
+            foreach ( $period as $dt ) {
+              $earnings[] = $EDD_Stats->get_earnings( 0, $dt->format( "jS F, Y" ), false );
+              $labels[] = $dt->format( "F j" );
+            }
+
+            foreach ( $period as $dt ) {
+              $sales[] = $EDD_Stats->get_sales( 0, $dt->format( "jS F, Y" ), false, array( 'publish', 'revoked' ) );
+            }
+
+            return array( 'sales' => $sales, 'earnings' => $earnings, 'labels' => $labels );
+
         }
 
     }

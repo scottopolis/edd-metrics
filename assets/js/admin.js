@@ -56,7 +56,7 @@
     console.debug('Start Date: '+ start +'\nEnd Date: '+ end);
 
     var data = {
-      'action': 'edd_metrics_change_date',
+      'action': 'metrics_batch_1',
       'start': start,
       'end' : end
     };
@@ -68,9 +68,31 @@
     $('.edd-metrics-box .bottom-text span').html('').removeClass();
 
     if( $(this.element[0]).hasClass('metrics-detail') ) {
-      $.post( window.ajaxurl, data, eddm.detailResponse );
+
+      $.post( window.ajaxurl, data, eddm.detailResponse ).then( function() {
+
+        data.action = 'metrics_batch_2';
+        $.post( window.ajaxurl, data, eddm.detailResponse_2 );
+
+      })
+      .fail(function() {
+
+        console.warn( "ajax error" );
+
+      });
+
     } else {
-      $.post( window.ajaxurl, data, eddm.dashResponse );
+      $.post( window.ajaxurl, data, eddm.dashResponse ).then( function() {
+
+        data.action = 'metrics_batch_2';
+        $.post( window.ajaxurl, data, eddm.batch2response );
+
+      })
+      .fail(function() {
+
+        console.warn( "ajax error" );
+
+      });
     }
 
   }
@@ -94,6 +116,16 @@
 
     $('#avgpercust').text( eddm.currencySign + data.earnings.avgpercust.total );
     $('#avgpercust-compare span').text( data.earnings.avgpercust.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.avgpercust.compare.classes );
+    
+  }
+
+  eddm.batch2response = function(response) {
+
+    var data = JSON.parse(response);
+
+    console.log( data );
+
+    var compareTemp = '% over previous ' + data.dates.num_days + ' days';
 
     $('#renewals').text( data.renewals.count );
     $('#renewal-amount').text( eddm.currencySign + data.renewals.earnings );
@@ -108,15 +140,6 @@
 
     $('#discounts').text( eddm.currencySign + data.discounts.now.amount );
     $('#discounts-compare span').text( data.discounts.compare.percentage + compareTemp ).removeClass().addClass( data.discounts.compare.classes );
-
-    // Charts
-    $('.detail-compare-first').text( eddm.currencySign + data.earnings.compare.total );
-    $('#box-4 .bottom-text span').text( data.earnings.compare.percentage + '%' );
-
-    $('#box-5 .bottom-text span').text( data.earnings.detail.sixmoago.compare + '%' );
-    $('.detail-compare-second').text( eddm.currencySign + data.earnings.detail.sixmoago.total );
-
-    $('.detail-compare-third').text( eddm.currencySign + data.earnings.detail.twelvemoago.total );
     
   }
 
@@ -138,22 +161,14 @@
           $('#revenue-compare span').text( data.earnings.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.compare.classes );
           $('.detail-compare-first').text( eddm.currencySign + data.earnings.compare.total );
 
-          $('#revenue-6mocompare span').text( data.earnings.detail.sixmoago.compare + compareTemp ).removeClass().addClass( data.earnings.detail.sixmoago.classes );
-          $('.detail-compare-second').text( eddm.currencySign + data.earnings.detail.sixmoago.total );
-
-          $('.detail-compare-third').text( eddm.currencySign + data.earnings.detail.twelvemoago.total );
-          $('#revenue-12mocompare span').text( data.earnings.detail.twelvemoago.compare + compareTemp ).removeClass().addClass( data.earnings.detail.twelvemoago.classes );
-
-          $('#earnings-today h2').text( eddm.currencySign + data.earnings.detail.today );
-          $('#earnings-this-month h2').text( eddm.currencySign + data.earnings.detail.this_month );
-
           $('#monthly h2').text( eddm.currencySign + data.earnings.avgmonthly.earnings );
 
           $('#new-customers h2').text( data.earnings.avgpercust.current_customers );
           $('#new-customers span').text( 'This period' );
 
-          $('#renewal-rate h2').text( data.yearly_renewal_rate.percent + '%' );
-          $('#yearly-renewal-compare span').text( 'Last ' + data.yearly_renewal_rate.period + ' days' );
+          // // Charts
+          $('.detail-compare-first').text( eddm.currencySign + data.earnings.compare.total );
+          $('#box-4 .bottom-text span').text( data.earnings.compare.percentage + '%' );
 
           break;
       case 'renewals':
@@ -164,9 +179,51 @@
     }
 
     eddm.doLineChart( data.lineChart );
+    
+  }
+
+  eddm.detailResponse_2 = function(response) {
+
+    var data = JSON.parse(response);
+
+    console.log( 'detailResponse', data );
+    
+    var metric = eddm.getQueryVariable('metric');
+
+    var compareTemp = '% compared to this period';
+
+    switch( metric ) {
+      case 'revenue':
+          // do revenue
+
+          $('#revenue-6mocompare span').text( data.earnings.detail.sixmoago.compare + compareTemp ).removeClass().addClass( data.earnings.detail.sixmoago.classes );
+          $('.detail-compare-second').text( eddm.currencySign + data.earnings.detail.sixmoago.total );
+
+          $('.detail-compare-third').text( eddm.currencySign + data.earnings.detail.twelvemoago.total );
+          $('#revenue-12mocompare span').text( data.earnings.detail.twelvemoago.compare + compareTemp ).removeClass().addClass( data.earnings.detail.twelvemoago.classes );
+
+          $('#earnings-today h2').text( eddm.currencySign + data.earnings.detail.today );
+          $('#earnings-this-month h2').text( eddm.currencySign + data.earnings.detail.this_month );
+
+          $('#renewal-rate h2').text( data.yearly_renewal_rate.percent + '%' );
+          $('#yearly-renewal-compare span').text( 'Last ' + data.yearly_renewal_rate.period + ' days' );
+
+          $('#box-5 .bottom-text span').text( data.earnings.detail.sixmoago.compare + '%' );
+          $('.detail-compare-second').text( eddm.currencySign + data.earnings.detail.sixmoago.total );
+
+          $('.detail-compare-third').text( eddm.currencySign + data.earnings.detail.twelvemoago.total );
+
+          break;
+      case 'renewals':
+          // ...
+          break;
+      default:
+          // ...
+    }
+
     eddm.doDownloadChart( data.pieChart );
     eddm.doGatewayChart( data.earnings.gateways );
-    
+
   }
 
   eddm.getQueryVariable = function (variable) {
