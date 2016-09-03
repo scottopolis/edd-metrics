@@ -45,8 +45,8 @@
 	<div class="one-half">
 	    <div class="edd-metrics-box">
 	        <p class="top-text"><?php _e('Refunds', 'edd-metrics'); ?></p>
-	        <h2 id="refunds" class="metrics-title2"></h2>
 	        <h2 id="refund-amount" class="metrics-title1"></h2>
+	        <h2 id="refunds" class="metrics-title2"></h2>
 	        <p class="bottom-text" id="refunds-compare"><span></span></p>
 	    </div>
 	</div>
@@ -54,7 +54,8 @@
 	<div class="one-half last-col">
 	    <div class="edd-metrics-box">
 	        <p class="top-text"><?php _e('Discounts', 'edd-metrics'); ?></p>
-	        <h2 id="discounts"></h2>
+	        <h2 id="discounts" class="metrics-title1"></h2>
+	        <h2 id="discounts-count" class="metrics-title2"></h2>
 	        <p class="bottom-text" id="discounts-compare"><span></span></p>
 	    </div>
 	</div>
@@ -63,8 +64,8 @@
 	<div class="one-half">
 	    <div class="edd-metrics-box">
 	        <p class="top-text"><?php _e('Renewals', 'edd-metrics'); ?></p>
-	        <h2 id="renewals" class="metrics-title2"></h2>
 	        <h2 id="renewal-amount" class="metrics-title1"></h2>
+	        <h2 id="renewals" class="metrics-title2"></h2>
 	        <p class="bottom-text" id="renewals-compare"><span></span></p>
 	    </div>
 	</div>

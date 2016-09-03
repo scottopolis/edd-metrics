@@ -63,11 +63,15 @@
 
     var compareTemp = '% over the last ';
 
-    $('.edd-metrics-box h2').html('<div id="circleG"><div id="circleG_1" class="circleG"></div><div id="circleG_2" class="circleG"></div><div id="circleG_3" class="circleG"></div></div>');
+    var loading = '<div id="circleG"><div id="circleG_1" class="circleG"></div><div id="circleG_2" class="circleG"></div><div id="circleG_3" class="circleG"></div></div>';
+
+    $('.edd-metrics-box h2').html( loading );
 
     $('.edd-metrics-box .bottom-text span').html('').removeClass();
 
     if( $(this.element[0]).hasClass('metrics-detail') ) {
+
+      $('.edd-metrics-chart-wrapper').append( loading );
 
       $.post( window.ajaxurl, data, eddm.detailResponse ).then( function() {
 
@@ -139,6 +143,7 @@
     $('#subscriptions-compare span').text( data.subscriptions.compare.percentage + compareTemp ).removeClass().addClass( data.subscriptions.compare.classes );
 
     $('#discounts').text( eddm.currencySign + data.discounts.now.amount );
+    $('#discounts-count').text( data.discounts.now.count );
     $('#discounts-compare span').text( data.discounts.compare.percentage + compareTemp ).removeClass().addClass( data.discounts.compare.classes );
     
   }
@@ -179,6 +184,8 @@
     }
 
     eddm.doLineChart( data.lineChart );
+
+    $('.edd-metrics-chart-wrapper #circleG').remove();
     
   }
 

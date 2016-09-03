@@ -1,9 +1,10 @@
 #edd-metrics-wrap .postbox h2{font-size:14px;padding:8px 12px;margin:0;line-height:1.4}#edd-metrics-wrap .postbox{min-width:150px}#edd-metrics-wrap .page-title{margin-bottom:2em}
 .edd-metrics-box{border:1px solid #e5e5e5;background-color:#fff;padding:10px;line-height:1;box-sizing:border-box;text-align:center;min-height:150px;display:block;text-decoration:none!important}
 .metrics-details-link{border:1px solid #e5e5e5;background-color:#fff;box-sizing:border-box;padding:10px;margin-bottom:10px;text-align:center;text-decoration:none!important}
-.metrics-details-link a{text-decoration:none!important}img.details-chart{max-width:150px;height:auto;display:block;margin:10px auto}.edd-metrics-chart-wrapper{margin-bottom:15px;min-height:200px;clear:both}
-.edd-metrics-box h2{font-size:32px;color:#0073aa;margin:0;padding:0;font-weight:bold;min-height:30px}.metrics-big-title{font-size:32px;color:#0073aa;font-weight:bold}
-.edd-metrics-box .top-text,.edd-metrics-box .bottom-text{color:#999;font-size:14px;clear:both}.metrics-positive{color:#090;position:relative}.metrics-uparrow:before{content:'';width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:10px solid #090;position:absolute;left:-15px;bottom:5px}
+.metrics-details-link a{text-decoration:none!important}img.details-chart{max-width:150px;height:auto;display:block;margin:10px auto}.edd-metrics-chart-wrapper{margin-bottom:15px;min-height:200px;clear:both;position:relative}
+.edd-metrics-chart-wrapper #circleG{top:49%;position:absolute;left:0;right:0}.edd-metrics-box h2{font-size:32px;color:#0073aa;margin:0;padding:0;font-weight:bold;min-height:30px}
+.metrics-big-title{font-size:32px;color:#0073aa;font-weight:bold}.edd-metrics-box .top-text,.edd-metrics-box .bottom-text{color:#999;font-size:14px;clear:both}
+.metrics-positive{color:#090;position:relative}.metrics-uparrow:before{content:'';width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-bottom:10px solid #090;position:absolute;left:-15px;bottom:5px}
 .metrics-negative{color:#c00;position:relative}.metrics-downarrow:before{content:'';width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:10px solid #c00;position:absolute;left:-15px;bottom:5px}
 .metrics-positive .status-wrap{background-color:#090}.metrics-negative .status-wrap{background-color:#c00}.metrics-nochange .status-wrap{background-color:#999}
 .status-wrap{color:#fff!important;padding:3px;border-radius:3px}#refunds-compare .metrics-negative,#discounts-compare .metrics-negative{color:#090}#refunds-compare .metrics-positive,#discounts-compare .metrics-positive{color:#c00}

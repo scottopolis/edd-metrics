@@ -50,6 +50,14 @@ img.details-chart {
 	margin-bottom: 15px;
 	min-height: 200px;
 	clear: both;
+	position: relative;
+}
+
+.edd-metrics-chart-wrapper #circleG {
+    top: 49%;
+    position: absolute;
+    left: 0;
+    right: 0;
 }
 
 .edd-metrics-box h2 {
