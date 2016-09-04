@@ -534,40 +534,51 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @since       1.0.0
          * @return      array( 'count' => $count, 'earnings' => $earnings )
          */
-        public static function get_renewals( $start = null, $end = null, $compare = true ) {
+        public function get_renewals_by_date( $start = null, $end = null ) {
+
+            // see reports.php in EDD SL plugin
+            // edd_sl_get_renewals_by_date( $day = null, $month = null, $year = null, $hour = null  )
+
+            $count = 0;
+            $earnings = 0;
+
+            // Loop between timestamps, 24 hours at a time
+            for ( $i = $start; $i <= $end; $i = $i + 86400 ) {
+                $renewals = edd_sl_get_renewals_by_date( date( 'd', $i ), date( 'm', $i ), date( 'Y', $i ) );
+                if( $renewals['count'] === 0 )
+                    continue;
+                $count++;
+                $earnings += $renewals['earnings'];
+            }
+
+            if( empty($count) )
+                $count = '0';
+
+            return array( 
+                'count' => $count, 
+                'earnings' => number_format( $earnings, 2 )
+                );
+        }
+
+        /**
+         * Get renewal count and earnings and return
+         * $start & $end should be date objects
+         *
+         * @access      public
+         * @since       1.0.0
+         * @return      array( 'count' => $count, 'earnings' => $earnings )
+         */
+        public static function get_renewals( $start = null, $end = null ) {
 
             if( !class_exists('EDD_Software_Licensing') ) {
             	return array( 'count' => '0', 'earnings' => '0', 'compare' => array( 'classes' => 'edd-metrics-nochange', 'percentage' => '0' ) );
             }
 
-        	// see reports.php in EDD SL plugin
-    		// edd_sl_get_renewals_by_date( $day = null, $month = null, $year = null, $hour = null  )
+        	$renewals = self::get_renewals_by_date( $start, $end );
 
-			$count = 0;
-			$earnings = 0;
+            $renewals['compare'] = self::compare_renewals( $renewals['count'] ); 
 
-			// Loop between timestamps, 24 hours at a time
-			for ( $i = $start; $i <= $end; $i = $i + 86400 ) {
-				$renewals = edd_sl_get_renewals_by_date( date( 'd', $i ), date( 'm', $i ), date( 'Y', $i ) );
-				if( $renewals['count'] === 0 )
-					continue;
-				$count++;
-			  	$earnings += $renewals['earnings'];
-			}
-
-            if( empty($count) )
-                $count = '0';
-
-            $ret = array( 
-                'count' => $count, 
-                'earnings' => number_format( $earnings, 2 )
-                );
-
-            if( $compare ) {
-                $ret['compare'] = self::compare_renewals( $count ); 
-            }
-
-	        return $ret;
+	        return $renewals;
 			        
         }
 
@@ -584,22 +595,13 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             $start = strtotime( $dates['previous_start'] );
             $end = strtotime( $dates['previous_end'] );
-            $count = 0;
-            $earnings = 0;
-
-            // Loop between timestamps, 24 hours at a time
-            for ( $i = $start; $i <= $end; $i = $i + 86400 ) {
-                $previous_renewals = edd_sl_get_renewals_by_date( date( 'd', $i ), date( 'm', $i ), date( 'Y', $i ) );
-                if( $previous_renewals['count'] === 0 )
-                    continue;
-                $count++;
-                // $earnings = $previous_renewals['earnings'];
-            }
+            
+            $previous_renewals = self::get_renewals_by_date( $start, $end );
 
             // output classes for arrows and colors
-            $classes = self::get_arrow_classes( $current_renewals, $count );
+            $classes = self::get_arrow_classes( $current_renewals, $previous_renewals['count'] );
 
-            return array( 'classes' => $classes, 'percentage' => self::get_percentage( $current_renewals, $count ) );
+            return array( 'classes' => $classes, 'percentage' => self::get_percentage( $current_renewals, $previous_renewals['count'] ) );
         }
 
         /**
