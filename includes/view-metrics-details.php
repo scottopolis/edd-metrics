@@ -1,28 +1,3 @@
-<?php
-
-// if( empty( $_GET['metric'] ) ) {
-//     echo '<p>Nothing to display here. Please go back to the main metrics page and select a metric.</p>';
-// }
-
-// $edd_metrics_detail_class = new EDD_Metrics_Detail();
-
-// switch ( $_GET['metric'] ) {
-//     case 'revenue':
-//         $edd_metrics_detail_class->revenue_callback();
-//         break;
-//     case 'renewals':
-//         $edd_metrics_detail_class->renewals_callback();
-//         break;
-//     case 'refunds':
-//         $edd_metrics_detail_class->refunds_callback();
-//         break;
-//     default:
-//         $edd_metrics_detail_class->revenue_callback();
-//         break;
-// }
-
-?>
-
 <div class="daterange daterange--double metrics-datepicker metrics-detail"></div>
 
 <h1><?php _e('Revenue Detail', 'edd-metrics'); ?></h2>

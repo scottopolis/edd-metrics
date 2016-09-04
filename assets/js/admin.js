@@ -4,6 +4,9 @@
 
   eddm.init = function() {
     eddm.currencySign = window.edd_vars.currency_sign;
+    eddm.compare_temp_2 = window.eddMetrics.compare_string_2;
+    eddm.revenue = window.eddMetrics.revenue;
+    eddm.downloads = window.eddMetrics.downloads;
     eddm.doCal();
   }
 
@@ -53,15 +56,13 @@
     var start = moment(this.start_date).format('ll'),
         end = moment(this.end_date).format('ll');
 
-    console.debug('Start Date: '+ start +'\nEnd Date: '+ end);
+    // console.debug('Start Date: '+ start +'\nEnd Date: '+ end);
 
     var data = {
       'action': 'metrics_batch_1',
       'start': start,
       'end' : end
     };
-
-    var compareTemp = '% over the last ';
 
     var loading = '<div id="circleG"><div id="circleG_1" class="circleG"></div><div id="circleG_2" class="circleG"></div><div id="circleG_3" class="circleG"></div></div>';
 
@@ -105,9 +106,9 @@
 
     var data = JSON.parse(response);
 
-    console.log( data );
+    // console.log( data );
 
-    var compareTemp = '% over previous ' + data.dates.num_days + ' days';
+    var compareTemp = window.eddMetrics.compare_string + ' ' + data.dates.num_days + ' ' + window.eddMetrics.days;
 
     $('#revenue').text( eddm.currencySign + data.earnings.total );
     $('#revenue-compare span').text( data.earnings.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.compare.classes );
@@ -127,9 +128,9 @@
 
     var data = JSON.parse(response);
 
-    console.log( data );
+    // console.log( data );
 
-    var compareTemp = '% over previous ' + data.dates.num_days + ' days';
+    var compareTemp = window.eddMetrics.compare_string + ' ' + data.dates.num_days + ' ' + window.eddMetrics.days;
 
     $('#renewals').text( data.renewals.count );
     $('#renewal-amount').text( eddm.currencySign + data.renewals.earnings );
@@ -152,18 +153,16 @@
 
     var data = JSON.parse(response);
 
-    console.log( 'detailResponse', data );
+    // console.log( 'detailResponse', data );
     
     var metric = eddm.getQueryVariable('metric');
-
-    var compareTemp = '% compared to this period';
 
     switch( metric ) {
       case 'revenue':
           // do revenue
 
           $('#revenue').text( eddm.currencySign + data.earnings.total );
-          $('#revenue-compare span').text( data.earnings.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.compare.classes );
+          $('#revenue-compare span').text( data.earnings.compare.percentage + eddm.compare_temp_2 ).removeClass().addClass( data.earnings.compare.classes );
           $('.detail-compare-first').text( eddm.currencySign + data.earnings.compare.total );
 
           $('#monthly h2').text( eddm.currencySign + data.earnings.avgmonthly.earnings );
@@ -193,21 +192,19 @@
 
     var data = JSON.parse(response);
 
-    console.log( 'detailResponse', data );
+    // console.log( 'detailResponse', data );
     
     var metric = eddm.getQueryVariable('metric');
-
-    var compareTemp = '% compared to this period';
 
     switch( metric ) {
       case 'revenue':
           // do revenue
 
-          $('#revenue-6mocompare span').text( data.earnings.detail.sixmoago.compare + compareTemp ).removeClass().addClass( data.earnings.detail.sixmoago.classes );
+          $('#revenue-6mocompare span').text( data.earnings.detail.sixmoago.compare + eddm.compare_temp_2 ).removeClass().addClass( data.earnings.detail.sixmoago.classes );
           $('.detail-compare-second').text( eddm.currencySign + data.earnings.detail.sixmoago.total );
 
           $('.detail-compare-third').text( eddm.currencySign + data.earnings.detail.twelvemoago.total );
-          $('#revenue-12mocompare span').text( data.earnings.detail.twelvemoago.compare + compareTemp ).removeClass().addClass( data.earnings.detail.twelvemoago.classes );
+          $('#revenue-12mocompare span').text( data.earnings.detail.twelvemoago.compare + eddm.compare_temp_2 ).removeClass().addClass( data.earnings.detail.twelvemoago.classes );
 
           $('#earnings-today h2').text( eddm.currencySign + data.earnings.detail.today );
           $('#earnings-this-month h2').text( eddm.currencySign + data.earnings.detail.this_month );
@@ -253,7 +250,7 @@
         labels: chart.labels,
         datasets: [
             {
-                label: "Revenue",
+                label: eddm.revenue,
                 fill: true,
                 lineTension: 0.1,
                 backgroundColor: "rgba(0,115,170,.2)",
@@ -304,13 +301,13 @@
       eddm.downloadChart.destroy();
     }
 
-    // console.log( chart );
+    console.log( chart );
 
     var data = {
         labels: chart.labels,
         datasets: [
             {
-                label: "Downloads",
+                label: eddm.downloads,
                 data: chart.earnings,
                 backgroundColor: [
                   "#225378",
@@ -351,13 +348,11 @@
       eddm.gatewayChart.destroy();
     }
 
-    console.log( chart );
-
     var data = {
         labels: chart.labels,
         datasets: [
             {
-                label: "Downloads",
+                label: eddm.downloads,
                 data: chart.earnings,
                 backgroundColor: [
                   "#225378",

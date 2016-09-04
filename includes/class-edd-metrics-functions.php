@@ -2,7 +2,7 @@
 /**
  *
  * @package     EDD\EDD Metrics
- * @since       1.0.0
+ * @since       0.2.0
  */
 
 
@@ -14,13 +14,13 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
     /**
      * EDD_Metrics_Functions class
      *
-     * @since       1.0.0
+     * @since       0.2.0
      */
     class EDD_Metrics_Functions {
 
         /**
          * @var         EDD_Metrics_Functions $instance The one true EDD_Metrics_Functions
-         * @since       1.0.0
+         * @since       0.2.0
          */
         private static $instance;
         public static $end = null;
@@ -33,7 +33,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * Get active instance
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      object self::$instance The one true EDD_Metrics_Functions
          */
         public static function instance() {
@@ -55,7 +55,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * Include necessary files
          *
          * @access      private
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      void
          */
         private function hooks() {
@@ -66,8 +66,6 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             add_action( 'wp_ajax_metrics_batch_2', array( $this, 'metrics_batch_2' ) );
 
-            // add_action( 'admin_enqueue_scripts', array( $this, 'localized_vars' ), 101 );
-
             // add_action('init', function() {
             //     $ret = self::get_discounts( self::$startstr, self::$endstr );
             //     var_dump($ret);
@@ -75,22 +73,11 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
         }
 
-        // not used
-        public static function localized_vars() {
-        	wp_localize_script( 'edd-metrics-js', 'eddMetrics', array(
-	            //'some_string' => __( 'Some string to translate', 'edd-metrics' ),
-	            'stats' => self::get_stats(),
-	            'renewals' => self::get_renewals(),
-	            'refunds' => self::get_refunds(),
-	            )
-	        );
-        }
-
         /**
          * Change date and reload everything, called via ajax. Echoes json string.
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      void
          */
         public static function metrics_batch_1( $start, $end ) {
@@ -131,7 +118,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * Ajax call
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      void
          */
         public static function metrics_batch_2( $start, $end ) {
@@ -176,7 +163,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * Return earnings
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      array()
          */
         public static function get_earnings() {
@@ -209,7 +196,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * Get average revenue per customer. Earnings/Customers
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      array()
          */
         public function get_avg_percust( $earnings = null, $previous_earnings = null ) {
@@ -251,7 +238,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * https://github.com/easydigitaldownloads/easy-digital-downloads/blob/master/includes/class-edd-db-customers.php#L523
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      array()
          */
         public static function get_edd_customers_by_date( $start, $end ) {
@@ -275,7 +262,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * see edd/includes/admin/reporting/reports.php line 486
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      array()
          */
         public function get_avg_monthly() {
@@ -290,7 +277,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * Get average yearly estimates
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      array()
          */
         public function get_avg_yearly( $earnings = null, $previous_earnings = null, $num_days = null ) {
@@ -321,7 +308,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * Return sales
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      array()
          */
         public static function get_sales() {
@@ -344,7 +331,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * Get start and end dates for compare periods
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      array()
          */
         public static function get_compare_dates() {
@@ -364,7 +351,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * Helper function to subtract days from 2 dates, for getting compare periods
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      array()
          */
         public function subtract_days( $start = null, $end = null, $num_days = null ) {
@@ -388,7 +375,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * Get a percentage based on 2 numbers
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      integer
          */
         public function percent_change($new_val, $old_val) {
@@ -407,7 +394,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * Helper method to prevent division by zero errors
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      integer
          */
         public function get_percentage( $current_value = null, $prev_value = null ) {
@@ -440,7 +427,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * Return the classes we need for arrows
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      string
          */
         public function get_arrow_classes( $current = null, $previous = null ) {
@@ -460,7 +447,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * Add metrics sidebar
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      void
          */
         public static function do_sidebar() {
@@ -531,7 +518,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * $start & $end should be date objects
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      array( 'count' => $count, 'earnings' => $earnings )
          */
         public function get_renewals_by_date( $start = null, $end = null ) {
@@ -565,7 +552,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * $start & $end should be date objects
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      array( 'count' => $count, 'earnings' => $earnings )
          */
         public static function get_renewals( $start = null, $end = null ) {
@@ -586,7 +573,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * Compare renewals
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      array()
          */
         public static function compare_renewals( $current_renewals = null ) {
@@ -608,7 +595,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * Query for discounts
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      
          */
         public function get_discounts( $start = string, $end = string ) {
@@ -661,7 +648,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * Discount compare. Compared by amounts, not count.
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      array()    
          */
         public function compare_discounts( $current_discounts_amount = null ) {
@@ -680,7 +667,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * Query for refunds
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      array( 'count' => $count, 'earnings' => $earnings )
          */
         public function refund_query( $start, $end ) {
@@ -722,7 +709,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 	     * Get refund count and losses and return
 	     *
 	     * @access      public
-	     * @since       1.0.0
+	     * @since       0.2.0
 	     * @return      array( 'count' => $count, 'losses' => $losses )
 	     */
 	    public static function get_refunds() {
@@ -742,7 +729,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * Compare refunds
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      array()
          */
         public static function compare_refunds( $current_refunds = null ) {
@@ -762,7 +749,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * taken from edd-recurring/includes/admin/class-subscriptions-list-table.php
          * $start and $end must be strings, not strtotime or date objects
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      array()
          */
         public function subscriptions_db( $start = string, $end = string ) {
@@ -795,7 +782,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * taken from edd-recurring/includes/admin/class-subscriptions-list-table.php
          * $start and $end must be strings, not strtotime or date objects
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      array()
          */
         public function get_subscriptions( $start = string, $end = string ) {
@@ -809,7 +796,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         /**
          * Compare subscriptions
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      array()
          */
         public function compare_subscriptions( $current_subscriptions = null ) {
@@ -828,7 +815,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * Get data for chart
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      array
          */
         public function get_chart_data( $dates = null, $monthly = false ) {

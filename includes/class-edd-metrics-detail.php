@@ -1,9 +1,9 @@
 <?php
 /**
- * Helper Functions
+ * Handles metrics for revenue details page
  *
  * @package     EDD\EDD Metrics\Functions
- * @since       1.0.0
+ * @since       0.2.0
  */
 
 
@@ -15,13 +15,13 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
     /**
      * EDD_Metrics_Detail class
      *
-     * @since       1.0.0
+     * @since       0.2.0
      */
     class EDD_Metrics_Detail extends EDD_Metrics_Functions {
 
         /**
          * @var         EDD_Metrics_Detail $instance The one true EDD_Metrics_Detail
-         * @since       1.0.0
+         * @since       0.2.0
          */
         private static $instance;
         public static $end = null;
@@ -34,7 +34,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
          * Get active instance
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      object self::$instance The one true EDD_Metrics_Detail
          */
         public static function instance() {
@@ -50,7 +50,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
          * Hooks
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      void
          */
         public function hooks() {
@@ -64,7 +64,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
          * Revenue stats for detail view
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      array
          */
         public static function revenue_callback( $data ) {
@@ -119,7 +119,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
          * Calculation is (renewals last 12 mo) / (sales count from 24mo ago -> 12 mo ago)
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      array
          */
         public function get_yearly_renewal_rate( $period = 365 ) {
@@ -148,7 +148,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
          * Get earnings for each product individually
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      array
          */
         public function get_single_product_detail( $data ) {
@@ -178,6 +178,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
                 }
                 wp_reset_postdata();
             } else {
+                $data['pieChart'] = array( 'labels' => array( 'No data' ), 'earnings' => array( '0' ) );
                 return $data;
             }
 
@@ -194,7 +195,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
          * For more methods see edd/includes/admin/reporting/class-gateways-reports-table.php ->reports_data()
          *
          * @access      public
-         * @since       1.0.0
+         * @since       0.2.0
          * @return      array()
          */
         public function get_edd_gateway_reports() {

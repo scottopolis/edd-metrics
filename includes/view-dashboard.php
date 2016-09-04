@@ -1,6 +1,6 @@
 <div class="daterange daterange--double metrics-datepicker"></div>
 
-<h2 class="page-title">Metrics Overview</h2>
+<h2 class="page-title"><?php _e('Metrics Overview', 'edd-metrics'); ?></h2>
 
 <!-- <div class="edd-metrics-box edd-metrics-chart-wrapper">
     <canvas id="metrics-chart" width="400" height="150"></canvas>
