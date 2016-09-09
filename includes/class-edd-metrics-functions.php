@@ -27,7 +27,8 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         public static $start = null;
         public static $endstr = null;
         public static $startstr = null;
-
+        public static $errorpath = '../php-error-log.php';
+        // sample: error_log("meta: " . $meta . "\r\n",3,self::$errorpath);
 
         /**
          * Get active instance
@@ -623,21 +624,20 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                 while ( $the_query->have_posts() ) {
                     $the_query->the_post();
 
-                    // get discount code from meta
-                    $discount = get_post_meta( get_the_ID(), '_edd_payment_meta' )[0]['user_info']['discount'];
 
-                    if( $discount != 'none' && !empty( $discount ) ) {
+                    // get discount amount from post meta
+                    $discount_amount = get_post_meta( get_the_ID(), '_edd_payment_meta' )[0]['cart_details'][0]['discount'];
 
-                        $code = edd_get_discount_id_by_code( $discount );
-                        // convert code to dollar amount
-                        $amount += edd_get_discount_amount( $code );
+                    if( !empty( $discount_amount ) ) {
+
+                        $amount += $discount_amount;
                         $count++;
                     }
                     
                 }
                 wp_reset_postdata();
             } else {
-                return 0;
+                return array( 'amount' => 0, 'count' => 0 );
             }
 
             return array( 'amount' => number_format( $amount, 2 ), 'count' => $count
