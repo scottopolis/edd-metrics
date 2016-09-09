@@ -27,10 +27,6 @@
         start: moment().subtract(1, 'month').startOf('month'),
         end: moment().subtract(1, 'month').endOf('month')
       },{
-        label: 'Today',
-        start: moment().startOf('day'),
-        end: moment()
-      },{
         label: 'Last 7 days',
         start: moment().subtract(6, 'days'),
         end: moment()
@@ -104,56 +100,56 @@
 
   eddm.dashResponse = function(response) {
 
-    var data = JSON.parse(response);
+    console.log( 'dashresponse', response );
 
-    // console.log( data );
+    var data = JSON.parse(response);
 
     var compareTemp = window.eddMetrics.compare_string + ' ' + data.dates.num_days + ' ' + window.eddMetrics.days;
 
-    $('#revenue').text( eddm.currencySign + data.earnings.total );
-    $('#revenue-compare span').text( data.earnings.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.compare.classes );
+    $('#revenue').html( eddm.currencySign + data.earnings.total );
+    $('#revenue-compare span').html( data.earnings.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.compare.classes );
 
-    $('#sales').text( data.sales.count );
-    $('#sales-compare span').text( data.sales.compare.percentage + compareTemp ).removeClass().addClass( data.sales.compare.classes );
+    $('#sales').html( data.sales.count );
+    $('#sales-compare span').html( data.sales.compare.percentage + compareTemp ).removeClass().addClass( data.sales.compare.classes );
 
-    $('#yearly').text( eddm.currencySign + data.earnings.avgyearly.total );
-    $('#avgyearly-compare span').text( data.earnings.avgyearly.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.avgyearly.compare.classes );
+    $('#yearly').html( eddm.currencySign + data.earnings.avgyearly.total );
+    $('#avgyearly-compare span').html( data.earnings.avgyearly.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.avgyearly.compare.classes );
 
-    $('#avgpercust').text( eddm.currencySign + data.earnings.avgpercust.total );
-    $('#avgpercust-compare span').text( data.earnings.avgpercust.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.avgpercust.compare.classes );
+    $('#avgpercust').html( eddm.currencySign + data.earnings.avgpercust.total );
+    $('#avgpercust-compare span').html( data.earnings.avgpercust.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.avgpercust.compare.classes );
     
   }
 
   eddm.batch2response = function(response) {
 
-    var data = JSON.parse(response);
+    console.log( 'batch2response', response );
 
-    // console.log( data );
+    var data = JSON.parse(response);
 
     var compareTemp = window.eddMetrics.compare_string + ' ' + data.dates.num_days + ' ' + window.eddMetrics.days;
 
-    $('#renewals').text( data.renewals.count );
-    $('#renewal-amount').text( eddm.currencySign + data.renewals.earnings );
-    $('#renewals-compare span').text( data.renewals.compare.percentage + compareTemp ).removeClass().addClass( data.renewals.compare.classes );
+    $('#renewals').html( data.renewals.count );
+    $('#renewal-amount').html( eddm.currencySign + data.renewals.earnings );
+    $('#renewals-compare span').html( data.renewals.compare.percentage + compareTemp ).removeClass().addClass( data.renewals.compare.classes );
 
-    $('#refunds').text( data.refunds.count );
-    $('#refund-amount').text( eddm.currencySign + data.refunds.losses );
-    $('#refunds-compare span').text( data.refunds.compare.percentage + compareTemp ).removeClass().addClass( data.refunds.compare.classes );
+    $('#refunds').html( data.refunds.count );
+    $('#refund-amount').html( eddm.currencySign + data.refunds.losses );
+    $('#refunds-compare span').html( data.refunds.compare.percentage + compareTemp ).removeClass().addClass( data.refunds.compare.classes );
 
-    $('#subscriptions').text( data.subscriptions.count );
-    $('#subscriptions-compare span').text( data.subscriptions.compare.percentage + compareTemp ).removeClass().addClass( data.subscriptions.compare.classes );
+    $('#subscriptions').html( data.subscriptions.count );
+    $('#subscriptions-compare span').html( data.subscriptions.compare.percentage + compareTemp ).removeClass().addClass( data.subscriptions.compare.classes );
 
-    $('#discounts').text( eddm.currencySign + data.discounts.now.amount );
-    $('#discounts-count').text( data.discounts.now.count );
-    $('#discounts-compare span').text( data.discounts.compare.percentage + compareTemp ).removeClass().addClass( data.discounts.compare.classes );
+    $('#discounts').html( eddm.currencySign + data.discounts.now.amount );
+    $('#discounts-count').html( data.discounts.now.count );
+    $('#discounts-compare span').html( data.discounts.compare.percentage + compareTemp ).removeClass().addClass( data.discounts.compare.classes );
     
   }
 
   eddm.detailResponse = function(response) {
 
-    var data = JSON.parse(response);
+    console.log( 'detailResponse', response );
 
-    // console.log( 'detailResponse', data );
+    var data = JSON.parse(response);
     
     var metric = eddm.getQueryVariable('metric');
 
@@ -161,18 +157,18 @@
       case 'revenue':
           // do revenue
 
-          $('#revenue').text( eddm.currencySign + data.earnings.total );
-          $('#revenue-compare span').text( data.earnings.compare.percentage + eddm.compare_temp_2 ).removeClass().addClass( data.earnings.compare.classes );
-          $('.detail-compare-first').text( eddm.currencySign + data.earnings.compare.total );
+          $('#revenue').html( eddm.currencySign + data.earnings.total );
+          $('#revenue-compare span').html( data.earnings.compare.percentage + eddm.compare_temp_2 ).removeClass().addClass( data.earnings.compare.classes );
+          $('.detail-compare-first').html( eddm.currencySign + data.earnings.compare.total );
 
-          $('#monthly h2').text( eddm.currencySign + data.earnings.avgmonthly.earnings );
+          $('#monthly h2').html( eddm.currencySign + data.earnings.avgmonthly.earnings );
 
-          $('#new-customers h2').text( data.earnings.avgpercust.current_customers );
-          $('#new-customers span').text( 'This period' );
+          $('#new-customers h2').html( data.earnings.avgpercust.current_customers );
+          $('#new-customers span').html( 'This period' );
 
           // // Charts
-          $('.detail-compare-first').text( eddm.currencySign + data.earnings.compare.total );
-          $('#box-4 .bottom-text span').text( data.earnings.compare.percentage + '%' );
+          $('.detail-compare-first').html( eddm.currencySign + data.earnings.compare.total );
+          $('#box-4 .bottom-text span').html( data.earnings.compare.percentage + '%' );
 
           break;
       case 'renewals':

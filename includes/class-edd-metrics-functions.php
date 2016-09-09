@@ -755,7 +755,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         public function subscriptions_db( $start = string, $end = string ) {
 
             if( !class_exists('EDD_Subscriptions_DB') ) {
-                return null;
+                return 0;
             }
 
             global $wp_query;
