@@ -188,7 +188,7 @@
 
     var data = JSON.parse(response);
 
-    // console.log( 'detailResponse', data );
+    console.log( 'detailResponse_2', data );
     
     var metric = eddm.getQueryVariable('metric');
 
