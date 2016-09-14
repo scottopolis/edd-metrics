@@ -159,7 +159,8 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
             $EDD_Stats = new EDD_Payment_Stats();
 
             $args = array(
-                'post_type' => 'download',
+                'post_type'      => 'download',
+                'posts_per_page' => -1,
             );
 
             // The Query
