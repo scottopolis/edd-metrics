@@ -202,7 +202,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
         public function get_edd_gateway_reports() {
             
             $reports_data = array();
-            $gateways     = edd_get_payment_gateways();
+            $gateways     = edd_get_enabled_payment_gateways();
 
             foreach ( $gateways as $gateway_id => $gateway ) {
 
