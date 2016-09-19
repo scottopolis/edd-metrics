@@ -189,6 +189,10 @@ img.details-chart {
 	float: right;
 }
 
+body .daterange .dr-selections .dr-preset-list {
+	width: 22.5em;
+}
+
 .metrics-right {
 	float: right;
 }
