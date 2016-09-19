@@ -173,7 +173,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
                     $title = get_the_title();
                     $product_earnings = $EDD_Stats->get_earnings( get_the_id(), $dates['start'], $dates['end'] );
 
-                    $labels[] = $title;
+                    $labels[] = html_entity_decode( $title );
                     $earnings[] = $product_earnings;
 
                 }
