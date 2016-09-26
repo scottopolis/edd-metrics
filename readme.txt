@@ -4,7 +4,7 @@ Contributors: scottopolis
 Tags: easy digital downloads, edd, analytics, metrics, statistics, baremetrics
 Requires at least: 4.0
 Tested up to: 4.6
-Stable tag: 0.3.0
+Stable tag: 0.4.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -49,6 +49,6 @@ Change the date using the datepicker in the top right hand corner. Click "Revenu
 
 == Changelog ==
 
-= 0.3.0 =
+= 0.4.0 =
 
 * Initial release
