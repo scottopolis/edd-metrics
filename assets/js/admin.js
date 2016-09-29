@@ -195,22 +195,22 @@
       case 'revenue':
           // do revenue
 
-          $('#revenue-6mocompare span').text( data.earnings.detail.sixmoago.compare + eddm.compare_temp_2 ).removeClass().addClass( data.earnings.detail.sixmoago.classes );
-          $('.detail-compare-second').text( data.earnings.detail.sixmoago.total );
+          $('#revenue-6mocompare span').html( data.earnings.detail.sixmoago.compare + eddm.compare_temp_2 ).removeClass().addClass( data.earnings.detail.sixmoago.classes );
+          $('.detail-compare-second').html( data.earnings.detail.sixmoago.total );
 
-          $('.detail-compare-third').text( data.earnings.detail.twelvemoago.total );
-          $('#revenue-12mocompare span').text( data.earnings.detail.twelvemoago.compare + eddm.compare_temp_2 ).removeClass().addClass( data.earnings.detail.twelvemoago.classes );
+          $('.detail-compare-third').html( data.earnings.detail.twelvemoago.total );
+          $('#revenue-12mocompare span').html( data.earnings.detail.twelvemoago.compare + eddm.compare_temp_2 ).removeClass().addClass( data.earnings.detail.twelvemoago.classes );
 
-          $('#earnings-today h2').text( data.earnings.detail.today );
-          $('#earnings-this-month h2').text( data.earnings.detail.this_month );
+          $('#earnings-today h2').html( data.earnings.detail.today );
+          $('#earnings-this-month h2').html( data.earnings.detail.this_month );
 
-          $('#renewal-rate h2').text( data.yearly_renewal_rate.percent + '%' );
-          $('#yearly-renewal-compare span').text( 'Last ' + data.yearly_renewal_rate.period + ' days' );
+          $('#renewal-rate h2').html( data.yearly_renewal_rate.percent + '%' );
+          $('#yearly-renewal-compare span').html( 'Last ' + data.yearly_renewal_rate.period + ' days' );
 
-          $('#box-5 .bottom-text span').text( data.earnings.detail.sixmoago.compare + '%' );
-          $('.detail-compare-second').text( data.earnings.detail.sixmoago.total );
+          $('#box-5 .bottom-text span').html( data.earnings.detail.sixmoago.compare + '%' );
+          $('.detail-compare-second').html( data.earnings.detail.sixmoago.total );
 
-          $('.detail-compare-third').text( data.earnings.detail.twelvemoago.total );
+          $('.detail-compare-third').html( data.earnings.detail.twelvemoago.total );
 
           break;
       case 'renewals':
