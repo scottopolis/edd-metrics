@@ -81,6 +81,16 @@
 	</div>
 	<?php endif; ?>
 
+	<?php if( defined( 'EDD_COMMISSIONS_VERSION' ) ): ?>
+		<div class="one-half last-col">
+			<div class="edd-metrics-box">
+				<p class="top-text"><?php _e('Unpaid Commissions', 'edd-metrics'); ?></p>
+				<h2 id="commissions-amount" class="metrics-title1"></h2>
+				<h2 id="commissions" class="metrics-title2"></h2>
+			</div>
+		</div>
+	<?php endif; ?>
+
 	<?php do_action('edd_metrics_after_boxes'); ?>
 
 </section>

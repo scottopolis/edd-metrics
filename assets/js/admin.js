@@ -142,7 +142,10 @@
     $('#discounts').html( eddm.currencySign + data.discounts.now.amount );
     $('#discounts-count').html( data.discounts.now.count );
     $('#discounts-compare span').html( data.discounts.compare.percentage + compareTemp ).removeClass().addClass( data.discounts.compare.classes );
-    
+
+    $('#commissions').html( data.commissions.count );
+    $('#commissions-amount').html( eddm.currencySign + data.commissions.earnings );
+
   }
 
   eddm.detailResponse = function(response) {

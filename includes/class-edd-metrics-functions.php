@@ -145,13 +145,14 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                     'subscriptions' => self::get_subscriptions( self::$startstr, self::$endstr ),
                     'discounts' => array( 
                         'now' => $discounts, 
-                        'compare' => self::compare_discounts( $discounts['amount'] ) 
+                        'compare' => self::compare_discounts( $discounts['amount'] ),
                     ),
+                    'commissions' => self::get_commissions( self::$start, self::$end ),
                 );
 
                 $metrics = apply_filters( 'metrics_json_output', $metrics );
 
-                set_transient( 'metrics2_' . $date_hash, $metrics, HOUR_IN_SECONDS );
+                //set_transient( 'metrics2_' . $date_hash, $metrics, HOUR_IN_SECONDS );
 
             }
 
@@ -590,6 +591,27 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             $classes = self::get_arrow_classes( $current_renewals, $previous_renewals['count'] );
 
             return array( 'classes' => $classes, 'percentage' => self::get_percentage( $current_renewals, $previous_renewals['count'] ) );
+        }
+
+        /**
+         * Get commissions count and earnings and return
+         * $start & $end should be date objects
+         *
+         * @access      public
+         * @since       0.4.0
+         * @return      array( 'count' => $count, 'earnings' => $earnings )
+         */
+        public static function get_commissions( $start = null, $end = null ) {
+
+            if( !defined('EDD_COMMISSIONS_VERSION') ) {
+                return array( 'count' => '0', 'earnings' => '0', 'compare' => array( 'classes' => 'edd-metrics-nochange', 'percentage' => '0' ) );
+            }
+
+            $commissions['count'] = count( eddc_get_unpaid_commissions( $args = array() ) );
+            $commissions['earnings'] = edd_format_amount( eddc_get_unpaid_totals( 0 ) );
+
+            return $commissions;
+
         }
 
         /**
