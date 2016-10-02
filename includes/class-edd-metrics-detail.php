@@ -95,15 +95,15 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
             $data['yearly_renewal_rate'] = self::get_yearly_renewal_rate();
 
             $data['earnings']['detail'] = array( 
-                'today' => number_format( $earnings_today, 2 ),
-                'this_month' => number_format( $earnings_this_month, 2 ),
+                'today' => edd_currency_filter( edd_format_amount( $earnings_today ) ),
+                'this_month' => edd_currency_filter( edd_format_amount( $earnings_this_month ) ),
                 'sixmoago' => array( 
-                    'total' => number_format( $earnings_6mo_ago, 2 ),
+                    'total' => edd_currency_filter( edd_format_amount( $earnings_6mo_ago ) ),
                     'compare' => self::get_percentage( $earnings, $earnings_6mo_ago ),
                     'classes' => $classes6mo
                     ),
                 'twelvemoago' => array( 
-                    'total' => number_format( $earnings_12mo_ago, 2 ),
+                    'total' => edd_currency_filter( edd_format_amount( $earnings_12mo_ago ) ),
                     'compare' => self::get_percentage( $earnings, $earnings_12mo_ago ),
                     'classes' => $classes12mo
                     ),
@@ -122,7 +122,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
          * @since       0.2.0
          * @return      array
          */
-        public function get_yearly_renewal_rate( $period = 365 ) {
+        public static function get_yearly_renewal_rate( $period = 365 ) {
 
             // renewals last 12 mo / sales total from 24mo ago -> 12 mo ago
             $now = strtotime('now');
@@ -141,7 +141,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
 
             $percent = ( intval($renewals) / intval($sales) ) * 100;
 
-            return array( 'percent' => number_format( $percent, 2 ), 'period' => $period );
+            return array( 'percent' => edd_format_amount( $percent ), 'period' => $period );
         }
 
         /**
@@ -151,7 +151,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
          * @since       0.2.0
          * @return      array
          */
-        public function get_single_product_detail( $data ) {
+        public static function get_single_product_detail( $data ) {
 
             $dates = self::get_compare_dates();
 
@@ -199,7 +199,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
          * @since       0.2.0
          * @return      array()
          */
-        public function get_edd_gateway_reports() {
+        public static function get_edd_gateway_reports() {
             
             $reports_data = array();
             $gateways     = edd_get_enabled_payment_gateways();
