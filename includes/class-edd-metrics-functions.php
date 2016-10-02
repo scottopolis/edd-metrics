@@ -63,9 +63,9 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             add_action( 'edd_metrics_dash_sidebar', array( $this, 'do_sidebar' ) );
 
-            add_action( 'wp_ajax_metrics_batch_1', array( $this, 'metrics_batch_1' ) );
+            add_action( 'wp_ajax_metrics_batch_1', array( $this, 'metrics_batch_1' ), 10, 2 );
 
-            add_action( 'wp_ajax_metrics_batch_2', array( $this, 'metrics_batch_2' ) );
+            add_action( 'wp_ajax_metrics_batch_2', array( $this, 'metrics_batch_2' ), 10, 2 );
 
             // add_action('init', function() {
             //     $ret = self::get_discounts( self::$startstr, self::$endstr );
@@ -81,7 +81,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @since       0.2.0
          * @return      void
          */
-        public static function metrics_batch_1( $start, $end ) {
+        public static function metrics_batch_1( $start = '', $end = '' ) {
         	self::$endstr = $_POST['end'];
         	self::$startstr = $_POST['start'];
             self::$end = strtotime( self::$endstr );
@@ -122,7 +122,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @since       0.2.0
          * @return      void
          */
-        public static function metrics_batch_2( $start, $end ) {
+        public static function metrics_batch_2( $start = '', $end = '' ) {
             self::$endstr = $_POST['end'];
             self::$startstr = $_POST['start'];
             self::$end = strtotime( self::$endstr );
