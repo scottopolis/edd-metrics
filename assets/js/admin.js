@@ -99,7 +99,7 @@
 
   eddm.dashResponse = function(response) {
 
-    console.log( 'dashresponse', response );
+    // console.log( 'dashresponse', response );
 
     var data = JSON.parse(response);
 
@@ -127,29 +127,35 @@
 
     var compareTemp = window.eddMetrics.compare_string + ' ' + data.dates.num_days + ' ' + window.eddMetrics.days;
 
-    $('#renewals').html( data.renewals.count );
-    $('#renewal-amount').html( data.renewals.earnings );
-    $('#renewals-compare span').html( data.renewals.compare.percentage + compareTemp ).removeClass().addClass( data.renewals.compare.classes );
+    if( $('#renewals').length ) {
+      $('#renewals').html( data.renewals.count );
+      $('#renewal-amount').html( data.renewals.earnings );
+      $('#renewals-compare span').html( data.renewals.compare.percentage + compareTemp ).removeClass().addClass( data.renewals.compare.classes );
+    }
 
     $('#refunds').html( data.refunds.count );
     $('#refund-amount').html( data.refunds.losses );
     $('#refunds-compare span').html( data.refunds.compare.percentage + compareTemp ).removeClass().addClass( data.refunds.compare.classes );
 
-    $('#subscriptions').html( data.subscriptions.count );
-    $('#subscriptions-compare span').html( data.subscriptions.compare.percentage + compareTemp ).removeClass().addClass( data.subscriptions.compare.classes );
+    if( $('#subscriptions').length ) {
+      $('#subscriptions').html( data.subscriptions.count );
+      $('#subscriptions-compare span').html( data.subscriptions.compare.percentage + compareTemp ).removeClass().addClass( data.subscriptions.compare.classes );
+    }
 
     $('#discounts').html( data.discounts.now.amount );
     $('#discounts-count').html( data.discounts.now.count );
     $('#discounts-compare span').html( data.discounts.compare.percentage + compareTemp ).removeClass().addClass( data.discounts.compare.classes );
 
-    $('#commissions').html( data.commissions.count );
-    $('#commissions-amount').html( eddm.currencySign + data.commissions.earnings );
+    if( $('#commissions').length ) {
+      $('#commissions').html( data.commissions.count );
+      $('#commissions-amount').html( eddm.currencySign + data.commissions.earnings );
+    }
 
   }
 
   eddm.detailResponse = function(response) {
 
-    console.log( 'detailResponse', response );
+    // console.log( 'detailResponse', response );
 
     var data = JSON.parse(response);
 
@@ -190,7 +196,7 @@
 
     var data = JSON.parse(response);
 
-    console.log( 'detailResponse_2', data );
+    // console.log( 'detailResponse_2', data );
 
     var metric = eddm.getQueryVariable('metric');
 
@@ -299,7 +305,7 @@
       eddm.downloadChart.destroy();
     }
 
-    console.log( chart );
+    // console.log( chart );
 
     var data = {
         labels: chart.labels,
