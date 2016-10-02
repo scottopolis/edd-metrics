@@ -1,6 +1,6 @@
 <div class="daterange daterange--double metrics-datepicker metrics-detail"></div>
 
-<h1><?php _e('Revenue Detail', 'edd-metrics'); ?></h2>
+<h1><?php _e('Revenue Detail', 'edd-metrics'); ?></h1>
 
 <a href="<?php echo admin_url(); ?>edit.php?post_type=download&page=edd_metrics" class="metrics-details-link" style="float:right;margin-top:15px">&larr; <?php _e('Back to Overview', 'edd-metrics'); ?></a>
 
