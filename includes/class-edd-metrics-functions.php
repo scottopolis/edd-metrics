@@ -180,11 +180,11 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         	$classes = self::get_arrow_classes( $earnings, $previous_earnings );
 
         	return array( 
-                'total' => number_format( $earnings, 2 ), 
+                'total' => edd_currency_filter( edd_format_amount( $earnings ) ), 
                 'compare' => array( 
                     'classes' => $classes, 
                     'percentage' => self::get_percentage( $earnings, $previous_earnings ),
-                    'total' => number_format( $previous_earnings, 2 ) 
+                    'total' => edd_currency_filter( edd_format_amount( $previous_earnings ) ), 
                     ), 
                 'avgyearly' => self::get_avg_yearly( $earnings, $previous_earnings, $dates['num_days'] ), 
                 'avgpercust' => self::get_avg_percust( $earnings, $previous_earnings ),
@@ -225,7 +225,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             $classes = self::get_arrow_classes( $total, $prev_total );
 
             return array( 
-                'total' => number_format( $total, 2 ),
+                'total' => edd_currency_filter( edd_format_amount( $total ) ),
                 'compare' => array( 
                     'classes' => $classes, 
                     'percentage' => self::get_percentage( $total, $prev_total ) 
@@ -269,7 +269,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         public function get_avg_monthly() {
             $avg = edd_estimated_monthly_stats();
             return array(
-                'earnings' => number_format( $avg['earnings'], 2 ),
+                'earnings' => edd_currency_filter( edd_format_amount( $avg['earnings'] ) ),
                 'sales' => $avg['sales']
                 );
         }
@@ -301,7 +301,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 			// output classes for arrows and colors
         	$classes = self::get_arrow_classes( $avgyearly, $previous_avgyearly );
 
-			return array( 'total' => number_format( $avgyearly, 2 ), 'compare' => array( 'classes' => $classes, 'percentage' => self::get_percentage( $avgyearly, $previous_avgyearly ) ) );
+			return array( 'total' => edd_currency_filter( edd_format_amount( $avgyearly ) ), 'compare' => array( 'classes' => $classes, 'percentage' => self::get_percentage( $avgyearly, $previous_avgyearly ) ) );
 
 		}
 
@@ -544,7 +544,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             return array( 
                 'count' => $count, 
-                'earnings' => number_format( $earnings, 2 )
+                'earnings' => edd_currency_filter( edd_format_amount( $earnings ) ),
                 );
         }
 
@@ -640,7 +640,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                 return array( 'amount' => 0, 'count' => 0 );
             }
 
-            return array( 'amount' => number_format( $amount, 2 ), 'count' => $count
+            return array( 'amount' => edd_currency_filter( edd_format_amount( $amount ) ), 'count' => $count
                 );
         }
 
@@ -722,7 +722,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                 $compare = self::compare_refunds( $refunds['count'] );
             }
 
-			return array( 'count' => $refunds['count'], 'losses' => number_format( $refunds['earnings'], 2 ), 'compare' => $compare );
+			return array( 'count' => $refunds['count'], 'losses' => edd_currency_filter( edd_format_amount( $refunds['earnings'] ) ), 'compare' => $compare );
 	    }
 
         /**
