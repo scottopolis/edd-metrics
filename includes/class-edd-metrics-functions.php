@@ -81,7 +81,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @since       0.2.0
          * @return      void
          */
-        public static function metrics_batch_1( $start, $end ) {
+        public static function metrics_batch_1() {
         	self::$endstr = $_POST['end'];
         	self::$startstr = $_POST['start'];
             self::$end = strtotime( self::$endstr );
@@ -122,7 +122,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @since       0.2.0
          * @return      void
          */
-        public static function metrics_batch_2( $start, $end ) {
+        public static function metrics_batch_2() {
             self::$endstr = $_POST['end'];
             self::$startstr = $_POST['start'];
             self::$end = strtotime( self::$endstr );
@@ -200,7 +200,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @since       0.2.0
          * @return      array()
          */
-        public function get_avg_percust( $earnings = null, $previous_earnings = null ) {
+        public static function get_avg_percust( $earnings = null, $previous_earnings = null ) {
 
             $dates = self::get_compare_dates();
 
@@ -266,7 +266,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @since       0.2.0
          * @return      array()
          */
-        public function get_avg_monthly() {
+        public static function get_avg_monthly() {
             $avg = edd_estimated_monthly_stats();
             return array(
                 'earnings' => edd_currency_filter( edd_format_amount( $avg['earnings'] ) ),
@@ -281,7 +281,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @since       0.2.0
          * @return      array()
          */
-        public function get_avg_yearly( $earnings = null, $previous_earnings = null, $num_days = null ) {
+        public static function get_avg_yearly( $earnings = null, $previous_earnings = null, $num_days = null ) {
 
         	// Fix division by 0 errors
         	if( !$earnings && !$previous_earnings ) {
@@ -355,7 +355,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @since       0.2.0
          * @return      array()
          */
-        public function subtract_days( $start = null, $end = null, $num_days = null ) {
+        public static function subtract_days( $start = null, $end = null, $num_days = null ) {
 
             // Switch to datetime format, subtract time, then back to string
             $startdate = date_create( $start );
@@ -379,7 +379,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @since       0.2.0
          * @return      integer
          */
-        public function percent_change($new_val, $old_val) {
+        public static function percent_change($new_val, $old_val) {
 
             if( empty( $old_val ) )
                 return 0;
@@ -398,7 +398,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @since       0.2.0
          * @return      integer
          */
-        public function get_percentage( $current_value = null, $prev_value = null ) {
+        public static function get_percentage( $current_value = null, $prev_value = null ) {
 
             // avoid division by 0 errors
             if( empty( $prev_value ) && $current_value > 0 ) {
@@ -431,7 +431,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @since       0.2.0
          * @return      string
          */
-        public function get_arrow_classes( $current = null, $previous = null ) {
+        public static function get_arrow_classes( $current = null, $previous = null ) {
 
             // output classes for arrows and colors
             if( intval( $previous ) > intval( $current ) ) {
@@ -522,7 +522,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @since       0.2.0
          * @return      array( 'count' => $count, 'earnings' => $earnings )
          */
-        public function get_renewals_by_date( $start = null, $end = null ) {
+        public static function get_renewals_by_date( $start = null, $end = null ) {
 
             // see reports.php in EDD SL plugin
             // edd_sl_get_renewals_by_date( $day = null, $month = null, $year = null, $hour = null  )
@@ -599,7 +599,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @since       0.2.0
          * @return      
          */
-        public function get_discounts( $start = string, $end = string ) {
+        public static function get_discounts( $start = string, $end = string ) {
 
             $args = array(
                 'post_type' => 'edd_payment',
@@ -651,7 +651,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @since       0.2.0
          * @return      array()    
          */
-        public function compare_discounts( $current_discounts_amount = null ) {
+        public static function compare_discounts( $current_discounts_amount = null ) {
 
             $dates = self::get_compare_dates();
 
@@ -670,7 +670,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @since       0.2.0
          * @return      array( 'count' => $count, 'earnings' => $earnings )
          */
-        public function refund_query( $start, $end ) {
+        public static function refund_query( $start, $end ) {
 
             $args = array(
                 'post_type' => 'edd_payment',
@@ -752,7 +752,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @since       0.2.0
          * @return      array()
          */
-        public function subscriptions_db( $start = string, $end = string ) {
+        public static function subscriptions_db( $start = string, $end = string ) {
 
             if( !class_exists('EDD_Subscriptions_DB') ) {
                 return 0;
@@ -785,7 +785,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @since       0.2.0
          * @return      array()
          */
-        public function get_subscriptions( $start = string, $end = string ) {
+        public static function get_subscriptions( $start = string, $end = string ) {
 
             $total = self::subscriptions_db( $start, $end );
 
@@ -799,7 +799,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @since       0.2.0
          * @return      array()
          */
-        public function compare_subscriptions( $current_subscriptions = null ) {
+        public static function compare_subscriptions( $current_subscriptions = null ) {
 
             $dates = self::get_compare_dates();
 
@@ -818,7 +818,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @since       0.2.0
          * @return      array
          */
-        public function get_chart_data( $dates = null, $monthly = false ) {
+        public static function get_chart_data( $dates = null, $monthly = false ) {
 
             $EDD_Stats = new EDD_Payment_Stats();
 

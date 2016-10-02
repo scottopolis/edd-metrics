@@ -122,7 +122,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
          * @since       0.2.0
          * @return      array
          */
-        public function get_yearly_renewal_rate( $period = 365 ) {
+        public static function get_yearly_renewal_rate( $period = 365 ) {
 
             // renewals last 12 mo / sales total from 24mo ago -> 12 mo ago
             $now = strtotime('now');
@@ -151,7 +151,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
          * @since       0.2.0
          * @return      array
          */
-        public function get_single_product_detail( $data ) {
+        public static function get_single_product_detail( $data ) {
 
             $dates = self::get_compare_dates();
 
@@ -199,7 +199,7 @@ if( !class_exists( 'EDD_Metrics_Detail' ) ) {
          * @since       0.2.0
          * @return      array()
          */
-        public function get_edd_gateway_reports() {
+        public static function get_edd_gateway_reports() {
             
             $reports_data = array();
             $gateways     = edd_get_enabled_payment_gateways();
