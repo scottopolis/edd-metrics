@@ -152,7 +152,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
                 $metrics = apply_filters( 'metrics_json_output', $metrics );
 
-                //set_transient( 'metrics2_' . $date_hash, $metrics, HOUR_IN_SECONDS );
+                set_transient( 'metrics2_' . $date_hash, $metrics, HOUR_IN_SECONDS );
 
             }
 
