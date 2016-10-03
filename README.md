@@ -28,3 +28,11 @@ This plugin is inspired by (and basically a total copy of) [Baremetrics](https:/
 ### Usage
 
 Install and activate this plugin on your WordPress site, then visit the "Metrics" menu under the "Downloads" left menu item.
+
+### Changelog
+
+=0.5.0=
+
+* Support for commissions
+* Fix PHP Warnings
+* Fix JS errors

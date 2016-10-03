@@ -121,7 +121,7 @@
 
   eddm.batch2response = function(response) {
 
-    console.log( 'batch2response', response );
+    // console.log( 'batch2response', response );
 
     var data = JSON.parse(response);
 
