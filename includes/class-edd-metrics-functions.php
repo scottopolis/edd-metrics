@@ -501,7 +501,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                                 $status = ucfirst( $status );
 
 								$total = get_post_meta( get_the_ID(), '_edd_payment_total' )[0];
-								echo '<li><a href="' . admin_url( 'edit.php?post_type=download&page=edd-payment-history&view=view-order-details&id=' . get_the_ID() ) . '"><span class="' . $classes . '"><span class="status-wrap">' . $status . '</span> $' . $total . '</span> ' . get_the_title() . '</a></li>';
+								echo '<li><a href="' . admin_url( 'edit.php?post_type=download&page=edd-payment-history&view=view-order-details&id=' . get_the_ID() ) . '"><span class="' . $classes . '"><span class="status-wrap">' . $status . '</span> ' . edd_currency_filter( edd_format_amount( $total ) ) . '</span> ' . get_the_title() . '</a></li>';
 							}
 							wp_reset_postdata();
 						} else {
