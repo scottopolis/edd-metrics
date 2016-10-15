@@ -382,7 +382,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          */
         public static function percent_change($new_val, $old_val) {
 
-            if( empty( $old_val ) )
+            if( empty( $old_val ) || $old_val === 0 )
                 return 0;
 
             // Commas break this equation
