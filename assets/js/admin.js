@@ -148,7 +148,7 @@
 
     if( $('#commissions').length ) {
       $('#commissions').html( data.commissions.count );
-      $('#commissions-amount').html( eddm.currencySign + data.commissions.earnings );
+      $('#commissions-amount').html( data.commissions.earnings );
     }
 
   }

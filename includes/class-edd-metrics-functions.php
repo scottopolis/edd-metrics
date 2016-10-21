@@ -608,7 +608,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             }
 
             $commissions['count'] = count( eddc_get_unpaid_commissions( $args = array() ) );
-            $commissions['earnings'] = edd_format_amount( eddc_get_unpaid_totals( 0 ) );
+            $commissions['earnings'] = edd_currency_filter( edd_format_amount( eddc_get_unpaid_totals( 0 ) ) );
 
             return $commissions;
 
