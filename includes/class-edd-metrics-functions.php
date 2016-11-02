@@ -294,7 +294,8 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         	}
 
         	// Yearly estimate - avg rev per day in set time period, averaged out over 365 days. So $287/day in the last 30 days would be $287*365
-			$num_days = self::get_compare_dates()['num_days'];
+		$comp_dates = self::get_compare_dates();
+		$num_days = $comp_dates['num_days'];		
 
 			$avgyearly = ( $earnings/$num_days )*365;
 			$previous_avgyearly = ( $previous_earnings/$num_days )*365;
