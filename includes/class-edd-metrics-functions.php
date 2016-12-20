@@ -383,6 +383,9 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          */
         public static function percent_change($new_val, $old_val) {
 
+	    $new_val = edd_sanitize_amount( $new_val );
+            $old_val = edd_sanitize_amount( $old_val );
+		
             if( empty( $old_val ) || $old_val === 0 )
                 return 0;
 
