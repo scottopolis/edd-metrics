@@ -856,12 +856,12 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             $period = new DatePeriod($begin, $interval, $end);
 
             foreach ( $period as $dt ) {
-              $earnings[] = $EDD_Stats->get_earnings( 0, $dt->format( "jS F, Y" ), false );
+              $earnings[] = $EDD_Stats->get_earnings( 0, $dt->format( "F j, Y" ), false );
               $labels[] = $dt->format( "F j" );
             }
 
             foreach ( $period as $dt ) {
-              $sales[] = $EDD_Stats->get_sales( 0, $dt->format( "jS F, Y" ), false, array( 'publish', 'revoked' ) );
+              $sales[] = $EDD_Stats->get_sales( 0, $dt->format( "F j, Y" ), false, array( 'publish', 'revoked' ) );
             }
 
             return array( 'sales' => $sales, 'earnings' => $earnings, 'labels' => $labels );
