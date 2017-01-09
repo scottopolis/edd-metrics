@@ -31,6 +31,10 @@ Install and activate this plugin on your WordPress site, then visit the "Metrics
 
 ### Changelog
 
+=0.5.1=
+
+* Fix previous year chart data
+
 =0.5.0=
 
 * Support for commissions

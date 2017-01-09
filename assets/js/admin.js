@@ -48,10 +48,10 @@
 
   eddm.callback = function() {
 
-    var start = moment(this.start_date).format('ll'),
-        end = moment(this.end_date).format('ll');
+    var start = moment(this.start_date).format('LL'),
+        end = moment(this.end_date).format('LL');
 
-    // console.debug('Start Date: '+ start +'\nEnd Date: '+ end);
+    //console.debug('Start Date: '+ start +'\nEnd Date: '+ end);
 
     var data = {
       'action': 'metrics_batch_1',
@@ -99,7 +99,7 @@
 
   eddm.dashResponse = function(response) {
 
-    // console.log( 'dashresponse', response );
+    //console.log( 'dashresponse', response );
 
     var data = JSON.parse(response);
 
@@ -121,7 +121,7 @@
 
   eddm.batch2response = function(response) {
 
-    // console.log( 'batch2response', response );
+    //console.log( 'batch2response', response );
 
     var data = JSON.parse(response);
 
@@ -155,7 +155,7 @@
 
   eddm.detailResponse = function(response) {
 
-    // console.log( 'detailResponse', response );
+    //console.log( 'detailResponse', response );
 
     var data = JSON.parse(response);
 
@@ -196,7 +196,7 @@
 
     var data = JSON.parse(response);
 
-    // console.log( 'detailResponse_2', data );
+    //console.log( 'detailResponse_2', data );
 
     var metric = eddm.getQueryVariable('metric');
 
@@ -305,7 +305,7 @@
       eddm.downloadChart.destroy();
     }
 
-    // console.log( chart );
+    //console.log( chart );
 
     var data = {
         labels: chart.labels,
