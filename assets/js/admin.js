@@ -99,7 +99,7 @@
 
   eddm.dashResponse = function(response) {
 
-    //console.log( 'dashresponse', response );
+    console.log( 'dashresponse', response );
 
     var data = JSON.parse(response);
 
@@ -111,21 +111,27 @@
     $('#sales').html( data.sales.count );
     $('#sales-compare span').html( data.sales.compare.percentage + compareTemp ).removeClass().addClass( data.sales.compare.classes );
 
-    $('#yearly').html( data.earnings.avgyearly.total );
-    $('#avgyearly-compare span').html( data.earnings.avgyearly.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.avgyearly.compare.classes );
+    // $('#yearly').html( data.earnings.avgyearly.total );
+    // $('#avgyearly-compare span').html( data.earnings.avgyearly.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.avgyearly.compare.classes );
 
     $('#avgpercust').html( data.earnings.avgpercust.total );
     $('#avgpercust-compare span').html( data.earnings.avgpercust.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.avgpercust.compare.classes );
+
+    $('#refunds').html( data.earnings.refunds.count );
+    $('#refund-amount').html( data.earnings.refunds.losses );
+    $('#refunds-compare span').html( data.earnings.refunds.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.refunds.compare.classes );
 
   }
 
   eddm.batch2response = function(response) {
 
-    //console.log( 'batch2response', response );
+    console.log( 'batch2response', response );
 
     var data = JSON.parse(response);
 
     var compareTemp = window.eddMetrics.compare_string + ' ' + data.dates.num_days + ' ' + window.eddMetrics.days;
+
+    $('#earnings-today').html( data.earnings.detail.today );
 
     if( $('#renewals').length ) {
       $('#renewals').html( data.renewals.count );
@@ -133,13 +139,14 @@
       $('#renewals-compare span').html( data.renewals.compare.percentage + compareTemp ).removeClass().addClass( data.renewals.compare.classes );
     }
 
-    $('#refunds').html( data.refunds.count );
-    $('#refund-amount').html( data.refunds.losses );
-    $('#refunds-compare span').html( data.refunds.compare.percentage + compareTemp ).removeClass().addClass( data.refunds.compare.classes );
-
     if( $('#subscriptions').length ) {
-      $('#subscriptions').html( data.subscriptions.count );
-      $('#subscriptions-compare span').html( data.subscriptions.compare.percentage + compareTemp ).removeClass().addClass( data.subscriptions.compare.classes );
+      $('#subscriptions').html( data.subscriptions.number.count );
+      $('#subscriptions-compare span').html( data.subscriptions.number.compare.percentage + compareTemp ).removeClass().addClass( data.subscriptions.number.compare.classes );
+
+      $('#recurring-revenue').html( data.subscriptions.earnings );
+
+      $('#recurring-revenue-30').html( data.subscriptions.earnings30 );
+      
     }
 
     $('#discounts').html( data.discounts.now.amount );
@@ -196,7 +203,7 @@
 
     var data = JSON.parse(response);
 
-    //console.log( 'detailResponse_2', data );
+    console.log( 'detailResponse_2', data );
 
     var metric = eddm.getQueryVariable('metric');
 

@@ -20,25 +20,25 @@
 
 	<div class="one-half last-col">
 	    <div class="edd-metrics-box">
+	        <p class="top-text"><?php _e('Revenue Today', 'edd-metrics'); ?></p>
+	        <h2 id="earnings-today"></h2>
+	        <!-- <p class="bottom-text" id="sales-compare"><span></span></p> -->
+	    </div>
+	</div>
+
+	<div class="one-half">
+	    <div class="edd-metrics-box">
 	        <p class="top-text"><?php _e('Sales', 'edd-metrics'); ?></p>
 	        <h2 id="sales"></h2>
 	        <p class="bottom-text" id="sales-compare"><span></span></p>
 	    </div>
 	</div>
 
-	<div class="one-half">
+	<div class="one-half last-col">
 	    <div class="edd-metrics-box">
 	        <p class="top-text"><?php _e('Avg. Per Customer', 'edd-metrics'); ?></p>
 	        <h2 id="avgpercust"></h2>
 	        <p class="bottom-text" id="avgpercust-compare"><span></span></p>
-	    </div>
-	</div>
-
-	<div class="one-half last-col">
-	    <div class="edd-metrics-box">
-	        <p class="top-text"><?php _e('Est. Yearly Revenue', 'edd-metrics'); ?></p>
-	        <h2 id="yearly"></h2>
-	        <p class="bottom-text" id="avgyearly-compare"><span></span></p>
 	    </div>
 	</div>
 
@@ -60,23 +60,39 @@
 	    </div>
 	</div>
 
-	<?php if( class_exists('EDD_Software_Licensing') ) : ?>
+	<?php if( class_exists('EDD_Recurring') ) : ?>
 	<div class="one-half">
 	    <div class="edd-metrics-box">
-	        <p class="top-text"><?php _e('Renewals', 'edd-metrics'); ?></p>
-	        <h2 id="renewal-amount" class="metrics-title1"></h2>
-	        <h2 id="renewals" class="metrics-title2"></h2>
-	        <p class="bottom-text" id="renewals-compare"><span></span></p>
+	        <p class="top-text"><?php _e('Recurring Revenue', 'edd-metrics'); ?></p>
+	        <h2 id="recurring-revenue"></h2>
+	        <!-- <p class="bottom-text" id="subscriptions-compare"><span></span></p> -->
 	    </div>
 	</div>
-	<?php endif; ?>
 
-	<?php if( class_exists('EDD_Recurring') ) : ?>
 	<div class="one-half last-col">
 	    <div class="edd-metrics-box">
 	        <p class="top-text"><?php _e('New Subscriptions', 'edd-metrics'); ?></p>
 	        <h2 id="subscriptions"></h2>
 	        <p class="bottom-text" id="subscriptions-compare"><span></span></p>
+	    </div>
+	</div>
+
+	<div class="one-half">
+	    <div class="edd-metrics-box">
+	        <p class="top-text"><?php _e('Recurring Next 30 Days', 'edd-metrics'); ?></p>
+	        <h2 id="recurring-revenue-30"></h2>
+	        <!-- <p class="bottom-text" id="subscriptions-compare"><span></span></p> -->
+	    </div>
+	</div>
+	<?php endif; ?>
+
+	<?php if( class_exists('EDD_Software_Licensing') ) : ?>
+	<div class="one-half last-col">
+	    <div class="edd-metrics-box">
+	        <p class="top-text"><?php _e('License Renewals', 'edd-metrics'); ?></p>
+	        <h2 id="renewal-amount" class="metrics-title1"></h2>
+	        <h2 id="renewals" class="metrics-title2"></h2>
+	        <p class="bottom-text" id="renewals-compare"><span></span></p>
 	    </div>
 	</div>
 	<?php endif; ?>
@@ -90,6 +106,14 @@
 			</div>
 		</div>
 	<?php endif; ?>
+
+	<!--  	<div class="one-half last-col">
+	    <div class="edd-metrics-box">
+	        <p class="top-text"><?php _e('Est. Yearly Revenue', 'edd-metrics'); ?></p>
+	        <h2 id="yearly"></h2>
+	        <p class="bottom-text" id="avgyearly-compare"><span></span></p>
+	    </div>
+	</div> -->
 
 	<?php do_action('edd_metrics_after_boxes'); ?>
 

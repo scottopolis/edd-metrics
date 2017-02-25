@@ -44,9 +44,9 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             }
 
             self::$endstr = "now";
-        	self::$startstr = "-30 days";
+            self::$startstr = "-30 days";
             self::$end = strtotime( self::$endstr );
-        	self::$start = strtotime( self::$startstr );
+            self::$start = strtotime( self::$startstr );
 
             return self::$instance;
         }
@@ -65,12 +65,16 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             add_action( 'wp_ajax_metrics_batch_1', array( $this, 'metrics_batch_1' ), 10, 2 );
 
-            add_action( 'wp_ajax_metrics_batch_2', array( $this, 'metrics_batch_2' ), 10, 2 );
+            add_action( 'wp_ajax_metrics_batch_2', array( $this, 'metrics_batch_2' ), 10 );
+
+
 
             // add_action('init', function() {
-            //     $ret = self::get_discounts( self::$startstr, self::$endstr );
-            //     var_dump($ret);
+                
+            //     var_dump( self::metrics_batch_2() );
+            //     exit;
             // });
+
 
         }
 
@@ -82,16 +86,16 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @return      void
          */
         public static function metrics_batch_1( $start = '', $end = '' ) {
-        	self::$endstr = $_POST['end'];
-        	self::$startstr = $_POST['start'];
+            self::$endstr = $_POST['end'];
+            self::$startstr = $_POST['start'];
             self::$end = strtotime( self::$endstr );
-        	self::$start = strtotime( self::$startstr );
+            self::$start = strtotime( self::$startstr );
 
             $date_hash = hash('md5', self::$startstr . self::$endstr );
 
             $metrics = get_transient( 'metrics1_' . $date_hash );
 
-            if ( false === $metrics ) {
+            if ( false === false ) {
 
                 $dates = self::get_compare_dates();
 
@@ -112,7 +116,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             echo json_encode( $metrics );
 
-	        exit;
+            exit;
         }
 
         /**
@@ -132,7 +136,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             $metrics = get_transient( 'metrics2_' . $date_hash );
 
-            if ( false === $metrics ) {
+            if ( false === false ) {
 
                 $discounts = self::get_discounts( self::$startstr, self::$endstr );
 
@@ -141,13 +145,16 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                 $metrics = array(
                     'dates' => $dates,
                     'renewals' => self::get_renewals( self::$start, self::$end ),
-                    'refunds' => self::get_refunds(),
-                    'subscriptions' => self::get_subscriptions( self::$startstr, self::$endstr ),
+                    'subscriptions' => array( 
+                        'number' => self::get_subscriptions( self::$startstr, self::$endstr ),
+                        'earnings' => self::get_subscription_revenue( self::$start, self::$end ),
+                        'earnings30' => self::get_subscription_revenue( strtotime( 'now' ), strtotime( '+ 30 days' ) )
+                        ),
                     'discounts' => array( 
                         'now' => $discounts, 
                         'compare' => self::compare_discounts( $discounts['amount'] ),
                     ),
-                    'commissions' => self::get_commissions( self::$start, self::$end ),
+                    'commissions' => self::get_commissions( self::$start, self::$end )
                 );
 
                 $metrics = apply_filters( 'metrics_json_output', $metrics );
@@ -170,25 +177,27 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          */
         public static function get_earnings() {
 
-        	$dates = self::get_compare_dates();
+            $dates = self::get_compare_dates();
 
-        	// Get current and previous period earnings
-        	$EDD_Stats = new EDD_Payment_Stats();
-        	$earnings = $EDD_Stats->get_earnings( 0, $dates['start'], $dates['end'] );
-        	$previous_earnings = $EDD_Stats->get_earnings( 0, $dates['previous_start'], $dates['previous_end'] );
+            // Get current and previous period earnings
+            $earnings = self::get_net_revenue( strtotime( $dates['start'] ), strtotime( $dates['end'] ) );
+            $previous_earnings = self::get_net_revenue( strtotime( $dates['previous_start'] ), strtotime( $dates['previous_end'] ) );
 
-        	// output classes for arrows and colors
-        	$classes = self::get_arrow_classes( $earnings, $previous_earnings );
+            // output classes for arrows and colors
+            $classes = self::get_arrow_classes( $earnings, $previous_earnings );
 
-        	return array( 
-                'total' => edd_currency_filter( edd_format_amount( $earnings ) ), 
+            $refunds = self::get_refunds();
+
+            return array( 
+                'total' => edd_currency_filter( edd_format_amount( $earnings ) ),
                 'compare' => array( 
                     'classes' => $classes, 
                     'percentage' => self::get_percentage( $earnings, $previous_earnings ),
                     'total' => edd_currency_filter( edd_format_amount( $previous_earnings ) ), 
                     ), 
-                'avgyearly' => self::get_avg_yearly( $earnings, $previous_earnings, $dates['num_days'] ), 
+                //'avgyearly' => self::get_avg_yearly( $earnings, $previous_earnings, $dates['num_days'] ), 
                 'avgpercust' => self::get_avg_percust( $earnings, $previous_earnings ),
+                'refunds' => $refunds,
                 'avgmonthly' => self::get_avg_monthly()
                 );
 
@@ -284,28 +293,28 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          */
         public static function get_avg_yearly( $earnings = null, $previous_earnings = null, $num_days = null ) {
 
-        	// Fix division by 0 errors
-        	if( !$earnings && !$previous_earnings ) {
-        		return array( 'total' => 0, 'compare' => array( 'classes' => 'metrics-nochange', 'percentage' => 0 ) );
-        	} else if( empty( $earnings ) ) {
-        		$earnings = 1;
-        	} else if( empty( $previous_earnings ) ) {
-        		$previous_earnings = 1;
-        	}
+            // Fix division by 0 errors
+            if( !$earnings && !$previous_earnings ) {
+                return array( 'total' => 0, 'compare' => array( 'classes' => 'metrics-nochange', 'percentage' => 0 ) );
+            } else if( empty( $earnings ) ) {
+                $earnings = 1;
+            } else if( empty( $previous_earnings ) ) {
+                $previous_earnings = 1;
+            }
 
-        	// Yearly estimate - avg rev per day in set time period, averaged out over 365 days. So $287/day in the last 30 days would be $287*365
-		$comp_dates = self::get_compare_dates();
-		$num_days = $comp_dates['num_days'];		
+            // Yearly estimate - avg rev per day in set time period, averaged out over 365 days. So $287/day in the last 30 days would be $287*365
+        $comp_dates = self::get_compare_dates();
+        $num_days = $comp_dates['num_days'];        
 
-			$avgyearly = ( $earnings/$num_days )*365;
-			$previous_avgyearly = ( $previous_earnings/$num_days )*365;
+            $avgyearly = ( $earnings/$num_days )*365;
+            $previous_avgyearly = ( $previous_earnings/$num_days )*365;
 
-			// output classes for arrows and colors
-        	$classes = self::get_arrow_classes( $avgyearly, $previous_avgyearly );
+            // output classes for arrows and colors
+            $classes = self::get_arrow_classes( $avgyearly, $previous_avgyearly );
 
-			return array( 'total' => edd_currency_filter( edd_format_amount( $avgyearly ) ), 'compare' => array( 'classes' => $classes, 'percentage' => self::get_percentage( $avgyearly, $previous_avgyearly ) ) );
+            return array( 'total' => edd_currency_filter( edd_format_amount( $avgyearly ) ), 'compare' => array( 'classes' => $classes, 'percentage' => self::get_percentage( $avgyearly, $previous_avgyearly ) ) );
 
-		}
+        }
 
         /**
          * Return sales
@@ -316,17 +325,17 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          */
         public static function get_sales() {
 
-        	$dates = self::get_compare_dates();
+            $dates = self::get_compare_dates();
  
-        	// Get current and previous period sales
-        	$EDD_Stats = new EDD_Payment_Stats();
-        	$sales = $EDD_Stats->get_sales( 0, $dates['start'], $dates['end'] );
-        	$previous_sales = $EDD_Stats->get_sales( 0, $dates['previous_start'], $dates['previous_end'] );
+            // Get current and previous period sales
+            $EDD_Stats = new EDD_Payment_Stats();
+            $sales = $EDD_Stats->get_sales( 0, $dates['start'], $dates['end'] );
+            $previous_sales = $EDD_Stats->get_sales( 0, $dates['previous_start'], $dates['previous_end'] );
 
-        	// output classes for arrows and colors
-        	$classes = self::get_arrow_classes( $sales, $previous_sales );
+            // output classes for arrows and colors
+            $classes = self::get_arrow_classes( $sales, $previous_sales );
 
-        	return array( 'count' => $sales, 'previous' => $previous_sales, 'compare' => array( 'classes' => $classes, 'percentage' => self::get_percentage( $sales, $previous_sales ) ) );
+            return array( 'count' => $sales, 'previous' => $previous_sales, 'compare' => array( 'classes' => $classes, 'percentage' => self::get_percentage( $sales, $previous_sales ) ) );
 
         }
 
@@ -338,16 +347,16 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          * @return      array()
          */
         public static function get_compare_dates() {
-        	// current period
-			$start = date("jS F Y", self::$start );
-        	$end = date("jS F Y", self::$end );
+            // current period
+            $start = date("jS F Y", self::$start );
+            $end = date("jS F Y", self::$end );
 
-        	$datediff = self::$end - self::$start;
-			$num_days = floor( $datediff/( 60*60*24 ) ) + 1;
+            $datediff = self::$end - self::$start;
+            $num_days = floor( $datediff/( 60*60*24 ) ) + 1;
 
-			$prev = self::subtract_days( $start, $end, $num_days );
+            $prev = self::subtract_days( $start, $end, $num_days );
 
-			return array( 'start' => $start, 'end' => $end, 'previous_start' => $prev[0], 'previous_end' => $prev[1], 'num_days' => $num_days );
+            return array( 'start' => $start, 'end' => $end, 'previous_start' => $prev[0], 'previous_end' => $prev[1], 'num_days' => $num_days );
         }
 
         /**
@@ -383,9 +392,9 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          */
         public static function percent_change($new_val, $old_val) {
 
-	    $new_val = edd_sanitize_amount( $new_val );
+        $new_val = edd_sanitize_amount( $new_val );
             $old_val = edd_sanitize_amount( $old_val );
-		
+        
             if( empty( $old_val ) || $old_val === 0 )
                 return 0;
 
@@ -393,8 +402,8 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             $new_val = str_replace( ',', '', $new_val );
             $old_val = str_replace( ',', '', $old_val );
 
-		    return ( ( $new_val - $old_val ) / $old_val ) * 100;
-		}
+            return ( ( $new_val - $old_val ) / $old_val ) * 100;
+        }
 
         /**
          * Helper method to prevent division by zero errors
@@ -458,27 +467,27 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          */
         public static function do_sidebar() {
 
-        	$edd_payment = get_post_type_object( 'edd_payment' );
+            $edd_payment = get_post_type_object( 'edd_payment' );
 
-        	$args = array(
-				'post_type' => 'edd_payment',
+            $args = array(
+                'post_type' => 'edd_payment',
                 // 'post_status' => array( 'publish' )
-			);
+            );
 
-        	// The Query
-			$the_query = new WP_Query( $args );
+            // The Query
+            $the_query = new WP_Query( $args );
 
-        	?>
+            ?>
 
-        	<div class="postbox metrics-sidebar">
+            <div class="postbox metrics-sidebar">
                 <h2 class="hndle ui-sortable-handle"><span><?php _e('Recent Activity', 'edd-metrics'); ?></span></h2>
                 <div class="inside">
                     <ul>
                     <?php
-                    	// Recent payments loop
-						if ( $the_query->have_posts() ) {
-							while ( $the_query->have_posts() ) {
-								$the_query->the_post();
+                        // Recent payments loop
+                        if ( $the_query->have_posts() ) {
+                            while ( $the_query->have_posts() ) {
+                                $the_query->the_post();
 
                                 $status = get_post_status( get_the_ID() );
 
@@ -504,14 +513,14 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
                                 $status = ucfirst( $status );
 
-								$total = get_post_meta( get_the_ID(), '_edd_payment_total' )[0];
-								echo '<li><a href="' . admin_url( 'edit.php?post_type=download&page=edd-payment-history&view=view-order-details&id=' . get_the_ID() ) . '"><span class="' . $classes . '"><span class="status-wrap">' . $status . '</span> ' . edd_currency_filter( edd_format_amount( $total ) ) . '</span> ' . get_the_title() . '</a></li>';
-							}
-							wp_reset_postdata();
-						} else {
-							echo '<li>' . _e('No Payments Found', 'edd-metrics') . '</li>';
-						}
-					?>
+                                $total = get_post_meta( get_the_ID(), '_edd_payment_total' )[0];
+                                echo '<li><a href="' . admin_url( 'edit.php?post_type=download&page=edd-payment-history&view=view-order-details&id=' . get_the_ID() ) . '"><span class="' . $classes . '"><span class="status-wrap">' . $status . '</span> ' . edd_currency_filter( edd_format_amount( $total ) ) . '</span> ' . get_the_title() . '</a></li>';
+                            }
+                            wp_reset_postdata();
+                        } else {
+                            echo '<li>' . _e('No Payments Found', 'edd-metrics') . '</li>';
+                        }
+                    ?>
                     </ul>
                 </div>
             </div>
@@ -564,15 +573,15 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         public static function get_renewals( $start = null, $end = null ) {
 
             if( !class_exists('EDD_Software_Licensing') ) {
-            	return array( 'count' => '0', 'earnings' => '0', 'compare' => array( 'classes' => 'edd-metrics-nochange', 'percentage' => '0' ) );
+                return array( 'count' => '0', 'earnings' => '0', 'compare' => array( 'classes' => 'edd-metrics-nochange', 'percentage' => '0' ) );
             }
 
-        	$renewals = self::get_renewals_by_date( $start, $end );
+            $renewals = self::get_renewals_by_date( $start, $end );
 
             $renewals['compare'] = self::compare_renewals( $renewals['count'] ); 
 
-	        return $renewals;
-			        
+            return $renewals;
+                    
         }
 
         /**
@@ -732,15 +741,15 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         }
 
         /**
-	     * Get refund count and losses and return
-	     *
-	     * @access      public
-	     * @since       0.2.0
-	     * @return      array( 'count' => $count, 'losses' => $losses )
-	     */
-	    public static function get_refunds() {
+         * Get refund count and losses and return
+         *
+         * @access      public
+         * @since       0.2.0
+         * @return      array( 'count' => $count, 'losses' => $losses )
+         */
+        public static function get_refunds() {
 
-        	$refunds = self::refund_query( self::$startstr, self::$endstr );
+            $refunds = self::refund_query( self::$startstr, self::$endstr );
 
             if( $refunds['count'] == 0 && $refunds['earnings'] == 0 ) {
                 $compare = array( 'classes' => 'metrics-nochange', 'percentage' => 0 );
@@ -748,8 +757,8 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
                 $compare = self::compare_refunds( $refunds['count'] );
             }
 
-			return array( 'count' => $refunds['count'], 'losses' => edd_currency_filter( edd_format_amount( $refunds['earnings'] ) ), 'compare' => $compare );
-	    }
+            return array( 'count' => $refunds['count'], 'losses' => edd_currency_filter( edd_format_amount( $refunds['earnings'] ) ), 'compare' => $compare, 'integer' => $refunds['earnings'] );
+        }
 
         /**
          * Compare refunds
@@ -838,6 +847,31 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
         }
 
         /**
+         * Retrieve estimated revenue for the number of days given
+         * Copied directly from edd-recurring/includes/admin/class-summary-widget.php and modified for my evil purposes muhahaha
+         *
+         * @since  2.4.15
+         * @return float
+         */
+        public static function get_subscription_revenue( $start, $end ) {
+
+            if( !class_exists('EDD_Recurring') )
+                return '0';
+
+            global $wpdb;
+
+            if( !empty( $start ) ) {
+
+                $start   = date( 'Y-n-d H:i:s', $start );
+                $end    = date( 'Y-n-d H:i:s', $end );
+                $amount = $wpdb->get_var( "SELECT sum(recurring_amount) FROM {$wpdb->prefix}edd_subscriptions WHERE expiration >= '$start' AND expiration <= '$end' AND status IN( 'active', 'trialling' );" );
+
+            }
+
+            return edd_currency_filter( edd_format_amount( edd_sanitize_amount( $amount ) ) );
+        }
+
+        /**
          * Get data for chart
          *
          * @access      public
@@ -868,9 +902,29 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
         }
 
+        /*
+         * Net revenue is total revenue minus refunds. Have to go back 3 months because EDD counts refunds by purchase date, not refund date. So some refunds are not counted in refund query.
+         * $start and $end should be time strings
+         */
+        public static function get_net_revenue( $start, $end ) {
+
+            $twomoago = date( "jS F Y", strtotime( "-2 months" ) );
+            
+            $EDD_Stats = new EDD_Payment_Stats();
+            $earnings_then = $EDD_Stats->get_earnings( 0, $twomoago, date( "jS F Y", $start ) );
+
+            $earnings_uptonow = $EDD_Stats->get_earnings( 0, $twomoago, date( "jS F Y", $end ) );
+
+            $net_revenue = $earnings_uptonow - $earnings_then;
+
+            return $net_revenue;
+
+        }
+
+
     }
 
-	$edd_metrics_class = new EDD_Metrics_Functions();
-	$edd_metrics_class->instance();
+    $edd_metrics_class = new EDD_Metrics_Functions();
+    $edd_metrics_class->instance();
 
 } // end class_exists check
