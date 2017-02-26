@@ -95,7 +95,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             $metrics = get_transient( 'metrics1_' . $date_hash );
 
-            if ( false === false ) {
+            if ( false === $metrics ) {
 
                 $dates = self::get_compare_dates();
 
@@ -136,19 +136,27 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             $metrics = get_transient( 'metrics2_' . $date_hash );
 
-            if ( false === false ) {
+            if ( false === $metrics ) {
 
                 $discounts = self::get_discounts( self::$startstr, self::$endstr );
 
                 $dates = self::get_compare_dates();
+
+                $recurring_revenue = self::get_subscription_revenue( self::$start, self::$end );
+                $prev_recurring_rev = self::get_subscription_revenue( strtotime( $dates['previous_start'] ), strtotime( $dates['previous_end'] ) );
+
+                $earnings_30 = self::get_subscription_revenue( strtotime( 'now' ), strtotime( '+ 30 days' ) );
 
                 $metrics = array(
                     'dates' => $dates,
                     'renewals' => self::get_renewals( self::$start, self::$end ),
                     'subscriptions' => array( 
                         'number' => self::get_subscriptions( self::$startstr, self::$endstr ),
-                        'earnings' => self::get_subscription_revenue( self::$start, self::$end ),
-                        'earnings30' => self::get_subscription_revenue( strtotime( 'now' ), strtotime( '+ 30 days' ) )
+                        'earnings' => array(
+                            'total' => edd_currency_filter( edd_format_amount( edd_sanitize_amount( $recurring_revenue ) ) ),
+                            'compare' => self::subscription_compare( $recurring_revenue, $prev_recurring_rev),
+                            ),
+                        'earnings30' => edd_currency_filter( edd_format_amount( edd_sanitize_amount( $earnings_30 ) ) )
                         ),
                     'discounts' => array( 
                         'now' => $discounts, 
@@ -166,6 +174,29 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
             echo json_encode( $metrics );
 
             exit;
+        }
+
+        /**
+         * Get comparison of current and previous recurring revenue
+         *
+         * @access      public
+         * @since       0.5.2
+         * @return      array()
+         */
+        public static function subscription_compare( $rev, $prev_rev) {
+
+            if( empty( $rev ) || empty ( $prev_rev ) ) {
+                return array( 
+                    'classes' => '', 
+                    'percentage' => '-' 
+                );
+            }
+
+            return array( 
+                'classes' => self::get_arrow_classes( $rev, $prev_rev ), 
+                'percentage' => self::get_percentage( $rev, $prev_rev )
+            );
+
         }
 
         /**
@@ -868,7 +899,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
 
             }
 
-            return edd_currency_filter( edd_format_amount( edd_sanitize_amount( $amount ) ) );
+            return $amount;
         }
 
         /**

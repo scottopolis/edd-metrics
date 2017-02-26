@@ -12,7 +12,7 @@
 
 	<div class="one-half">
 	    <div class="edd-metrics-box">
-	        <p class="top-text"><?php _e('Revenue', 'edd-metrics'); ?></p>
+	        <p class="top-text"><?php _e('Net Revenue', 'edd-metrics'); ?></p>
 	        <h2 id="revenue"></h2>
 	        <p class="bottom-text" id="revenue-compare"><span></span></p>
 	    </div>
@@ -65,7 +65,7 @@
 	    <div class="edd-metrics-box">
 	        <p class="top-text"><?php _e('Recurring Revenue', 'edd-metrics'); ?></p>
 	        <h2 id="recurring-revenue"></h2>
-	        <!-- <p class="bottom-text" id="subscriptions-compare"><span></span></p> -->
+	        <p class="bottom-text" id="recurring-compare"><span></span></p> 
 	    </div>
 	</div>
 

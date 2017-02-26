@@ -99,7 +99,7 @@
 
   eddm.dashResponse = function(response) {
 
-    console.log( 'dashresponse', response );
+    //console.log( 'dashresponse', response );
 
     var data = JSON.parse(response);
 
@@ -125,7 +125,7 @@
 
   eddm.batch2response = function(response) {
 
-    console.log( 'batch2response', response );
+    // console.log( 'batch2response', response );
 
     var data = JSON.parse(response);
 
@@ -143,10 +143,11 @@
       $('#subscriptions').html( data.subscriptions.number.count );
       $('#subscriptions-compare span').html( data.subscriptions.number.compare.percentage + compareTemp ).removeClass().addClass( data.subscriptions.number.compare.classes );
 
-      $('#recurring-revenue').html( data.subscriptions.earnings );
+      $('#recurring-revenue').html( data.subscriptions.earnings.total );
+      //$('#recurring-compare span').html( data.subscriptions.earnings.compare.percentage + compareTemp ).removeClass().addClass( data.subscriptions.earnings.compare.classes );
 
       $('#recurring-revenue-30').html( data.subscriptions.earnings30 );
-      
+
     }
 
     $('#discounts').html( data.discounts.now.amount );
@@ -203,7 +204,7 @@
 
     var data = JSON.parse(response);
 
-    console.log( 'detailResponse_2', data );
+    // console.log( 'detailResponse_2', data );
 
     var metric = eddm.getQueryVariable('metric');
 
