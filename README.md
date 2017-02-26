@@ -1,6 +1,6 @@
 # EDD Metrics
 
-Add beautiful, advanced metrics to your Easy Digital Downloads for WordPress installation.
+Advanced stats, comparisons, and metrics for your Easy Digital Downloads store.
 
 Metrics all include a comparison to the previous period, so you can see if they are going up or down.
 
@@ -8,28 +8,33 @@ Metrics all include a comparison to the previous period, so you can see if they 
 
 ### Metrics
 
-- Revenue
+- Net Revenue (Properly subtracts refunds)
 - Sales
 - Average revenue per customer
-- Estimated yearly revenue
 - Estimated monthly revenue
 - Refunds
 - Discounts
 - Renewals, and renewal rate (if EDD Software Licensing is active)
-- Subscriptions (if EDD Recurring Payments is active)
+- New subscriptions (if EDD Recurring Payments is active)
+- Recurring revenue this period and next 30 days
 - Earnings by download
 - Earnings by gateway
 - New customers
 
 Charts are displayed on the detail page along with other metrics.
 
-This plugin is inspired by (and basically a total copy of) [Baremetrics](https://baremetrics.com/). I would have just used Baremetrics instead of building a new plugin, except that Baremetrics is very specific to SaaS businesses, and doesn't really work for EDD.
+This plugin is inspired by (and basically a total copy of) [Baremetrics](https://baremetrics.com/).
 
 ### Usage
 
 Install and activate this plugin on your WordPress site, then visit the "Metrics" menu under the "Downloads" left menu item.
 
 ### Changelog
+
+=0.6=
+
+* Add recurring revenue metrics
+* Change revenue total to net revenue, which accounts for refunds EDD does not track properly
 
 =0.5.1=
 

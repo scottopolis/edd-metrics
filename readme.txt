@@ -16,15 +16,15 @@ Get the important metrics for your business, such as average revenue per custome
 
 Included metrics:
 
-* Revenue
+* Net Revenue (Properly subtracts refunds)
 * Sales
 * Average revenue per customer
-* Estimated yearly revenue
 * Estimated monthly revenue
 * Refunds
 * Discounts
 * Renewals, and renewal rate (if EDD Software Licensing is active)
 * Subscriptions (if EDD Recurring Payments is active)
+* Recurring revenue this period and next 30 days
 * Earnings by download
 * Earnings by gateway
 * New customers
@@ -48,6 +48,11 @@ Change the date using the datepicker in the top right hand corner. Click "Revenu
 2. Revenue details
 
 == Changelog ==
+
+=0.6=
+
+* Add recurring revenue metrics
+* Change revenue total to net revenue, which accounts for refunds EDD does not track properly
 
 = 0.5.1 =
 
