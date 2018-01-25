@@ -3,8 +3,8 @@
 Contributors: scottopolis, growdev, netzberufler
 Tags: easy digital downloads, edd, analytics, metrics, statistics, baremetrics
 Requires at least: 4.0
-Tested up to: 4.7.2
-Stable tag: 0.6
+Tested up to: 4.9.2
+Stable tag: 0.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -48,6 +48,10 @@ Change the date using the datepicker in the top right hand corner. Click "Revenu
 2. Revenue details
 
 == Changelog ==
+
+=0.7=
+
+* Fix net revenue stats for some historical periods - props to @danlester
 
 =0.6=
 
