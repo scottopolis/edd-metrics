@@ -939,7 +939,7 @@ if( !class_exists( 'EDD_Metrics_Functions' ) ) {
          */
         public static function get_net_revenue( $start, $end ) {
 
-            $twomoago = date( "jS F Y", strtotime( "-2 months" ) );
+            $twomoago = date( "jS F Y", strtotime( "-2 months", $start ) );
             
             $EDD_Stats = new EDD_Payment_Stats();
             $earnings_then = $EDD_Stats->get_earnings( 0, $twomoago, date( "jS F Y", $start ) );
