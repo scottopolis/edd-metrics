@@ -31,6 +31,10 @@ Install and activate this plugin on your WordPress site, then visit the "Metrics
 
 ### Changelog
 
+=1.0=
+
+* Major UI update thanks to @boxystudio!
+
 =0.6=
 
 * Add recurring revenue metrics
