@@ -106,19 +106,23 @@
     var compareTemp = window.eddMetrics.compare_string + ' ' + data.dates.num_days + ' ' + window.eddMetrics.days;
 
     $('#revenue').html( data.earnings.total );
+    $('#revenue-compare').addClass( data.earnings.compare.classes );
     $('#revenue-compare span').html( data.earnings.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.compare.classes );
 
     $('#sales').html( data.sales.count );
+    $('#sales-compare').addClass( data.sales.compare.classes );
     $('#sales-compare span').html( data.sales.compare.percentage + compareTemp ).removeClass().addClass( data.sales.compare.classes );
 
     // $('#yearly').html( data.earnings.avgyearly.total );
     // $('#avgyearly-compare span').html( data.earnings.avgyearly.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.avgyearly.compare.classes );
 
     $('#avgpercust').html( data.earnings.avgpercust.total );
+    $('#avgpercust-compare').addClass( data.earnings.avgpercust.compare.classes );
     $('#avgpercust-compare span').html( data.earnings.avgpercust.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.avgpercust.compare.classes );
 
     $('#refunds').html( data.earnings.refunds.count );
     $('#refund-amount').html( data.earnings.refunds.losses );
+    $('#refunds-compare').addClass( data.earnings.refunds.compare.classes );
     $('#refunds-compare span').html( data.earnings.refunds.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.refunds.compare.classes );
 
   }
@@ -136,11 +140,13 @@
     if( $('#renewals').length ) {
       $('#renewals').html( data.renewals.count );
       $('#renewal-amount').html( data.renewals.earnings );
+      $('#renewals-compare').addClass( data.renewals.compare.classes );
       $('#renewals-compare span').html( data.renewals.compare.percentage + compareTemp ).removeClass().addClass( data.renewals.compare.classes );
     }
 
     if( $('#subscriptions').length ) {
       $('#subscriptions').html( data.subscriptions.number.count );
+      $('#subscriptions-compare').addClass( data.subscriptions.number.compare.classes );
       $('#subscriptions-compare span').html( data.subscriptions.number.compare.percentage + compareTemp ).removeClass().addClass( data.subscriptions.number.compare.classes );
 
       $('#recurring-revenue').html( data.subscriptions.earnings.total );
@@ -152,6 +158,7 @@
 
     $('#discounts').html( data.discounts.now.amount );
     $('#discounts-count').html( data.discounts.now.count );
+    $('#discounts-compare').addClass( data.discounts.compare.classes );
     $('#discounts-compare span').html( data.discounts.compare.percentage + compareTemp ).removeClass().addClass( data.discounts.compare.classes );
 
     if( $('#commissions').length ) {
@@ -174,6 +181,7 @@
           // do revenue
 
           $('#revenue').html( data.earnings.total );
+          $('#revenue-compare').addClass( data.earnings.compare.classes );
           $('#revenue-compare span').html( data.earnings.compare.percentage + eddm.compare_temp_2 ).removeClass().addClass( data.earnings.compare.classes );
           $('.detail-compare-first').html( data.earnings.compare.total );
 
@@ -212,10 +220,12 @@
       case 'revenue':
           // do revenue
 
+          $('#revenue-6mocompare').addClass( data.earnings.detail.sixmoago.classes );
           $('#revenue-6mocompare span').html( data.earnings.detail.sixmoago.compare + eddm.compare_temp_2 ).removeClass().addClass( data.earnings.detail.sixmoago.classes );
           $('.detail-compare-second').html( data.earnings.detail.sixmoago.total );
 
           $('.detail-compare-third').html( data.earnings.detail.twelvemoago.total );
+          $('#revenue-12mocompare').addClass( data.earnings.detail.twelvemoago.classes );
           $('#revenue-12mocompare span').html( data.earnings.detail.twelvemoago.compare + eddm.compare_temp_2 ).removeClass().addClass( data.earnings.detail.twelvemoago.classes );
 
           $('#earnings-today h2').html( data.earnings.detail.today );
