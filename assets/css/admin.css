@@ -8,11 +8,15 @@
     margin: 0;
     line-height: 1;
     border-color:#eee;
-    background:#f9f9f9;
+    background:#fbfbfb;
+    color:#333;
     cursor:default;
+    border-radius:6px 6px 0 0;
 }
 
 #edd-metrics-wrap .postbox {
+	border:none;
+	border-radius:6px;
 	min-width: 150px;
 	border-top:none;
 }
@@ -26,7 +30,7 @@
 .edd-metrics-flex { display:flex; flex-wrap:wrap; }
 
 .edd-metrics-boxes { width:68.666%; margin:0 -1%; }
-.edd-metrics-sidebar { width:32.833%; margin:0 0 0 0.5%; }
+.edd-metrics-sidebar { width:33.333%; margin:0; }
 
 .edd-metrics-boxes.edd-metrics-boxes-full { width:100%; margin:0; }
 .edd-metrics-boxes.edd-metrics-boxes-full .edd-metrics-flex { width:100%; }
@@ -46,6 +50,7 @@
     width:47%;
     min-height: 175px;
     display: block;
+    position:relative;
     text-decoration: none !important;
 }
 
@@ -68,24 +73,30 @@
 .edd-metrics-flex.edd-metrics-flex-half .edd-metrics-box { width:48%; }
 
 .metrics-details-link {
-	background-color: #0073aa;
+	background-color: #fff;
 	box-sizing: border-box;
-    padding:30px;
-    height:175px;
+	border-radius:6px;
+	margin:0 0 20px;
+    padding:20px 30px 30px 20px;
+	border: 1px solid #e5e5e5;
+	box-shadow:0 1px 1px rgba(0,0,0,.04);
     text-align: center;
     text-decoration: none !important;
     transition: all 250ms cubic-bezier(0.420, 0.000, 0.260, 1.000);
+    position:relative;
 }
+
+.metrics-details-link canvas { margin:0 0 25px; }
 
 .metrics-details-link a {
 	text-decoration: none !important;
 	display:block;
-	color:#fff;
+	font-size:1.3rem;
 	font-weight:600;
 }
 
 img.details-chart {
-	max-width: 250px;
+	max-width: 200px;
 	height: auto;
 	display: block;
 	margin: 0 auto;
@@ -93,6 +104,7 @@ img.details-chart {
 
 .edd-metrics-chart-wrapper {
 	margin-bottom: 15px;
+	padding:20px 20px 40px;
 	min-height: 200px;
 	clear: both;
 	position: relative;
@@ -123,6 +135,9 @@ img.details-chart {
 	font-weight: 400;
 }
 
+#metrics-piechart-by-download,
+#metrics-piechart-by-gateway { max-width:400px; margin:30px auto 0; }
+
 .edd-metrics-box .top-text, .edd-metrics-box .bottom-text {
 	color: #888;
 	font-size: 1rem;
@@ -132,9 +147,10 @@ img.details-chart {
 
 .edd-metrics-box .bottom-text {
 	margin:15px -10px 0;
-	top:12px;
+	bottom:0;
+	position:absolute;
+	width:100%;
 	border-radius:0 0 6px 6px;
-	position:relative;
 	padding:0.75rem 0;
 	background:#f9f9f9;
 	min-height:24px;
@@ -142,7 +158,6 @@ img.details-chart {
 
 .edd-metrics-flex-combined .edd-metrics-box .bottom-text {
 	border-radius:0;
-	top:14px;
 }
 
 .edd-metrics-box .bottom-text.metrics-positive { background:#edfbed; }
@@ -159,7 +174,7 @@ span.metrics-uparrow:before {
 	height: 0;
 	border-left: 5px solid transparent;
 	border-right: 5px solid transparent;
-	border-bottom: 10px solid #009900;
+	border-bottom: 7px solid #009900;
 	position: absolute;
     left: -15px;
     bottom: 5px;
@@ -176,7 +191,7 @@ span.metrics-downarrow:before {
 	height: 0;
 	border-left: 5px solid transparent;
 	border-right: 5px solid transparent;
-	border-top: 10px solid #cc0000;
+	border-top: 7px solid #cc0000;
 	position: absolute;
     left: -15px;
     bottom: 5px;
@@ -184,17 +199,24 @@ span.metrics-downarrow:before {
 
 .metrics-positive .status-wrap {
 	background-color: #009900;
+	margin:0 5px 0 0;
 }
 
 .metrics-negative .status-wrap {
 	background-color: #cc0000;
+	margin:0 5px 0 0;
 }
 
 .metrics-nochange .status-wrap {
 	background-color: #aaa;
+	margin:0 5px 0 0;
 }
 
-.metrics-sidebar li a > span { margin-right:10px; }
+.metrics-sidebar li a > span {
+	margin-right:10px;
+	font-weight:700;
+	min-width:150px;
+	display:inline-block; }
 
 .status-wrap {
 	position:relative;
@@ -247,23 +269,69 @@ span.metrics-downarrow:before {
     margin-bottom: 0;
 }
 
-.metrics-sidebar li:last-child { border-bottom:none; padding-bottom:0; }
+.metrics-sidebar li:last-child { border-bottom:none; }
 
 .metrics-sidebar li a {
 	text-decoration: none;
 	color: #999;
 }
 
-.metrics-details-link:hover {
-	background-color: #008ec2;
+.metrics-details-link .edd-metrics-details-arrow {
+	position:absolute;
+	top:50%;
+	right:50px;
+	font-size:5rem;
+	color:#fff;
+    height: 5rem;
+    line-height: 5rem;
+    margin: -2.5rem 0 0 0;
+    transform:translate3d(0,0,0);
+    transition: all 250ms cubic-bezier(0.420, 0.000, 0.260, 1.000);
 }
 
-.metrics-title2, .edd-metrics-box:hover .metrics-title1 {
-	display: none;
+.metrics-details-link:hover .edd-metrics-details-arrow {
+	transform:translate3d(10px,0,0);
+}
+
+.edd-metrics-box:hover {
+	transform:translate3d(0,-2px,0);
+	box-shadow:0 5px 10px rgba(0,0,0,0.075);
+}
+
+.edd-metrics-flex-combined .edd-metrics-box:hover,
+.edd-metrics-box-full:hover {
+	transform:translate3d(0,0,0);
+	box-shadow:inherit;
+}
+
+.edd-metrics-box h2 {
+	position:absolute; top:50%; left:0;
+	width:100%; margin:-1.6rem 0 0 0;
+}
+
+.edd-metrics-box .metrics-title1 {
+	opacity:1;
+	transform:translate3d(0,0,0);
+}
+
+.edd-metrics-box:hover .metrics-title1 {
+	opacity:0;
+	transform:translate3d(0,20px,0);
+}
+
+.edd-metrics-box .metrics-title2 {
+	opacity:0;
+	transform:translate3d(0,-20px,0);
 }
 
 .edd-metrics-box:hover .metrics-title2 {
-	display: block;
+	opacity:1;
+	transform:translate3d(0,0,0);
+}
+.edd-metrics-box .metrics-title1,
+.edd-metrics-box .metrics-title2,
+.edd-metrics-box {
+	transition: all 250ms cubic-bezier(0.420, 0.000, 0.260, 1.000);
 }
 
 .daterange {

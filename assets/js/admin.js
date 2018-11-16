@@ -82,6 +82,7 @@
       });
 
     } else {
+
       $.post( window.ajaxurl, data, eddm.dashResponse ).then( function() {
 
         data.action = 'metrics_batch_2';
@@ -124,6 +125,8 @@
     $('#refund-amount').html( data.earnings.refunds.losses );
     $('#refunds-compare').addClass( data.earnings.refunds.compare.classes );
     $('#refunds-compare span').html( data.earnings.refunds.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.refunds.compare.classes );
+
+    eddm.doLineChart( data.lineChart );
 
   }
 
@@ -274,21 +277,22 @@
             {
                 label: eddm.revenue,
                 fill: true,
-                lineTension: 0.1,
-                backgroundColor: "rgba(0,115,170,.2)",
-                borderColor: "#0073aa",
+                lineTension: 0,
+                backgroundColor: "#edfbed",
+                borderColor: "#009900",
+                borderWidth: 3,
                 borderCapStyle: 'butt',
                 borderDash: [],
                 borderDashOffset: 0.0,
-                borderJoinStyle: 'miter',
-                pointBorderColor: "#0073aa",
+                borderJoinStyle: 'round',
+                pointBorderColor: "#009900",
                 pointBackgroundColor: "#fff",
-                pointBorderWidth: 2,
+                pointBorderWidth: 3,
                 pointHoverRadius: 5,
-                pointHoverBackgroundColor: "#0073aa",
-                pointHoverBorderColor: "rgba(220,220,220,1)",
-                pointHoverBorderWidth: 2,
-                pointRadius: 4,
+                pointHoverBackgroundColor: "#009900",
+                pointHoverBorderColor: "#009900",
+                pointHoverBorderWidth: 3,
+                pointRadius: 5,
                 pointHitRadius: 10,
                 data: chart.earnings,
                 spanGaps: false
@@ -302,19 +306,46 @@
     };
 
     var ctx = document.getElementById("metrics-line-chart");
+    var ctx_tiny = document.getElementById("metrics-line-chart-tiny");
 
-    eddm.lineChart = new Chart(ctx, {
-        type: 'line',
-        data: data,
-        options: {
-            scales: {
-                xAxes: [{
-                    display: false,
-                    stacked: true
-                }],
-            }
-        }
-    });
+    if ( ctx !== null ){
+
+      eddm.lineChart = new Chart(ctx, {
+          type: 'line',
+          data: data,
+          options: {
+              scales: {
+                  xAxes: [{
+                      display: false,
+                      stacked: true
+                  }],
+              }
+          }
+      });
+    }
+
+    if ( ctx_tiny !== null ){
+
+      data.datasets[0].borderWidth = 2;
+      data.datasets[0].pointBorderWidth = 2;
+      data.datasets[0].pointHoverRadius = 3;
+      data.datasets[0].pointHoverBorderWidth = 2;
+      data.datasets[0].pointRadius = 3;
+
+      eddm.lineChart = new Chart(ctx_tiny, {
+          type: 'line',
+          data: data,
+          options: {
+              scales: {
+                  xAxes: [{
+                      display: false,
+                      stacked: true
+                  }],
+              }
+          }
+      });
+    }
+
   }
 
   eddm.doDownloadChart = function( chart ) {

@@ -13,7 +13,7 @@
     <div class="edd-metrics-flex" style="margin-bottom:10px">
 
         <div class="edd-metrics-box edd-metrics-box-full edd-metrics-chart-wrapper">
-            <canvas id="metrics-line-chart" width="400" height="150"></canvas>
+            <canvas id="metrics-line-chart" width="400" height="125"></canvas>
         </div>
 
     </div>

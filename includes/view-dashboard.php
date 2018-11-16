@@ -102,11 +102,10 @@
 	<div class="edd-metrics-sidebar">
 
 		<div class="metrics-details-link">
-
-			<a href="<?php echo admin_url(); ?>edit.php?post_type=download&page=edd_metrics&view=metrics-details&metric=revenue"><img src="<?php echo plugins_url( 'assets/img/chart1.png', dirname(__FILE__) ); ?>" class="details-chart" />
-			<br>
-			<?php _e('View Revenue Details', 'edd-metrics'); ?> &rarr;</a>
-
+			<canvas id="metrics-line-chart-tiny" width="300" height="125"></canvas>
+			<a href="<?php echo admin_url(); ?>edit.php?post_type=download&page=edd_metrics&view=metrics-details&metric=revenue">
+				<?php _e('View Revenue Details', 'edd-metrics'); ?> &rarr;
+			</a>
 		</div>
 
 	    <?php do_action('edd_metrics_dash_sidebar'); ?>
