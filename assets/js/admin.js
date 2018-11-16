@@ -82,6 +82,7 @@
       });
 
     } else {
+
       $.post( window.ajaxurl, data, eddm.dashResponse ).then( function() {
 
         data.action = 'metrics_batch_2';
@@ -106,20 +107,26 @@
     var compareTemp = window.eddMetrics.compare_string + ' ' + data.dates.num_days + ' ' + window.eddMetrics.days;
 
     $('#revenue').html( data.earnings.total );
+    $('#revenue-compare').addClass( data.earnings.compare.classes );
     $('#revenue-compare span').html( data.earnings.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.compare.classes );
 
     $('#sales').html( data.sales.count );
+    $('#sales-compare').addClass( data.sales.compare.classes );
     $('#sales-compare span').html( data.sales.compare.percentage + compareTemp ).removeClass().addClass( data.sales.compare.classes );
 
     // $('#yearly').html( data.earnings.avgyearly.total );
     // $('#avgyearly-compare span').html( data.earnings.avgyearly.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.avgyearly.compare.classes );
 
     $('#avgpercust').html( data.earnings.avgpercust.total );
+    $('#avgpercust-compare').addClass( data.earnings.avgpercust.compare.classes );
     $('#avgpercust-compare span').html( data.earnings.avgpercust.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.avgpercust.compare.classes );
 
     $('#refunds').html( data.earnings.refunds.count );
     $('#refund-amount').html( data.earnings.refunds.losses );
+    $('#refunds-compare').addClass( data.earnings.refunds.compare.classes );
     $('#refunds-compare span').html( data.earnings.refunds.compare.percentage + compareTemp ).removeClass().addClass( data.earnings.refunds.compare.classes );
+
+    eddm.doLineChart( data.lineChart );
 
   }
 
@@ -136,11 +143,13 @@
     if( $('#renewals').length ) {
       $('#renewals').html( data.renewals.count );
       $('#renewal-amount').html( data.renewals.earnings );
+      $('#renewals-compare').addClass( data.renewals.compare.classes );
       $('#renewals-compare span').html( data.renewals.compare.percentage + compareTemp ).removeClass().addClass( data.renewals.compare.classes );
     }
 
     if( $('#subscriptions').length ) {
       $('#subscriptions').html( data.subscriptions.number.count );
+      $('#subscriptions-compare').addClass( data.subscriptions.number.compare.classes );
       $('#subscriptions-compare span').html( data.subscriptions.number.compare.percentage + compareTemp ).removeClass().addClass( data.subscriptions.number.compare.classes );
 
       $('#recurring-revenue').html( data.subscriptions.earnings.total );
@@ -152,6 +161,7 @@
 
     $('#discounts').html( data.discounts.now.amount );
     $('#discounts-count').html( data.discounts.now.count );
+    $('#discounts-compare').addClass( data.discounts.compare.classes );
     $('#discounts-compare span').html( data.discounts.compare.percentage + compareTemp ).removeClass().addClass( data.discounts.compare.classes );
 
     if( $('#commissions').length ) {
@@ -174,6 +184,7 @@
           // do revenue
 
           $('#revenue').html( data.earnings.total );
+          $('#revenue-compare').addClass( data.earnings.compare.classes );
           $('#revenue-compare span').html( data.earnings.compare.percentage + eddm.compare_temp_2 ).removeClass().addClass( data.earnings.compare.classes );
           $('.detail-compare-first').html( data.earnings.compare.total );
 
@@ -212,10 +223,12 @@
       case 'revenue':
           // do revenue
 
+          $('#revenue-6mocompare').addClass( data.earnings.detail.sixmoago.classes );
           $('#revenue-6mocompare span').html( data.earnings.detail.sixmoago.compare + eddm.compare_temp_2 ).removeClass().addClass( data.earnings.detail.sixmoago.classes );
           $('.detail-compare-second').html( data.earnings.detail.sixmoago.total );
 
           $('.detail-compare-third').html( data.earnings.detail.twelvemoago.total );
+          $('#revenue-12mocompare').addClass( data.earnings.detail.twelvemoago.classes );
           $('#revenue-12mocompare span').html( data.earnings.detail.twelvemoago.compare + eddm.compare_temp_2 ).removeClass().addClass( data.earnings.detail.twelvemoago.classes );
 
           $('#earnings-today h2').html( data.earnings.detail.today );
@@ -264,21 +277,22 @@
             {
                 label: eddm.revenue,
                 fill: true,
-                lineTension: 0.1,
-                backgroundColor: "rgba(0,115,170,.2)",
-                borderColor: "#0073aa",
+                lineTension: 0,
+                backgroundColor: "#edfbed",
+                borderColor: "#009900",
+                borderWidth: 3,
                 borderCapStyle: 'butt',
                 borderDash: [],
                 borderDashOffset: 0.0,
-                borderJoinStyle: 'miter',
-                pointBorderColor: "#0073aa",
+                borderJoinStyle: 'round',
+                pointBorderColor: "#009900",
                 pointBackgroundColor: "#fff",
-                pointBorderWidth: 2,
+                pointBorderWidth: 3,
                 pointHoverRadius: 5,
-                pointHoverBackgroundColor: "#0073aa",
-                pointHoverBorderColor: "rgba(220,220,220,1)",
-                pointHoverBorderWidth: 2,
-                pointRadius: 4,
+                pointHoverBackgroundColor: "#009900",
+                pointHoverBorderColor: "#009900",
+                pointHoverBorderWidth: 3,
+                pointRadius: 5,
                 pointHitRadius: 10,
                 data: chart.earnings,
                 spanGaps: false
@@ -292,19 +306,46 @@
     };
 
     var ctx = document.getElementById("metrics-line-chart");
+    var ctx_tiny = document.getElementById("metrics-line-chart-tiny");
 
-    eddm.lineChart = new Chart(ctx, {
-        type: 'line',
-        data: data,
-        options: {
-            scales: {
-                xAxes: [{
-                    display: false,
-                    stacked: true
-                }],
-            }
-        }
-    });
+    if ( ctx !== null ){
+
+      eddm.lineChart = new Chart(ctx, {
+          type: 'line',
+          data: data,
+          options: {
+              scales: {
+                  xAxes: [{
+                      display: false,
+                      stacked: true
+                  }],
+              }
+          }
+      });
+    }
+
+    if ( ctx_tiny !== null ){
+
+      data.datasets[0].borderWidth = 2;
+      data.datasets[0].pointBorderWidth = 2;
+      data.datasets[0].pointHoverRadius = 3;
+      data.datasets[0].pointHoverBorderWidth = 2;
+      data.datasets[0].pointRadius = 3;
+
+      eddm.lineChart = new Chart(ctx_tiny, {
+          type: 'line',
+          data: data,
+          options: {
+              scales: {
+                  xAxes: [{
+                      display: false,
+                      stacked: true
+                  }],
+              }
+          }
+      });
+    }
+
   }
 
   eddm.doDownloadChart = function( chart ) {
