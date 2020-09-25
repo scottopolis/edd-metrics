@@ -33,7 +33,7 @@ Install and activate this plugin on your WordPress site, then visit the "Metrics
 
 =1.0=
 
-* Major UI update thanks to @boxystudio!
+* Major UI update thanks to [@boxystudio](https://github.com/boxystudio)!
 
 =0.6=
 
